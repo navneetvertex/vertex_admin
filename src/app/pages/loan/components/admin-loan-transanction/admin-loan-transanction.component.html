@@ -1,0 +1,138 @@
+<div class="container-fluid">
+
+  <app-page-title title="Transanction History" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body" >
+                        <div class="card-body border-bottom" >
+                            <form [formGroup]="searchFormGroup" >
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <input type="search" class="form-control" id="searchInput" placeholder="Search for Name / User Id / Email id..." formControlName="name">
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="search" class="form-control" id="searchInput" placeholder="Search for Transanction Id.." formControlName="transaction_id">
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <select class="form-control" formControlName="transaction_type"> 
+                                            <option value="">Transanction Type</option>
+                                            <option value="credit">Credit</option>
+                                            <option value="debit">Debit</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <select class="form-control" formControlName="payment_method"> 
+                                            <option value="">Payment Method</option>
+                                            <option value="EMI">EMI</option>
+                                            <option value="Bank Transfer">Bank Transfer</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Cheque">Cheque</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2" >
+                                       <input type="date" class="form-control" id="searchInput" formControlName="transaction_date">
+                                    </div>
+                                    
+                                    <div class="col-lg-1">
+                                        <button (click)="getTransanctionList()" type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                                    </div>
+                                    <div class="col-lg-1" >
+                                        <button (click)="refresh()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                    </div>
+                                </div>
+                          </form>
+                      </div>
+                        <div class="row">
+                                <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!transanctionList || transanctionList.length === 0">
+                                    <img src="assets/img/not-found.png" width="300px" alt="">
+                                    <p class="text-mutes mt-2">No Transanction found in the current filter.</p>
+                                </div>
+                                <div class="table-responsive"  *ngIf="transanctionList.length !== 0">
+                                    <table id="basic-datatable"
+                                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                      <thead>
+                                        <tr>
+                                          <th>Sr No</th>
+                                          <th>User</th>
+                                          <th>Loan ID</th>
+                                          <th>Transanction Id</th>
+                                          <th>Transanction Type</th>
+                                          <th>Intrest</th>
+                                          <th>Principal</th>
+                                          <th>Amount</th>
+                                          <th>Date</th>
+                                          <th>Payment Method</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr *ngFor="let loan of transanctionList; let i = index">
+                                          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                          <td>{{loan.user.name}} ({{loan.user.user_id}})  </td>
+                                          <td>₹{{loan.loan}}</td>
+                                          <td>{{loan.transaction_id}}</td>
+                                          <td>
+                                             <a *ngIf="loan.transaction_type" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': loan.transaction_type === 'credit' , 
+                                                'badge-soft-warning': loan.transaction_type === 'debit'
+                                              }">
+                                              {{ loan.transaction_type }}
+                                            </a>
+                                          </td>
+                                          <td>{{loan.interest_component}}</td>
+                                          <td>{{loan.principal_component}}</td>
+                                          <td>{{loan.amount}}</td>
+                                          <td>{{loan.transaction_date}}</td>
+                                          <td>{{loan.payment_method}}</td>
+                                          <td>
+                                             <a *ngIf="loan.transaction_type" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': loan.transaction_type === 'credit' , 
+                                                'badge-soft-warning': loan.transaction_type === 'debit'
+                                              }">
+                                              {{ loan.transaction_type }}
+                                            </a>
+                                          </td>
+                                          <td>
+                                            <!-- <ul class="list-inline font-size-20 contact-links mb-0" >
+                                              <li *ngIf="loan.status === 'Pending'" (click)="openLoanModal(loanModal, loan)" data-bs-toggle="modal" data-bs-target="#myModal"  class="list-inline-item px-2">
+                                                <a href="javascript:void(0);" tooltip="Message">
+                                                  <i class="bx bx-check-double"></i>
+                                                </a>
+                                              </li>
+                                              <li class="list-inline-item px-2" *ngIf="loan.status !== 'Pending' || loan.status !== 'Rejected'" >
+                                                <a (click)="viewLoan(loanViewModal, loan)" tooltip="Profile">
+                                                  <i class="bx bx-detail"></i>
+                                                </a>
+                                              </li>
+                                            </ul> -->
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                          <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                          {{ findPageShowing() }} of {{ total }}
+                                          entries
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="text-md-right float-md-end pagination-rounded">
+                                          <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                          </ngb-pagination>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                        </div>
+                            
+                    </div>
+                </div>
+            </div>
+    </div>
+
+</div>

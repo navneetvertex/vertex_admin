@@ -1,0 +1,154 @@
+<div class="container-fluid">
+    <app-page-title title="Assigned Cards" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div  class="row">
+        <div  class="col-lg-12">
+            <div  class="card">
+                <div class="card-body border-bottom">
+                    <div class="row mb-0">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <input
+                                        type="text"
+                                        autocomplete="off"
+                                        id="searchTableList"
+                                        placeholder="Search..."
+                                        class="form-control"
+                                        (keydown.enter)="search($event.target.value)"
+                                    >
+                                    <i class="bx bx-search-alt search-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div  class="card-body">
+                    <div  class="row">
+                            <div class="table-responsive">
+
+                                <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;" *ngIf="ccList.length === 0" >
+                                    <img src="assets/img/not-found.png" width="300px" alt="">
+                                    <p class="text-mutes mt-2">No request found.</p>
+                                </div> 
+                                    <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline"  *ngIf="ccList.length !== 0">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No.</th>
+                                                <th>User Id</th>
+                                                <th>Card Limit</th>
+                                                <th>Card Number</th>
+                                                <th>Interest Rate</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let cc of ccList; let i = index">
+                                                <tr>
+                                                    <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                                    <td>{{ cc?.user?.name }} ({{cc?.user?.user_id}}) </td>
+                                                    <td>{{cc.approved_credit_limit}}</td>
+                                                    <td>{{cc.card_number}}</td>
+                                                    <td>{{cc.interest_rate}}%</td>
+                                                    <td>
+                                                        Requested On: {{cc.created_date | date}} <br>
+                                                        Approved On: {{cc.approved_date ? (cc.approved_date | date) : 'N/A'}} <br>
+                                                        Start Date: {{cc.start_date ? (cc.start_date | date) : 'N/A'}} <br>
+                                                        Expiry Date: {{cc.expiry_date ? (cc.expiry_date | date) : 'N/A'}}
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-{{cc.status === 'Active' ? 'success' : cc.status === 'Requested' ? 'warning' : 'danger'}}">
+                                                            {{cc.status}}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        
+                                                        <span class="mx-1"></span>
+                                                        <span (click)="rejectCreditCardModal(RejectFormModal, cc)" data-bs-toggle="tooltip" data-bs-placement="top" title="Reject">
+                                                            <a href="javascript:void(0);" class="btn btn-sm btn-soft-danger">
+                                                                <i class="mdi mdi-pencil-outline"></i>
+                                                            </a>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                            
+                                            
+                                        </tbody>
+                                    </table>
+                                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                          <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                          {{ findPageShowing() }} of {{ total }}
+                                          entries
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="text-md-right float-md-end pagination-rounded">
+                                          <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                          </ngb-pagination>
+                                        </div>
+                                      </div>
+                                    </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #RejectFormModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Reject Credit Card</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <form  [formGroup]="rejectCCFormGroup" novalidate>
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+                <div class="mb-3">
+                    <label for="rejected_credit_limit" class="form-label">Rejected Credit Limit</label>
+                    <select
+                        id="rejected_credit_limit"
+                        class="form-select"
+                        formControlName="status"
+                        [class.is-invalid]="rejectCCFormGroup.get('status')?.invalid && (rejectCCFormGroup.get('status')?.touched || rejectCCFormGroup.get('status')?.dirty)"
+                        required >
+                        <option value="Rejected">Rejected</option>
+                        <option value="Blocked">Blocked</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Reason for Rejection</label>
+                    <textarea
+                        id="reason"
+                        class="form-control"
+                        formControlName="reason"
+                        rows="3"
+                        [class.is-invalid]="rejectCCFormGroup.get('reason')?.invalid && (rejectCCFormGroup.get('reason')?.touched || rejectCCFormGroup.get('reason')?.dirty)"
+                        required
+                        minlength="10"
+                    ></textarea>
+                    <div class="invalid-feedback" *ngIf="rejectCCFormGroup.get('reason')?.errors?.['required']">
+                        Reason is required.
+                    </div>
+                    <div class="invalid-feedback" *ngIf="rejectCCFormGroup.get('reason')?.errors?.['minlength']">
+                        Reason must be at least 10 characters.
+                    </div>
+                </div>
+                
+        </div>
+      </div>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" [disabled]="!rejectCCFormGroup.valid"  (click)="rejectCreditCard()" >Submit</button>
+      </div>
+
+    </form>
+</ng-template>

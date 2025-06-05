@@ -1,0 +1,69 @@
+<div class="container-fluid">
+    <app-page-title title="Assigned Pins" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div  class="row">
+        <div  class="col-lg-12">
+            <div  class="card">
+                <div class="card-body border-bottom">
+                    <div class="row mb-0">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative"><input type="text"  autocomplete="off" id="searchTableList" placeholder="Search..." class="form-control"><i class="bx bx-search-alt search-icon"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div  class="card-body">
+                    <div  class="row">
+                        <div  class="col-lg-12">
+                            <div class="table">
+                                    <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No.</th>
+                                                <th>Assigned To</th>
+                                                <th>Assigned On</th>
+                                                <th>Pin</th>
+                                                <th>Used By</th>
+                                                <th>Used On</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let pin of pinList; let i = index">
+                                                <tr>
+                                                    <td>{{ i + 1 }}</td>
+                                                    <td>{{ pin.assigned_user[0].name }} ({{pin.assigned_user[0].user_id}})  </td>
+                                                    <td>{{ pin.assigned_on | date }}</td>
+                                                    <td>{{ pin.pin }}</td>
+                                                    <td>{{ pin.used_by_user[0]?.name }} ({{pin.used_by_user[0]?.user_id}})</td>
+                                                    <td>{{ pin.used_on ? (pin.usedOn | date) : 'N/A' }}</td>
+                                                    <td><span class="badge" [ngClass]="{'bg-success': pin.status === 'Assigned', 'bg-danger': pin.status === 'Inactive'}">{{ pin.status }}</span></td>
+                                                </tr>
+                                            </ng-container>
+                                            
+                                        </tbody>
+                                    </table>
+                                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                          <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                          {{ findPageShowing() }} of {{ total }}
+                                          entries
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="text-md-right float-md-end pagination-rounded">
+                                          <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                          </ngb-pagination>
+                                        </div>
+                                      </div>
+                                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

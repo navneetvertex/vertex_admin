@@ -1,0 +1,153 @@
+<div class="container-fluid">
+
+  <app-page-title title="Match Quiz" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+      <div class="col-xl-12">
+          <div class="card">
+              <div class="card-body">
+                  <h5 class="card-title">Filter Quiz</h5>
+                  <p class="card-title-desc"></p>
+                  <form [formGroup]="getQuizFormGroup" >
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="mb-3">
+                              <label>Select Recent Matches</label>
+                              <ng-select formControlName="match_id" placeholder="Select Match" [items]="upcomingMatches" bindLabel="label" bindValue="match_id" ></ng-select>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                          <button type="submit" class="btn btn-primary w-md" [disabled]="!getQuizFormGroup.valid"  (click)="onSave()" >Submit</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="row" *ngIf="questionList.length !== 0">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+              <div class="card-header" >
+                <div class="d-flex align-items-center">
+                  <h5 class="mb-0 card-title flex-grow-1">Quiz List</h5>
+                  <div class="flex-shrink-0 d-flex gap-1">
+                    <button  class="btn btn-primary" (click)="enableQuestion()" [disabled]="isAnyCheckBoxSelected()" >Enable Quiz</button>
+                  </div>
+                </div>
+              </div>
+
+
+                <p class="card-title-desc"></p>
+                <div class="table-responsive">
+                  <table id="basic-datatable"
+                    class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                    <thead>
+                      <tr>
+                        <th>Question</th>
+                        <th>Condition</th>
+                        <th>Type</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>Active</th>
+                        <th>Action</th>
+                        <th>
+                          <label class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" name="example-checkbox1" [checked]="isAllCheckBoxChecked()" (change)="checkAllCheckBox($event)">
+                            <span class="custom-control-label"></span>
+                          </label>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngFor="let question of questionList">
+                        <tr>
+                          <td>{{question.question}}</td>
+                          <td>{{question.runAfter}}</td>
+                          <td>{{question.type}}</td>
+                          <td>{{question.A}}</td>
+                          <td>{{question.B}}</td>
+                          <td>{{question.C}}</td>
+                          <td>{{question.D}}</td>
+                          <td>
+                            <span *ngIf="question.active" class="badge bg-success">Active</span>
+                            <span *ngIf="!question.active" class="badge bg-danger">InActive</span>
+                          </td>
+                          <td>
+                            <ul  class="list-unstyled hstack gap-1 mb-0">
+                              <li data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                <a (click)="editQuizModal(question,editQuizContent)" class="btn btn-sm btn-soft-info"><i class="mdi mdi-pencil-outline"></i></a>
+                              </li>
+                              <li data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                <a  (click)="deleteQuiz(question._id)" data-bs-toggle="modal" class="btn btn-sm btn-soft-danger"><i  class="mdi mdi-delete-outline"></i></a>
+                              </li>
+                            </ul>
+                          </td>
+                          <td>
+                            <label class="custom-control custom-checkbox" *ngIf="!question.status">
+                              <input type="checkbox" class="custom-control-input" value="{{question._id}}" [(ngModel)]="question.checked">
+                              <span class="custom-control-label"></span>
+                            </label>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<ng-template #editQuizContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Edit Quiz</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+  <form [formGroup]="editQuizFormGroup">
+	<div class="modal-body">
+      <div class="row">
+        <div class="col-lg-12" >
+          <div class="mb-3">
+            <label for="formrow-email-input">Question</label>
+            <input type="text" class="form-control" formControlName="question">
+          </div>
+        </div>
+        <div class="col-lg-6" >
+          <div class="mb-3">
+            <label for="formrow-email-input">Option A</label>
+            <input type="text" class="form-control" formControlName="A">
+          </div>
+        </div>
+        <div class="col-lg-6" >
+          <div class="mb-3">
+            <label for="formrow-email-input">Option B</label>
+            <input type="text" class="form-control" formControlName="B">
+          </div>
+        </div>
+        <div class="col-lg-6" >
+          <div class="mb-3">
+            <label for="formrow-email-input">Option C</label>
+            <input type="text" class="form-control" formControlName="C">
+          </div>
+        </div>
+        <div class="col-lg-6" >
+          <div class="mb-3">
+            <label for="formrow-email-input">Option D</label>
+            <input type="text" class="form-control" formControlName="D">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary"  [disabled]="!editQuizFormGroup.valid"  (click)="editQuiz()">Update</button>
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Close</button>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,252 @@
+<div class="container-fluid">
+
+  <app-page-title title="Profile" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row" *ngIf="userDetails">
+    <div class="col-xl-4">
+      <div class="card overflow-hidden">
+        <div class="bg-soft bg-primary">
+          <div class="row">
+            <div class="col-7">
+              <div class="text-primary p-3">
+                <h5 class="text-primary">Welcome Back !</h5>
+                <p>Vertex Kalyan Coopertive Urban Thrift & Credit Society Ltd.</p>
+              </div>
+            </div>
+            <div class="col-5 align-self-end">
+              <img src="assets/images/profile-img.png" alt="" class="img-fluid">
+            </div>
+          </div>
+        </div>
+        <div class="card-body pt-0">
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="avatar-md profile-user-wid mb-4">
+                <img src="{{userDetails.profile_image || 'assets/images/users/user_placeholder.png'}}" alt="" class="img-thumbnail rounded-circle" style="object-fit: cover; width: 80px; height: 80px;">
+              </div>
+              <h5 class="font-size-15 text-truncate">{{userDetails.name}}</h5>
+              <p class="text-muted mb-0 text-truncate">{{userDetails.account_number || '-'}}</p>
+            </div>
+
+            <div class="col-sm-8">
+              <div class="pt-4">
+
+                <div class="row">
+                  <div class="col-6">
+                    <h5 class="font-size-15">{{userDetails?.kyc?.aadhar || '-'}}</h5>
+                    <p class="text-muted mb-0">Aadhar <i  *ngIf="userDetails?.kyc?.aadhar_front" class="bx bx-info-circle" (mouseover)="openAadhar()" ></i> </p>
+                  </div>
+                  <div class="col-6">
+                    <h5 class="font-size-15">{{userDetails?.kyc?.pan || '-'}}</h5>
+                    <p class="text-muted mb-0">PAN <i *ngIf="userDetails?.kyc?.pan_image" class="bx bx-info-circle"  (mouseover)="openPan()" ></i></p>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <a href="javascript: void(0);" class="btn btn-primary btn-sm">View Transanction <i
+                      class="mdi mdi-arrow-right ms-1"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end card -->
+
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title mb-4">Personal Information</h4>
+          <div class="table-responsive">
+            <table class="table table-nowrap mb-0">
+              <tbody>
+                <tr>
+                  <th scope="row">Full Name :</th>
+                  <td>{{userDetails.name}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Mobile :</th>
+                  <td>{{userDetails.mobile_number  || '-'}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">E-mail :</th>
+                  <td>{{userDetails.email_id  || '-'}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Gender :</th>
+                  <td>{{userDetails.gender || '-'}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">DOB :</th>
+                  <td>{{userDetails?.date_of_birth| date}}</td>
+                </tr>
+                 <tr>
+                  <th scope="row">Registered On :</th>
+                  <td>{{userDetails.created_date | date}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- end card -->
+
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title mb-4">Account Status</h4>
+          <div class="table-responsive">
+            <table class="table table-nowrap mb-0">
+              <tbody>
+                <tr>
+                  <th scope="row">Active :</th>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">{{userDetails.status}}</a> <i class="mdi mdi-cursor-default-click"></i> </td>
+                </tr>
+                <tr>
+                  <th scope="row">KYC :</th>
+                  <td>
+                    <a href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': userDetails.kyc_status === 'Approved',
+                                                'badge-soft-warning': userDetails.kyc_status === 'Requested',
+                                                'badge-soft-danger': userDetails.kyc_status === 'Rejected'
+                                              }"> {{ userDetails.kyc_status }}</a> <i *ngIf="userDetails.kyc_status" class="mdi mdi-cursor-default-click"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Advisor :</th>
+                  <td>
+                    <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': userDetails.advisor_status === 'Approved',
+                                                'badge-soft-warning': userDetails.advisor_status === 'Requested',
+                                                'badge-soft-danger': userDetails.advisor_status === 'Rejected'
+                                              }"> Advisor {{ userDetails.advisor_status }} </a> <i *ngIf="userDetails.advisor_status" class="mdi mdi-cursor-default-click"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Franchise :</th>
+                  <td>
+                    <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': userDetails.franchise_status === 'Approved',
+                                                'badge-soft-warning': userDetails.franchise_status === 'Requested',
+                                                'badge-soft-danger': userDetails.franchise_status === 'Rejected'
+                                              }">  {{ userDetails.franchise_status }} </a> <i  *ngIf="userDetails.franchise_status" class="mdi mdi-cursor-default-click"></i>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Loan  :</th>
+                  <td>
+                    <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': userDetails.loan_status === 'Approved',
+                                                'badge-soft-warning': userDetails.loan_status === 'Requested',
+                                                'badge-soft-danger': userDetails.loan_status === 'Rejected',
+                                                'badge-soft-secondary': userDetails.loan_status === 'Closed',
+                                                'badge-soft-success': userDetails.loan_status === 'Disbursed'
+                                              }">
+                                              Loan {{ userDetails.loan_status }}
+                                            </a> <i *ngIf="userDetails.loan_status" class="mdi mdi-cursor-default-click"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Card</th>
+                    <td>
+                      <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': userDetails.card_status === 'Approved',
+                                                'badge-soft-warning': userDetails.card_status === 'Requested',
+                                                'badge-soft-danger': userDetails.card_status === 'Rejected'
+                                              }">  {{ userDetails.card_status }} </a> <i *ngIf="userDetails.card_status" class="mdi mdi-cursor-default-click"></i>
+                    </td>
+                  </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- end card -->
+    </div>
+
+    <div class="col-xl-8">
+
+      <div class="row">
+        <div *ngFor="let stat of statData" class="col-md-4">
+          <app-stat [title]="stat.title" [value]="stat.value" [icon]="stat.icon"></app-stat>
+        </div>
+
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title mb-4">Revenue</h4>
+          <apx-chart dir="ltr" class="apex-charts" [series]="revenueBarChart.series" [chart]="revenueBarChart.chart"
+            [xaxis]="revenueBarChart.xaxis" [colors]="revenueBarChart.colors" [yaxis]="revenueBarChart.yaxis"
+            [dataLabels]="revenueBarChart.dataLabels" [stroke]="revenueBarChart.stroke"
+            [plotOptions]="revenueBarChart.plotOptions" [fill]="revenueBarChart.fill">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+            <h4 class="card-title mb-4">My Team Members</h4>
+          <div class="table-responsive">
+            <table class="table table-nowrap table-hover mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">User</th>
+                  <th scope="col">Account Id</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Account Verified</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Aditya Pandey</td>
+                  <td>123456</td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                </tr>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Aditya Pandey</td>
+                  <td>123456</td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                </tr>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Aditya Pandey</td>
+                  <td>123456</td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                </tr>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Aditya Pandey</td>
+                  <td>123456</td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                </tr>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Aditya Pandey</td>
+                  <td>123456</td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                  <td><a href="javascript: void(0);" class="badge badge-soft-primary font-size-11 m-1">Active</a></td>
+                </tr>
+
+                
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end row -->
+</div>
+
+
+
+

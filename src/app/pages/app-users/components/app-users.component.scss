@@ -1,0 +1,22 @@
+.blink-red {
+    animation: blink-red 1s infinite;
+}
+
+.dropdown-menu {
+  z-index: 1050 !important;
+}
+
+.card,
+.table-responsive {
+  overflow: visible !important;
+}
+
+@keyframes blink-red {
+    0%, 100% {
+        background-color: rgb(221, 150, 150);
+        color: white;
+    }
+    50% {
+        color: transparent;
+    }
+}

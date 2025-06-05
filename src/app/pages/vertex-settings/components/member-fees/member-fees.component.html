@@ -1,0 +1,75 @@
+<div class="container-fluid">
+    <app-page-title title="Member Fees" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row" >
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-header bg-transparent border-bottom">Refundable Deposit</h5>
+                    <form [formGroup]="memberFeesFormGroup" >
+                        <div class="row mb-4 mt-2">
+                            <label for="horizontal-firstname-input" class="col-sm-3 col-form-label">Shared Money</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="horizontal-firstname-input" formControlName="shared_money">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="horizontal-email-input" class="col-sm-3 col-form-label">Compulsory Deposit</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="horizontal-email-input" formControlName="compulsory_deposit">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Refundable Subtotal</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" disabled id="horizontal-password-input" [value]="number(memberFeesFormGroup.get('shared_money')?.value) + number(memberFeesFormGroup.get('compulsory_deposit')?.value)"  >
+                            </div>
+                        </div>
+
+                        <h5 class="card-header bg-transparent border-bottom">Non-Refundable Fees</h5>
+                        <div class="row mb-4 mt-2">
+                            <label for="horizontal-firstname-input" class="col-sm-3 col-form-label">Admission Fee</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="horizontal-firstname-input" formControlName="admission_fees">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="horizontal-email-input" class="col-sm-3 col-form-label">Building Fund</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="horizontal-email-input" formControlName="building_fund">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Welfare Fund</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="horizontal-password-input" formControlName="welfare_fund">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Other Deposit</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="horizontal-password-input" formControlName="other_deposit">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Non-Refundable Subtotal</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" disabled id="horizontal-password-input" [value]="number(memberFeesFormGroup.get('admission_fees')?.value) + number(memberFeesFormGroup.get('building_fund')?.value)+ number(memberFeesFormGroup.get('welfare_fund')?.value)+ number(memberFeesFormGroup.get('other_deposit')?.value)">
+                            </div>
+                        </div>
+
+                        <h5 class="card-header bg-transparent border-bottom">Fees</h5>
+                        <div class="row mb-4 mt-2">
+                            <label for="horizontal-firstname-input" class="col-sm-3 col-form-label">Total Fees</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="horizontal-firstname-input" disabled [value]="number(memberFeesFormGroup.get('shared_money')?.value) + number(memberFeesFormGroup.get('compulsory_deposit')?.value) + number(memberFeesFormGroup.get('admission_fees')?.value) + number(memberFeesFormGroup.get('building_fund')?.value) + number(memberFeesFormGroup.get('welfare_fund')?.value) + number(memberFeesFormGroup.get('other_deposit')?.value)">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" >Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

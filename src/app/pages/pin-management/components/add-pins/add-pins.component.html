@@ -1,0 +1,175 @@
+<div class="container-fluid">
+    <app-page-title title="Add Pins" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div  class="row">
+        <div  class="col-lg-12">
+            <div  class="card">
+                <div class="card-body border-bottom">
+                    <div class="row mb-0">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative"><input type="text"  autocomplete="off" id="searchTableList" placeholder="Search..." class="form-control"><i class="bx bx-search-alt search-icon"></i></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <button type="button" (click)="openModal(addPinModal)" class="btn btn-success btn-rounded mb-2 me-2">
+                                    <i class="mdi mdi-plus mr-1"></i> Add Pins
+                                </button>
+                                <button type="button" [disabled]="this.pinSelected.length == 0" (click)="openModal(assignModal)" class="btn btn-light btn-rounded mb-2 me-2">
+                                    <i class="bx bx-user mr-1"></i> Assigned To
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div  class="card-body">
+                    <div  class="row">
+                        <div  class="col-lg-12">
+                            <div class="table">
+                                    <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <!-- <div class="form-check font-size-16">
+                                                        <input type="checkbox"  class="form-check-input "><label class="form-check-label" for="transactionCheck1"></label>
+                                                    </div> -->
+                                                </th>
+                                                <th>S.No.</th>
+                                                <th>Pin</th>
+                                                <th>Status</th>
+                                                <th>Generated On</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let pins of pinList; let i = index">
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-check font-size-16">
+                                                            <input type="checkbox" class="form-check-input" [value]="pins.pin" (change)="pinChecked($event)" ><label class="form-check-label" for="transactionCheck1"></label>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{pins.pin}}</td>
+                                                    <td>
+                                                        <span [ngClass]="{
+                                                            'badge-soft-primary': pins.status === 'Active',
+                                                            'badge-soft-success': pins.status === 'Assigned',
+                                                            'badge-soft-danger': pins.status === 'Inactive'
+                                                        }">{{pins.status}}</span>
+                                                    </td>
+                                                    <td>{{pins.created_date | date}}</td>
+                                                    <td>
+                                                    <ul class="list-unstyled hstack gap-1 mb-0">
+                                                        <li data-bs-toggle="tooltip"  (click)="disablePin()"  data-bs-placement="top" title="Delete"><a  href="javascript:void(0);" data-bs-toggle="modal" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-book-edit-outline"></i></a>
+                                                        </li>
+                                                    </ul>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                            
+                                        </tbody>
+                                    </table>
+                                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                          <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                          {{ findPageShowing() }} of {{ total }}
+                                          entries
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="text-md-right float-md-end pagination-rounded">
+                                          <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                          </ngb-pagination>
+                                        </div>
+                                      </div>
+                                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #addPinModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Add Pins</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="addPinFormGroup">
+        <div class="modal-body">
+            <!-- Assigned To -->
+            <div class="mb-3">
+                <label for="assignedTo" class="form-label">Assigned To (Optional)</label>
+                <select class="form-select" id="assignedTo" formControlName="assign_to">
+                    <option value="">Choose...</option>
+                    <option *ngFor="let user of userList" [attr.value]="user._id" >{{user.name}} ({{user.user_id}}) </option>
+                </select>
+            </div>
+
+            <!-- No of Pins -->
+            <div class="mb-3">
+                <label for="noOfPins" class="form-label">No of Pins to Create</label>
+                <select class="form-select" id="noOfPins" formControlName="no_of_pins">
+                    <option value="">Choose...</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <div class="text-danger mt-1"
+                    *ngIf="addPinFormGroup.get('no_of_pins')?.touched && addPinFormGroup.get('no_of_pins')?.hasError('required')">
+                    Please select number of pins.
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Close</button>
+            <button type="submit" class="btn btn-primary waves-effect waves-light"
+                [disabled]="addPinFormGroup.invalid"  (click)="createPins()">Submit</button>
+        </div>
+    </form>
+
+</ng-template>
+
+<ng-template #assignModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Assign Pins (No of Pin Selected : {{this.pinSelected.length}}) </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="assignFormGroup">
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="assignedTo" class="form-label">Assigned To</label>
+                <select class="form-select" id="assignedTo" formControlName="assign_to">
+                    <option value="" disabled selected>Choose...</option>
+                    <option *ngFor="let user of userList" [attr.value]="user._id" >{{user.name}} ({{user.user_id}}) </option>
+                </select>
+
+                <!-- Error Message -->
+                <div *ngIf="assignFormGroup.get('assign_to')?.touched && assignFormGroup.get('assign_to')?.invalid"
+                    class="text-danger mt-1">
+                    Assigned To is required.
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Close</button>
+            <button type="submit" class="btn btn-primary waves-effect waves-light"
+                [disabled]="assignFormGroup.invalid" (click)="assignPins()" >Submit</button>
+        </div>
+    </form>
+
+</ng-template>

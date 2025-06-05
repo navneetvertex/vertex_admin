@@ -1,0 +1,301 @@
+<div class="container-fluid">
+
+  <app-page-title title="Requested Loan" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body" >
+                        <div class="card-body border-bottom" >
+                            <form [formGroup]="searchFormGroup" >
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <input type="search" class="form-control" id="searchInput" placeholder="Search for Name / User Id / Email id..." formControlName="name">
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <select class="form-control" formControlName="loan_type"> >
+                                            <option value="">Select Loan Type</option>
+                                            <option value="Personal">Personal</option>
+                                            <option value="Garanteed">Garanteed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <select class="form-control" formControlName="interval"> >
+                                            <option value="">Select EMI Type</option>
+                                            <option value="Daily">Daily</option>
+                                            <option value="Monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <select class="form-control" formControlName="status">
+                                            <option value="">Select Status</option>
+                                            <option *ngFor="let stat of status" [ngValue]="stat" >{{stat}}</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-lg-1">
+                                        <button (click)="getLoanList()" type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                                    </div>
+                                    <div class="col-lg-1" >
+                                        <button (click)="refresh()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                    </div>
+                                </div>
+                          </form>
+                      </div>
+                        <div class="row">
+                                <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!loanList || loanList.length === 0">
+                                    <img src="assets/img/not-found.png" width="300px" alt="">
+                                    <p class="text-mutes mt-2">No Loan found in the current filter.</p>
+                                </div>
+                                <div class="table-responsive"  *ngIf="loanList.length !== 0">
+                                    <table id="basic-datatable"
+                                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                      <thead>
+                                        <tr>
+                                          <th>Sr No</th>
+                                          <th>Loan Number</th>
+                                          <th>User</th>
+                                          <th>Loan Amount</th>
+                                          <th>Duration</th>
+                                          <th>EMI Type</th>
+                                          <th>Loan Type</th>
+                                          <th>Purpose</th>
+                                          <th>Status</th>
+                                          <th>Action</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr *ngFor="let loan of loanList; let i = index">
+                                          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                          <td>{{loan.loan_id}}</td>
+                                          <td>{{loan.user.name}} ({{loan.user.user_id}})  </td>
+                                          <td>₹{{loan.requested_loan_amount}}</td>
+                                          <td>{{loan.duration}} days</td>
+                                          <td>{{loan.interval}}</td>
+                                          <td>{{loan.loan_type}}</td>
+                                          <td>{{loan.purpose}}</td>
+                                          <td>
+                                             <a *ngIf="loan.status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': loan.status === 'Approved' || loan.status === 'Completed', 
+                                                'badge-soft-warning': loan.status === 'Requested',
+                                                'badge-soft-danger': loan.status === 'Rejected' || loan.status === 'Defaulted',
+                                                'badge-soft-secondary': loan.status === 'Pending'
+                                              }">
+                                              {{ loan.status }}
+                                            </a>
+                                          </td>
+                                          <td>
+                                            <ul class="list-inline font-size-20 contact-links mb-0" >
+                                              <li *ngIf="loan.status === 'Pending'" (click)="openLoanModal(loanModal, loan)" data-bs-toggle="modal" data-bs-target="#myModal"  class="list-inline-item px-2">
+                                                <a href="javascript:void(0);" tooltip="Message">
+                                                  <i class="bx bx-check-double"></i>
+                                                </a>
+                                              </li>
+                                              <li class="list-inline-item px-2" *ngIf="loan.status !== 'Pending' && loan.status !== 'Rejected'" >
+                                                <a (click)="viewLoan(loanViewModal, loan)" tooltip="Profile">
+                                                  <i class="bx bx-detail"></i>
+                                                </a>
+                                              </li>
+                                            </ul>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                          <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                          {{ findPageShowing() }} of {{ total }}
+                                          entries
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="text-md-right float-md-end pagination-rounded">
+                                          <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                          </ngb-pagination>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                        </div>
+                            
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+
+<ng-template #loanModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Approve/Reject Loan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="statusFormGroup">
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label for="status_">Status</label>
+                        <select class="form-control" id="status_" formControlName="status">
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                        <div class="text-danger"
+                            *ngIf="statusFormGroup.get('status')?.touched && statusFormGroup.get('status')?.invalid">
+                            <small *ngIf="statusFormGroup.get('status')?.errors?.['required']">Status is
+                                required.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="requested_loan_amount">Requested Loan Amount (₹)</label>
+                        <input type="number" class="form-control" id="requested_loan_amount"
+                            formControlName="requested_loan_amount" placeholder="Enter approved amount">
+                        <div class="text-danger"
+                            *ngIf="statusFormGroup.get('requested_loan_amount')?.touched && statusFormGroup.get('requested_loan_amount')?.invalid">
+                            <small *ngIf="statusFormGroup.get('requested_loan_amount')?.errors?.['required']">Approved
+                                Loan Amount is required.</small>
+                            <small *ngIf="statusFormGroup.get('requested_loan_amount')?.errors?.['pattern']">Enter a
+                                valid number.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="interest_rate">Interest Rate (%)</label>
+                        <input type="number" class="form-control" id="interest_rate" formControlName="interest_rate"
+                            placeholder="Enter interest rate">
+                        <span class="text-muted">Enter the interest rate as a percentage</span>
+                        <div class="text-danger"
+                            *ngIf="statusFormGroup.get('interest_rate')?.touched && statusFormGroup.get('interest_rate')?.invalid">
+                            <small *ngIf="statusFormGroup.get('interest_rate')?.errors?.['required']">Interest Rate is
+                                required.</small>
+                            <small *ngIf="statusFormGroup.get('interest_rate')?.errors?.['pattern']">Enter a valid
+                                number (e.g. 5, 7.25).</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="approved_loan_amount">Approved Loan Amount (₹)</label>
+                        <input type="number" class="form-control" id="approved_loan_amount"
+                            formControlName="approved_loan_amount" placeholder="Enter approved amount">
+                        <div class="text-danger"
+                            *ngIf="statusFormGroup.get('approved_loan_amount')?.touched && statusFormGroup.get('approved_loan_amount')?.invalid">
+                            <small *ngIf="statusFormGroup.get('approved_loan_amount')?.errors?.['required']">Approved
+                                Loan Amount is required.</small>
+                            <small *ngIf="statusFormGroup.get('approved_loan_amount')?.errors?.['pattern']">Enter a
+                                valid number.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="start_date">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" formControlName="start_date">
+                        <div class="text-danger"
+                            *ngIf="statusFormGroup.get('start_date')?.touched && statusFormGroup.get('start_date')?.invalid">
+                            <small *ngIf="statusFormGroup.get('start_date')?.errors?.['required']">Start Date is
+                                required.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="penalty">Penalty (₹)</label>
+                        <input type="number" class="form-control" id="penalty" formControlName="penalty"
+                            placeholder="Enter penalty percentage">
+                        <span class="text-muted">Enter the penalty amount for late payments</span>
+                        <div class="text-danger"
+                            *ngIf="statusFormGroup.get('penalty')?.touched && statusFormGroup.get('penalty')?.invalid">
+                            <small *ngIf="statusFormGroup.get('penalty')?.errors?.['required']">Penalty is
+                                required.</small>
+                            <small *ngIf="statusFormGroup.get('penalty')?.errors?.['pattern']">Enter a valid number
+                                (e.g. 2, 3.5).</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Close</button>
+            <button type="submit" class="btn btn-primary waves-effect waves-light" [disabled]="statusFormGroup.invalid"
+                (click)="submit()">Submit</button>
+        </div>
+    </form>
+
+</ng-template>
+
+
+<ng-template #loanViewModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Loan Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+                <table class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline" >
+                    <tbody>
+                    <tr>
+                        <th><strong>User Name</strong></th>
+                        <td>{{selectedLoan.user.name}}</td>
+                    </tr>
+                    <tr>
+                        <th><strong>User ID</strong></th>
+                        <td>{{selectedLoan.user.user_id}}</td>
+                    </tr>
+                    <tr>
+                        <th><strong>Requested Loan Amount</strong></th>
+                        <td>₹{{selectedLoan.requested_loan_amount}}</td>
+                    </tr>
+                    <tr>
+                        <th><strong>Approved Loan Amount</strong></th>
+                        <td>₹{{selectedLoan.approved_loan_amount}}</td>
+                    </tr>
+                    <tr>
+                        <th><strong>Interest Rate</strong></th>
+                        <td>{{selectedLoan.interest_rate}} %</td>
+                    </tr>
+                    <tr>
+                        <th><strong>Duration</strong></th>
+                        <td>{{selectedLoan.duration}} days</td>
+                    </tr>
+                    <tr>
+                        <th><strong>EMI Type</strong></th>
+                        <td>{{selectedLoan.interval}}</td>
+                    </tr>
+                    <tr>
+                        <th><strong>Loan Type</strong></th>
+                        <td>{{selectedLoan.loan_type}}</td>
+                    </tr>
+                    <tr>
+                        <th><strong>Purpose</strong></th>
+                        <td>{{selectedLoan.purpose}}</td>
+                    </tr>
+                    <tr>
+                        <th><strong>Status</strong></th>
+                        <td><a *ngIf="selectedLoan.status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': selectedLoan.status === 'Approved' || selectedLoan.status === 'Completed', 
+                                                'badge-soft-warning': selectedLoan.status === 'Requested',
+                                                'badge-soft-danger': selectedLoan.status === 'Rejected' || selectedLoan.status === 'Defaulted',
+                                                'badge-soft-secondary': selectedLoan.status === 'Pending'
+                                              }">
+                                              {{ selectedLoan.status }}
+                                            </a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Close</button>
+            
+        </div>
+
+</ng-template>

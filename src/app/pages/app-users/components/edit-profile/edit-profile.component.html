@@ -1,0 +1,617 @@
+<div class="container-fluid">
+  <app-page-title title="Edit Profile" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="col-lg-12">
+      <div class="card">
+        <div class="card-body">
+          
+          <ul ngbNav #justifiednav="ngbNav" [activeId]="1" class="nav-pills nav-justified">
+            <li [ngbNavItem]="1">
+              <a ngbNavLink>
+                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                <span class="d-none d-sm-block">Know your customer</span>
+              </a>
+              <ng-template ngbNavContent>
+                <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
+              </ng-template>
+            </li>
+            <li [ngbNavItem]="2">
+              <a ngbNavLink>
+                <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                <span class="d-none d-sm-block">Profile</span>
+              </a>
+              <ng-template ngbNavContent>
+                <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
+              </ng-template>
+            </li>
+            <li [ngbNavItem]="3">
+              <a ngbNavLink>
+                <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
+                <span class="d-none d-sm-block">Address</span>
+              </a>
+              <ng-template ngbNavContent>
+                <ng-template [ngTemplateOutlet]="TabContent2"></ng-template>
+              </ng-template>
+            </li>
+            <li [ngbNavItem]="4">
+              <a ngbNavLink>
+                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
+                <span class="d-none d-sm-block">Bank</span>
+              </a>
+              <ng-template ngbNavContent>
+                <ng-template [ngTemplateOutlet]="TabContent3"></ng-template>
+              </ng-template>
+            </li>
+          </ul>
+          <div [ngbNavOutlet]="justifiednav"></div>
+        </div>
+      </div>
+    </div>
+
+  
+  
+</div>
+
+  <!-- KYC -->
+  <ng-template #TabContent>
+    <form [formGroup]="kycFormGroup">
+      <div class="row p-3 mb-0 mt-2">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="formrow-email-input">Aadhar Number</label>
+            <input type="number" class="form-control" formControlName="aadhar" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('aadhar')?.invalid}">
+            <div *ngIf="typeKYCsubmit && kycFormGroup.get('aadhar')?.errors" class="invalid-feedback">
+              <span *ngIf="kycFormGroup.get('aadhar')?.errors?.required">This value is required.</span>
+              <span *ngIf="kycFormGroup.get('aadhar')?.errors?.pattern">Aadhar must be a 12-digit number.</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="formrow-password-input">Pan Number</label>
+            <input type="text" class="form-control" formControlName="pan" [ngClass]="{ 'is-invalid': typeKYCsubmit && kycFormGroup.get('pan')?.invalid }" />
+            <div *ngIf="typeKYCsubmit && kycFormGroup.get('pan')?.errors" class="invalid-feedback">
+              <span *ngIf="kycFormGroup.get('pan')?.errors?.required">This value is required.</span>
+              <span *ngIf="kycFormGroup.get('pan')?.errors?.pattern">Enter a valid PAN (e.g., ABCDE1234F).</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="mb-3">
+            <label for="formrow-text-input">PAN</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event, 'pan')" />
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="mb-3">
+            <label for="formrow-text-input">Aadhar Front</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_front')" />
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="mb-3">
+            <label for="formrow-text-input">Aadhar Back</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_back')"/>
+          </div>
+        </div>
+        <div class="col-lg-4" >
+          <img [src]="kycFormGroup.get('pan_image')?.value" style="max-width: 100px; max-height: 100px;">
+        </div>
+        <div class="col-lg-4" >
+          <img src="{{kycFormGroup.get('aadhar_front')?.value}}" style="max-width: 100px; max-height: 100px;">
+        </div>
+        <div class="col-lg-4" >
+          <img src="{{kycFormGroup.get('aadhar_back')?.value}}" style="max-width: 100px; max-height: 100px;">
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary w-md" (click)="kycSubmit()" >Submit</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <!-- Profile -->
+  <ng-template #TabContent1>
+   <form [formGroup]="profileFormGroup">
+  <div class="row p-3 mb-0 mt-2">
+    <!-- User ID (readonly) -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label for="user-id">User Id</label>
+        <input type="text" id="user-id" class="form-control" formControlName="user_id" readonly
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('user_id')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('user_id')?.errors">
+          User ID is required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Number (readonly) -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label for="account-number">Account Number</label>
+        <input type="text" id="account-number" class="form-control" formControlName="account_number" readonly
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('account_number')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('account_number')?.errors">
+          Invalid account number.
+        </div>
+      </div>
+    </div>
+
+    <!-- Name -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Name</label>
+        <input type="text" class="form-control" formControlName="name"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('name')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('name')?.errors">
+          Name is required (min 2 characters).
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Number -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Mobile Number</label>
+        <input type="text" class="form-control" formControlName="mobile_number"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('mobile_number')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('mobile_number')?.errors">
+          Enter a valid mobile number.
+        </div>
+      </div>
+    </div>
+
+    <!-- Email ID -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Email ID</label>
+        <input type="email" class="form-control" formControlName="email_id"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('email_id')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('email_id')?.errors">
+          Enter a valid email.
+        </div>
+      </div>
+    </div>
+
+    <!-- Gender -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Gender</label>
+        <input type="text" class="form-control" formControlName="gender"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('gender')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('gender')?.errors">
+          Gender is required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Date of Birth</label>
+        <input type="date" class="form-control" formControlName="date_of_birth"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('date_of_birth')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('date_of_birth')?.errors">
+          Date of birth is required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Guardian Name -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Guardian Name</label>
+        <input type="text" class="form-control" formControlName="guardian_name"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('guardian_name')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('guardian_name')?.errors">
+          Guardian name is required (min 2 characters).
+        </div>
+      </div>
+    </div>
+
+    <!-- Guardian Relation -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Guardian Relation</label>
+        <select class="form-control" formControlName="guardian_relation"
+                [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('guardian_relation')?.invalid}">
+          <option value="">Select</option>
+          <option *ngFor="let relationship of relationshipOptions" [value]="relationship">{{relationship}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('guardian_relation')?.errors">
+          Guardian relation is required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Nominee Name -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Nominee Name</label>
+        <input type="text" class="form-control" formControlName="nominee_name"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_name')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_name')?.errors">
+          Nominee name is required (min 2 characters).
+        </div>
+      </div>
+    </div>
+
+    <!-- Nominee Relation -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Nominee Relation</label>
+        <select class="form-control" formControlName="nominee_relation"
+                [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_relation')?.invalid}">
+          <option value="">Select</option>
+          <option *ngFor="let relationship of relationshipOptions" [value]="relationship">{{relationship}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_relation')?.errors">
+          Nominee relation is required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Nominee Contact -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Nominee Contact</label>
+        <input type="text" class="form-control" formControlName="nominee_contact"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_contact')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_contact')?.errors">
+          Enter a valid contact number.
+        </div>
+      </div>
+    </div>
+
+    <!-- Nominee Email -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Nominee Email</label>
+        <input type="email" class="form-control" formControlName="nominee_email"
+               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_email')?.invalid}">
+        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_email')?.errors">
+          Enter a valid email address.
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Image -->
+    <div class="col-md-4">
+      <div class="mb-3">
+        <label>Profile Image</label>
+        <input type="file" class="form-control" (change)="onFileSelected($event, 'profile')" />
+      </div>
+    </div>
+
+     <div class="col-lg-4" >
+          <img [src]="profileFormGroup.get('profile_image')?.value" style="max-width: 100px; max-height: 100px;">
+      </div>
+
+    <!-- Are you Divyang -->
+    <div class="mb-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="divyangCheck" formControlName="is_divyang" />
+        <label class="form-check-label" for="divyangCheck">
+          Are you Divyang?
+        </label>
+      </div>
+    </div>
+
+    <!-- Are you Senior Citizen -->
+   
+  </div>
+
+  <div>
+    <button type="submit" class="btn btn-primary w-md" (click)="onProfileSubmit()" >Update Profile</button>
+  </div>
+</form>
+
+  </ng-template>
+
+  <!-- Address -->
+  <ng-template #TabContent2>
+    <div class="row p-3 mb-0 mt-2">
+      <div class="row mb-2">
+        <div class="col-sm"></div>
+        <div class="col-sm-auto">
+          <div class="text-sm-end"><a (click)="openModal(addNewAddressModal)" class="btn btn-success btn-rounded"><i class="mdi mdi-plus me-1"></i> Add New Address</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="row" >
+      <ng-container *ngFor="let address of userDetails.address">
+        <div class="col-lg-3 mb-3">
+          <div class="card task-box">
+            <div class="card-body">
+              <div ngbDropdown class="dropdown float-end">
+                <a href="javascript:void(0);" ngbDropdownToggle data-bs-toggle="dropdown" aria-expanded="false" dropdowntoggle="" class="dropdown-toggle arrow-none" aria-haspopup="true"><i
+                    class="mdi mdi-dots-vertical m-0 text-muted h5"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" style="left: auto; right: 0px;" ngbDropdownMenu>
+                  <a href="javascript:void(0);" id="taskedit" data-id="#uptask-2" class="dropdown-item edittask-details">Edit</a>
+                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask">Delete</a>
+                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask">{{address.status ? 'InActive': 'Active'}}</a>
+                </div>
+              </div>
+              <div class="float-end ms-2">
+                <span *ngIf="address.status" class="badge rounded-pill badge-soft-primary font-size-12">Active</span>
+                <span *ngIf="!address.status" class="badge rounded-pill badge-soft-danger font-size-12">InActive</span>
+              </div>
+              <div>
+                <h5 class="font-size-15"><a href="javascript: void(0);" class="text-dark">Permanent Address</a></h5>
+                <p class="text-muted mb-0">{{address.address_line}}, <br>  {{address.city}}, {{address.state}},  <br>  {{address.district}}, {{address.pincode}} </p>
+                <hr>
+                <h5 class="font-size-15 mb-2"><a href="javascript: void(0);" class="text-dark">Correspondence Address</a></h5>
+                <p class="text-muted mb-0">{{address.corr_address_line}}, <br>  {{address.corr_city}}, {{address.corr_state}},  <br>  {{address.corr_district}}, {{address.corr_pincode}} </p>
+              </div>
+            </div>
+          </div> 
+        </div>
+      </ng-container>
+    </div>
+    <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;" *ngIf="userDetails.address.length === 0"  >
+      <img src="assets/img/not-found.png" width="300px" alt="">
+      <p class="text-mutes mt-2">No address is added.</p>
+    </div>
+  </ng-template>
+
+<!-- Bank -->
+  <ng-template #TabContent3>
+    <div class="row p-3 mb-0 mt-2">
+      <div class="row mb-2">
+        <div class="col-sm"></div>
+        <div class="col-sm-auto">
+          <div class="text-sm-end"><a  (click)="openModal(addNewBankModal)" class="btn btn-success btn-rounded"><i class="mdi mdi-plus me-1"></i> Add New Bank</a></div>
+        </div>
+      </div>
+      <div class="row">
+        <ng-container *ngFor="let bank of userDetails.bank">
+          <div class="col-lg-3" >
+            <div class="card">
+              <div class="card-body">
+                <div ngbDropdown class="dropdown float-end">
+                  <a href="javascript:void(0);" ngbDropdownToggle data-bs-toggle="dropdown" aria-expanded="false" dropdowntoggle="" class="dropdown-toggle arrow-none" aria-haspopup="true"><i
+                      class="mdi mdi-dots-vertical m-0 text-muted h5"></i>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-end" style="left: auto; right: 0px;" ngbDropdownMenu>
+                    <a href="javascript:void(0);" id="taskedit" data-id="#uptask-2" class="dropdown-item edittask-details">Edit</a>
+                    <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask">Delete</a>
+                  </div>
+                </div>
+                <div class="float-end ms-2"><span
+                    class="badge rounded-pill badge-soft-primary font-size-12">Active</span></div>
+                <div>
+                  <h5 class="font-size-15">
+                    <a href="javascript: void(0);" class="text-dark">{{bank.bank_name}}</a></h5>
+                  <p class="text-muted mb-0">Branch Name :  {{bank.branch_name}}</p>
+                  <p class="text-muted mb-0">Acc Holder Name : {{bank.account_holder}} </p>
+                  <p class="text-muted mb-0">IFSC Code : {{bank.ifsc_code}}</p>
+                  <p class="text-muted mb-0">Account Number : {{bank.account_number}}</p>
+                  <p class="text-muted mb-0">Account Type : {{bank.account_type}}</p>
+                  <p class="text-muted mb-0">MICR : {{bank.micr_code}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 150px;"  *ngIf="userDetails.bank.length === 0">
+        <img src="assets/img/not-found.png" width="300px" alt="">
+        <p class="text-mutes mt-2">No Bank is added.</p>
+      </div>
+    </div>
+  </ng-template>
+
+
+
+  <ng-template #addNewBankModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Add Bank</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+  <form [formGroup]="bankFormGroup">
+  <div class="modal-body">
+    <div class="row">
+      <div class="row col-lg-12">
+        <div class="mb-3 col-lg-6">
+          <label class="col-form-label">Account Holder Name:</label>
+          <input type="text" class="form-control" formControlName="account_holder" placeholder="Enter Account Holder Name">
+          <div class="text-danger" *ngIf="bankFormGroup.get('account_holder')?.touched && bankFormGroup.get('account_holder')?.invalid">
+            Bank name is required.
+          </div>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+          <label class="col-form-label">Branch Name:</label>
+          <input type="text" class="form-control" formControlName="branch_name" placeholder="Enter Branch Name">
+          <div class="text-danger" *ngIf="bankFormGroup.get('branch_name')?.touched && bankFormGroup.get('branch_name')?.invalid">
+            Branch name is required.
+          </div>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+          <label class="col-form-label">Bank Name:</label>
+          <input type="text" class="form-control" formControlName="bank_name" placeholder="Enter Bank Name">
+          <div class="text-danger" *ngIf="bankFormGroup.get('bank_name')?.touched && bankFormGroup.get('bank_name')?.invalid">
+            Bank address is required.
+          </div>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+          <label class="col-form-label">IFSC Number:</label>
+          <input type="text" class="form-control" formControlName="ifsc_code" placeholder="Enter IFSC Number">
+          <div class="text-danger" *ngIf="bankFormGroup.get('ifsc_code')?.touched && bankFormGroup.get('ifsc_code')?.invalid">
+            Invalid IFSC code (e.g., SBIN0001234).
+          </div>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+          <label class="col-form-label">Account Number:</label>
+          <input type="text" class="form-control" formControlName="account_number" placeholder="Enter Account Number">
+          <div class="text-danger" *ngIf="bankFormGroup.get('account_number')?.touched && bankFormGroup.get('account_number')?.invalid">
+            Account number must be 9–18 digits.
+          </div>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+          <label class="col-form-label">Account Type:</label>
+          <select class="form-control" formControlName="account_type">
+            <option value="">Select Account Type</option>
+            <option value="savings">Savings</option>
+            <option value="current">Current</option>
+            <option value="salary">Salary</option>
+          </select>
+          <div class="text-danger" *ngIf="bankFormGroup.get('account_type')?.touched && bankFormGroup.get('account_type')?.invalid">
+            Account type is required.
+          </div>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+          <label class="col-form-label">MICR Code (Optional):</label>
+          <input type="text" class="form-control" formControlName="micr_code" placeholder="Enter MICR Code">
+          <div class="text-danger" *ngIf="bankFormGroup.get('micr_code')?.touched && bankFormGroup.get('micr_code')?.invalid">
+            MICR code must be 9 digits.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+    <button type="submit" class="btn btn-primary" [disabled]="bankFormGroup.invalid" (click)="bankSubmit()" >Submit</button>
+  </div>
+</form>
+
+  </ng-template>
+
+
+  <ng-template #addNewAddressModal role="document" let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Add Address</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+        (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+    <form [formGroup]="addressFormGroup">
+      <div class="modal-body">
+        <div class="row">
+          <div class="row col-lg-12">
+            <div class="card-title">Permanent Address</div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="address_line" class="col-form-label">Address:</label>
+              <input type="text" class="form-control" id="address_line" formControlName="address_line"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('address_line')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('address_line')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('address_line')?.errors?.required">Address is required.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="city" class="col-form-label">City:</label>
+              <input type="text" class="form-control" id="city" formControlName="city"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('city')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('city')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('city')?.errors?.required">City is required.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="pincode" class="col-form-label">PinCode:</label>
+              <input type="text" class="form-control" id="pincode" formControlName="pincode"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('pincode')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('pincode')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('pincode')?.errors?.required">Pincode is required.</div>
+                <div *ngIf="addressFormGroup.get('pincode')?.errors?.pattern">Invalid pincode format.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="state" class="col-form-label">State:</label>
+              <input type="text" class="form-control" id="state" formControlName="state"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('state')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('state')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('state')?.errors?.required">State is required.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="district" class="col-form-label">District:</label>
+              <input type="text" class="form-control" id="district" formControlName="district"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('district')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('district')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('district')?.errors?.required">District is required.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Checkbox -->
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="sameAsPermanent" (change)="copyAddress($event)">
+              <label class="form-check-label" for="sameAsPermanent">Same as Permanent Address</label>
+            </div>
+          </div>
+
+          <div class="row col-lg-12">
+            <div class="card-title">Correspondence Address</div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="corr_address_line" class="col-form-label">Address:</label>
+              <input type="text" class="form-control" id="corr_address_line" formControlName="corr_address_line"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_address_line')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_address_line')?.errors"
+                class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('corr_address_line')?.errors?.required">Address is required.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="corr_city" class="col-form-label">City:</label>
+              <input type="text" class="form-control" id="corr_city" formControlName="corr_city"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_city')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_city')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('corr_city')?.errors?.required">City is required.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="corr_pincode" class="col-form-label">Pincode:</label>
+              <input type="text" class="form-control" id="corr_pincode" formControlName="corr_pincode"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_pincode')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_pincode')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('corr_pincode')?.errors?.required">Pincode is required.</div>
+                <div *ngIf="addressFormGroup.get('corr_pincode')?.errors?.pattern">Invalid pincode format.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="corr_state" class="col-form-label">State:</label>
+              <input type="text" class="form-control" id="corr_state" formControlName="corr_state"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_state')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_state')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('corr_state')?.errors?.required">State is required.</div>
+              </div>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+              <label for="corr_district" class="col-form-label">District:</label>
+              <input type="text" class="form-control" id="corr_district" formControlName="corr_district"
+                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_district')?.invalid}">
+              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_district')?.errors" class="invalid-feedback">
+                <div *ngIf="addressFormGroup.get('corr_district')?.errors?.required">District is required.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary" (click)="submitAddress()">Submit</button>
+      </div>
+    </form>
+
+  </ng-template>

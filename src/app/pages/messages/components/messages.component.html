@@ -1,0 +1,39 @@
+<div class="container-fluid">
+    <app-page-title title="Message" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <form [formGroup]="addMessageFormGroup"  class="col-12">
+                            <div class="mb-3">
+                                <label for="messageTitle" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="messageTitle" formControlName="title"
+                                    placeholder="Enter title">
+                                <div *ngIf="addMessageFormGroup.get('title')?.touched && addMessageFormGroup.get('title')?.invalid"
+                                    class="text-danger">
+                                    Title is required.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="messageBody" class="form-label">Message</label>
+                                <textarea class="form-control" id="messageBody" formControlName="message" rows="4"
+                                    placeholder="Enter message body"></textarea>
+                                <div *ngIf="addMessageFormGroup.get('message')?.touched && addMessageFormGroup.get('message')?.invalid"
+                                    class="text-danger">
+                                    Message is required.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary"
+                                [disabled]="addMessageFormGroup.invalid">Submit</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

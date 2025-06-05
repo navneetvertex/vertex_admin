@@ -1,0 +1,62 @@
+<div class="container-fluid">
+    <app-page-title title="Distributor" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div  class="row">
+        <div  class="col-lg-12">
+            <div  class="card">
+                <div class="card-body border-bottom">
+                    <div class="row mb-0">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative"><input type="text"  autocomplete="off" id="searchTableList" placeholder="Search..." class="form-control"><i class="bx bx-search-alt search-icon"></i></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <button type="button" class="btn btn-success btn-rounded mb-2 me-2">
+                                    <i class="mdi mdi-plus mr-1"></i> Add Distributor
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div  class="card-body">
+                    <!-- <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;">
+                        <img src="assets/img/not-found.png" width="300px" alt="">
+                        <p class="text-mutes mt-2">No Assigned Card found.</p>
+                    </div> -->
+                    <div  class="row">
+                        <div  class="col-lg-12">
+                            <div class="table-responsive">
+                                    <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No.</th>
+                                                <th>User</th>
+                                                <th>Status</th>
+                                                <th>Requested at</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>John Doe (111112)</td>
+                                                <td><span class="badge bg-success">Approved</span></td>
+                                                <td>2025-01-01</td>
+                                                <td>
+                                                    <ul class="list-unstyled hstack gap-1 mb-0">
+                                                        <li data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><a href="javascript:void(0);" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-delete-outline"></i></a></li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

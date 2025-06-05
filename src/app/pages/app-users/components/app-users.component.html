@@ -1,0 +1,295 @@
+<div class="container-fluid">
+
+    <app-page-title title="All Users" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-body border-bottom">
+                          <div class="row">
+                              <div class="col-lg-3">
+                                  <input type="search" class="form-control" id="searchInput" placeholder="Search for Name...">
+                              </div>
+                              <div class="col-lg-3">
+                                  <input type="search" class="form-control" id="searchInput" placeholder="Search for Aadhar Number...">
+                              </div>
+                              <div class="col-lg-3">
+                                  <input type="search" class="form-control" id="searchInput" placeholder="Search for User id...">
+                              </div>
+                              <div class="col-lg-2">
+                                  <select class="form-control select2" >
+                                      <option value="">Select Status</option>
+                                      <option value="All">All</option>
+                                      <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
+                                  </select>
+                              </div>
+                              
+                              <div class="col-lg-1">
+                                  <button type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                              </div>
+                          </div>
+                      </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table id="basic-datatable"
+                                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                      <thead>
+                                        <tr>
+                                          <th>Sr No</th>
+                                          <th>Name</th>
+                                          <th>UserId</th>
+                                          <th>Refer Id</th>
+                                          <th>Direct Ref</th>
+                                          <th>InDirect Ref</th>
+                                          <th>Account Number</th>
+                                          <th>Gender</th>
+                                          <th>Age</th>
+                                          <th>Date</th>
+                                          <th [width]="10" >Status</th>
+                                          <th>Action</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr *ngFor="let user of userList; let i = index">
+                                          <!-- <td>{{user | json}}</td> -->
+                                          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                          <td>
+                                            {{ user.name }} <br>
+                                            <span *ngIf="user.guardian_name" class="text-muted" > Gardian  : {{ user.guardian_name || '-' }} ({{user.guardian_relation}}) <br></span>
+                                           
+                                          </td>
+                                          <td>{{ user.user_id }}</td>
+                                          <td>{{ user.parent_id?.user_id || '-' }}</td>
+                                          <td>{{ user.direct_id?.user_id || '-' }}</td>
+                                          <td>{{ user.indirect_id?.user_id || '-' }}</td>
+                                          <td>{{ user.account_number || '-' }}</td>
+                                          <td>{{ user.gender || '-' }}</td>
+                                          <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>
+                                          <td>
+                                            Joining : {{ user.created_date | date}} <br>
+                                            Approved : {{ user.approved_date | date}}
+                                          </td>
+                                          <td>
+                                            <a href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': user.status === 'Active',
+                                                'badge-soft-warning': user.status === 'Pending',
+                                                'badge-soft-danger': user.status === 'Blocked' || user.status === 'Deleted',
+                                                'badge-soft-secondary': user.status === 'Inactive'
+                                              }">
+                                              Account {{ user.status }}
+                                            </a>
+                                            <a *ngIf="user.kyc_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': user.kyc_status === 'Approved',
+                                                'badge-soft-warning': user.kyc_status === 'Requested',
+                                                'badge-soft-danger': user.kyc_status === 'Rejected'
+                                              }">
+                                              KYC {{ user.kyc_status }}
+                                            </a>
+                                            <a *ngIf="user.franchise_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': user.franchise_status === 'Approved',
+                                                'badge-soft-warning': user.franchise_status === 'Requested',
+                                                'badge-soft-danger': user.franchise_status === 'Rejected'
+                                              }">
+                                              Franchise {{ user.franchise_status }}
+                                            </a>
+                                            <a *ngIf="user.loan_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': user.loan_status === 'Approved',
+                                                'badge-soft-warning': user.loan_status === 'Requested',
+                                                'badge-soft-danger': user.loan_status === 'Rejected',
+                                                'badge-soft-secondary': user.loan_status === 'Closed',
+                                                'badge-soft-success': user.loan_status === 'Disbursed'
+                                              }">
+                                              Loan {{ user.loan_status }}
+                                            </a>
+                                            <a *ngIf="user.card_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': user.card_status === 'Approved',
+                                                'badge-soft-warning': user.card_status === 'Requested',
+                                                'badge-soft-danger': user.card_status === 'Rejected'
+                                              }">
+                                              Card {{ user.card_status }}
+                                            </a>
+                                            <a *ngIf="user.advisor_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                              [ngClass]="{
+                                                'badge-soft-primary': user.advisor_status === 'Approved',
+                                                'badge-soft-warning': user.advisor_status === 'Requested',
+                                                'badge-soft-danger': user.advisor_status === 'Rejected'
+                                              }">
+                                              Advisor {{ user.advisor_status }}
+                                            </a>
+                                          </td>
+                                          <td>
+                                            <ul class="list-inline font-size-20 contact-links mb-0" *ngIf="user.status !== 'Deleted'">
+                                              <li data-bs-toggle="modal" data-bs-target="#myModal" (click)="sendNotification(messageModal, user)" class="list-inline-item px-2">
+                                                <a href="javascript:void(0);" tooltip="Message">
+                                                  <i class="bx bx-message-square-dots"></i>
+                                                </a>
+                                              </li>
+                                              <li class="list-inline-item px-2" >
+                                                <a [routerLink]="['profile', user._id]" tooltip="Profile">
+                                                  <i class="bx bx-user-circle"></i>
+                                                </a>
+                                              </li>
+                                              <li class="list-inline-item" *ngIf="user.status !== 'Deleted'">
+                                                <div dropdown="" class="dropdown" ngbDropdown>
+                                                  <a ngbDropdownToggle href="javascript: void(0);" aria-expanded="false" class="dropdown-toggle card-drop px-2 show" aria-haspopup="true">
+                                                    <i class="mdi mdi-dots-horizontal font-size-18"></i>
+                                                  </a>
+                                                  <ul placement="bottom-end" class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
+                                                    <li>
+                                                      <a [routerLink]="['edit', user._id]" class="dropdown-item edit-list">
+                                                        <i class="mdi mdi-pencil font-size-16 text-success me-1"></i> Edit
+                                                      </a>
+                                                    </li>
+                                                    <li>
+                                                      <a href="javascript:void(0);"  (click)="changeStatusAccount(user, changeStatusModal)" class="dropdown-item remove-list">
+                                                        <i class="mdi mdi-trash-can font-size-16 text-danger me-1"></i> Change Status
+                                                      </a>
+                                                    </li>
+                                                    <li>
+                                                      <a *ngIf=" user.advisor_status === 'Approved'" href="javascript:void(0);" (click)="addMember(user)" class="dropdown-item remove-list">
+                                                        <i class="mdi mdi-plus font-size-16 text-primary me-1"></i> Add Member
+                                                      </a>
+                                                    </li>
+                                                    <li>
+                                                      <a [routerLink]="['compulsory-deposit', user._id]" class="dropdown-item remove-list">
+                                                        <i class="mdi mdi-cash-100 font-size-16 text-warning me-1"></i> Compulsory Deposit
+                                                      </a>
+                                                    </li>
+                                                    <li>
+                                                      <a [routerLink]="['recurring-deposits', user._id]" class="dropdown-item remove-list">
+                                                        <i class="mdi mdi-account-cash font-size-16 text-info me-1"></i> Recurring Deposit
+                                                      </a>
+                                                    </li>
+                                                    <li>
+                                                      <a [routerLink]="['fixed-deposits', user._id]" class="dropdown-item remove-list">
+                                                        <i class="mdi mdi-cash-register font-size-16 text-primary me-1"></i> Fixed Deposit
+                                                      </a>
+                                                    </li>
+                                                  </ul>
+                                                </div>
+                                              </li>
+                                            </ul>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                          <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                          {{ findPageShowing() }} of {{ total }}
+                                          entries
+                                        </div>
+                                      </div>
+                                      <div class="col-sm-12 col-md-5">
+                                        <div class="text-md-right float-md-end pagination-rounded">
+                                          <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                          </ngb-pagination>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                        </div>
+                            
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+  
+
+
+
+<ng-template #messageModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Send Notification</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <form [formGroup]="notificationFormGroup">
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="mb-3">
+          <label for="recipient-name" class="col-form-label">Title:</label>
+          <input type="text" class="form-control" id="recipient-name" formControlName="title" placeholder="Enter Title">
+          <div *ngIf="notificationFormGroup.get('title')?.invalid && (notificationFormGroup.get('title')?.dirty || notificationFormGroup.get('title')?.touched)" class="text-danger mt-1">
+            <small *ngIf="notificationFormGroup.get('title')?.errors?.['required']">Title is required.</small>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="message-text" class="col-form-label">Message:</label>
+          <textarea class="form-control" id="message-text" formControlName="message" placeholder="Enter Message"></textarea>
+          <div *ngIf="notificationFormGroup.get('message')?.invalid && (notificationFormGroup.get('message')?.dirty || notificationFormGroup.get('message')?.touched)" class="text-danger mt-1">
+            <small *ngIf="notificationFormGroup.get('message')?.errors?.['required']">Message is required.</small>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+    <button type="submit" class="btn btn-primary waves-effect waves-light" [disabled]="notificationFormGroup.invalid" (click)="sendMessage()" >Send Message</button>
+  </div>
+</form>
+
+</ng-template>
+
+<ng-template #settingModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Settings</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <form  >
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Recurring Deposit (R D):</label>
+              <input type="number" class="form-control" id="recipient-name" placeholder="Settings">
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light">Send Message</button>
+      </div>
+    </form>
+</ng-template>
+
+<ng-template #changeStatusModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Status</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Change Status:</label>
+              <select type="number" class="form-control" [(ngModel)]="currStatus"  >
+                <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
+              </select>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeStatus()" >Submit</button>
+      </div>
+</ng-template>

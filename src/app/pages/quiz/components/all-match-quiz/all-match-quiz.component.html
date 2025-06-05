@@ -1,0 +1,246 @@
+<div class="container-fluid">
+
+  <app-page-title title="Match Common Quiz" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+      <div class="col-xl-12">
+          <div class="card">
+              <div class="card-body">
+                  <h5 class="card-title">Common Quiz</h5>
+                  <p class="card-title-desc"></p>
+                  <form [formGroup]="addQuizFormGroup" >
+                      <ng-container formArrayName="quiz" *ngFor="let qui of quiz?.controls; let i = index">
+                        <div class="row"  [formGroupName]="i">
+                          <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">Question</label>
+                                <input type="text" class="form-control" formControlName="question" >
+                                <small>#TEAM1 : For Team 1, #TEAM2 : For Team 2</small>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">Question Type</label>
+                                <select class="form-control" formControlName="type" (change)="questionTypeChange($event.target, quiz.at(i))" >
+                                  <option value="boolean">Yes/No</option>
+                                  <option value="4options">4 Options</option>
+                                  <option value="team">Team</option>
+                                  <option value="nearest">Nearest</option>
+                                </select>
+                            </div>
+                          </div>
+                          <div class="col-md-1">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">Run After</label>
+                                <select class="form-control" formControlName="runAfter" >
+                                  <option value="1hrbefore">1 Hours Before match start</option>
+                                  <option value="MatchStart">On Match Start</option>
+                                  <option value="On1innOver">On 1st inning over</option>
+                                  <option value="On2ndInnStart">After 2nd inning start</option>
+                                  <option value="MatchEnds">On Match ends</option>
+                                </select>
+                            </div>
+                          </div>
+                          <div class="col-md-1" *ngIf="quiz.at(i).value.type !== 'nearest'">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">A</label>
+                                <input type="text" class="form-control"  [value]="quiz.at(i).value.type === 'boolean' ? 'Yes' : quiz.at(i).value.type === 'team' ? '#TEAM1' : ''" formControlName="A">
+                            </div>
+                          </div>
+                          <div class="col-md-1" *ngIf="quiz.at(i).value.type !== 'nearest'">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">B</label>
+                                <input type="text" class="form-control"   [value]="quiz.at(i).value.type === 'boolean' ? 'No' : quiz.at(i).value.type === 'team' ? '#TEAM2' : ''"  formControlName="B">
+                            </div>
+                          </div>
+                          <div class="col-md-1" *ngIf="quiz.at(i).value.type === 'nearest'">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">Min</label>
+                                <input type="number" class="form-control"  [value]="quiz.at(i).value.type === 'boolean' ? 'Yes' : quiz.at(i).value.type === 'team' ? '#TEAM1' : ''" formControlName="A">
+                            </div>
+                          </div>
+                          <div class="col-md-1" *ngIf="quiz.at(i).value.type === 'nearest'">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">Max</label>
+                                <input type="number" class="form-control"   [value]="quiz.at(i).value.type === 'boolean' ? 'No' : quiz.at(i).value.type === 'team' ? '#TEAM2' : ''"  formControlName="B">
+                            </div>
+                          </div>
+                          <div class="col-md-1" *ngIf="quiz.at(i).value.type === '4options'">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">C</label>
+                                <input type="text" class="form-control"  formControlName="C">
+                            </div>
+                          </div>
+                          <div class="col-md-1" *ngIf="quiz.at(i).value.type === '4options'">
+                            <div class="mb-3">
+                                <label for="formrow-email-input">D</label>
+                                <input type="text" class="form-control"  formControlName="D">
+                            </div>
+                          </div>
+                          <div class="form-group col-lg-1" >
+                            <button *ngIf="i===0"  (click)="addQuiz()" type="button" class="btn btn-outline-success button-icon" style="margin-top: 27px;"><i class="bx bx-plus"></i></button>
+                            <button *ngIf="i!==0"  (click)="removeQuiz(i)" type="button" class="btn btn-outline-danger button-icon" style="margin-top: 27px;"><i class="bx bx-minus"></i></button>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <div>
+                          <button type="submit" class="btn btn-primary w-md" [disabled]="!addQuizFormGroup.valid"  (click)="onSave()" >Submit</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="row" >
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+              <div class="card-header" >
+                <div class="d-flex align-items-center">
+                  <h5 class="mb-0 card-title flex-grow-1">Quiz List</h5>
+                  <div class="flex-shrink-0 d-flex gap-1">
+                    <button  class="btn btn-primary" >Enable Quiz</button>
+                  </div>
+                </div>
+              </div>
+
+
+                <p class="card-title-desc"></p>
+                <div class="table-responsive">
+                  <table id="basic-datatable"
+                    class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                    <thead>
+                      <tr>
+                        <th>Question</th>
+                        <th>Condition</th>
+                        <th>Type</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>Active</th>
+                        <th>Action</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngFor="let question of questionList">
+                        <tr>
+                          <td>{{question.question}}</td>
+                          <td>{{question.runAfter}}</td>
+                          <td>{{question.type}}</td>
+                          <td>{{question.A}}</td>
+                          <td>{{question.B}}</td>
+                          <td>{{question.C}}</td>
+                          <td>{{question.D}}</td>
+                          <td>
+                            <span *ngIf="question.active" class="badge bg-success">Active</span>
+                            <span *ngIf="!question.active" class="badge bg-danger">InActive</span>
+                          </td>
+                          <td>
+                            <ul  class="list-unstyled hstack gap-1 mb-0">
+                              <li data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                <a (click)="editQuizModal(question,editQuizContent)" class="btn btn-sm btn-soft-info"><i class="mdi mdi-pencil-outline"></i></a>
+                              </li>
+                              <li data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                <a  (click)="deleteQuiz(question._id)" data-bs-toggle="modal" class="btn btn-sm btn-soft-danger"><i  class="mdi mdi-delete-outline"></i></a>
+                              </li>
+                              <li data-bs-toggle="tooltip" data-bs-placement="top" title="Active" *ngIf="!question.active">
+                                <a  (click)="activeQuiz(question._id, !question.active)" data-bs-toggle="modal" class="btn btn-sm btn-soft-primary"><i  class="mdi mdi-arrow-up"></i></a>
+                              </li>
+                              <li data-bs-toggle="tooltip" data-bs-placement="top" title="Active" *ngIf="question.active">
+                                <a  (click)="activeQuiz(question._id, !question.active)" data-bs-toggle="modal" class="btn btn-sm btn-soft-primary"><i  class="mdi mdi-arrow-down"></i></a>
+                              </li>
+                            </ul>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<ng-template #editQuizContent let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Edit Quiz</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+  <form [formGroup]="editQuizFormGroup">
+	<div class="modal-body">
+      <div class="row">
+        <div class="col-lg-12" >
+          <div class="mb-3">
+            <label for="formrow-email-input">Question</label>
+            <input type="text" class="form-control" formControlName="question">
+            <small>#TEAM1 : For Team 1, #TEAM2 : For Team 2</small>
+          </div>
+        </div>
+        <div class="col-lg-12 mb-3">
+          <label for="formrow-email-input">Question Type</label>
+          <select class="form-control" formControlName="type" (change)="changeeditquestion($event.target)" >
+            <option value="boolean">Yes/No</option>
+            <option value="4options">4 Options</option>
+            <option value="team">Team</option>
+            <option value="nearest">Nearest</option>
+          </select>
+      </div>
+      <div class="col-lg-12 mb-3">
+          <label for="formrow-email-input">Run After</label>
+          <select class="form-control" formControlName="runAfter" >
+            <option value="1hrbefore">1 Hours Before match start</option>
+            <option value="MatchStart">On Match Start</option>
+            <option value="On1innOver">On 1st inning over</option>
+            <option value="On2ndInnStart">After 2nd inning start</option>
+            <option value="MatchEnds">On Match ends</option>
+          </select>
+      </div>
+        <div class="col-lg-6"  *ngIf="editQuizFormGroup.get('type')?.value!=='nearest'"  >
+          <div class="mb-3">
+            <label for="formrow-email-input">Option A</label>
+            <input type="text" class="form-control" formControlName="A"  >
+          </div>
+        </div>
+        <div class="col-lg-6" *ngIf="editQuizFormGroup.get('type')?.value!=='nearest'">
+          <div class="mb-3">
+            <label for="formrow-email-input">Option B</label>
+            <input type="text" class="form-control" formControlName="B" >
+          </div>
+        </div>
+        <div class="col-lg-6"  *ngIf="editQuizFormGroup.get('type')?.value==='nearest'"  >
+          <div class="mb-3">
+            <label for="formrow-email-input">Option A</label>
+            <input type="text" class="form-control" formControlName="A"  >
+          </div>
+        </div>
+        <div class="col-lg-6" *ngIf="editQuizFormGroup.get('type')?.value==='nearest'">
+          <div class="mb-3">
+            <label for="formrow-email-input">Option B</label>
+            <input type="text" class="form-control" formControlName="B" >
+          </div>
+        </div>
+        <div class="col-lg-6" *ngIf="editQuizFormGroup.get('type')?.value=='4options'">
+          <div class="mb-3">
+            <label for="formrow-email-input">Option C</label>
+            <input type="text" class="form-control" formControlName="C">
+          </div>
+        </div>
+        <div class="col-lg-6" *ngIf="editQuizFormGroup.get('type')?.value=='4options'">
+          <div class="mb-3">
+            <label for="formrow-email-input">Option D</label>
+            <input type="text" class="form-control" formControlName="D">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary"  [disabled]="!editQuizFormGroup.valid"  (click)="editQuiz()">Update</button>
+      <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Close</button>
+    </div>
+  </form>
+</ng-template>

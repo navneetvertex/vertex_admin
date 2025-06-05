@@ -1,0 +1,59 @@
+<div class="container-fluid">
+
+    <app-page-title title="Undeclared Result" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  
+  
+    <div class="row">
+      <div class="col-xl-12">
+          <div class="card">
+              <div class="card-body">
+                <!-- <div class="card-header" >
+                  <div class="d-flex align-items-center">
+                    <h5 class="mb-0 card-title flex-grow-1">Undeclared Result</h5>
+                    
+                  </div>
+                </div> -->
+  
+  
+                  <p class="card-title-desc"></p>
+                  <div class="table-responsive">
+                    <table id="basic-datatable"
+                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                      <thead>
+                        <tr>
+                          <th>Match ID</th>
+                          <th>TeamA Vs TeamB</th>
+                          <th>Series</th>
+                          <th>Date and Time</th>
+                          <th>User Participated</th>
+                          <th>Finalize</th>
+                          <th>Score Calculated</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <ng-container *ngFor="let match of matchList">
+                          <tr>
+                            <td>{{match.match_id}}</td>
+                            <td>{{match.match_details[0].team_a}} vs {{match.match_details[0].team_b}}</td>
+                            <td>{{match.match_details[0].series}}</td>
+                            <td>{{match.match_details[0].match_date}} {{match.match_details[0].match_time}}</td>
+                            <td>{{match.user_participated}}</td>
+                            <td>{{match.quizes[0].finalize}}</td>
+                            <td>{{match.quizes[0].score_calculated}}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" routerLink="/quiz/results" [queryParams]="{match_id: match.match_id}" >Declare</button>
+                            </td>
+                            
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  </div>
+  
+ 
