@@ -6,66 +6,102 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-header bg-transparent border-bottom">Refundable Deposit</h5>
-                    <form [formGroup]="memberFeesFormGroup" >
+                    <form [formGroup]="memberFeesFormGroup" (ngSubmit)="onSubmit()">
                         <div class="row mb-4 mt-2">
-                            <label for="horizontal-firstname-input" class="col-sm-3 col-form-label">Shared Money</label>
+                            <label for="horizontal-shared-money-input" class="col-sm-3 col-form-label">Shared Money</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="horizontal-firstname-input" formControlName="shared_money">
+                                <input type="number" class="form-control" id="horizontal-shared-money-input" formControlName="shared_money" [ngClass]="{'is-invalid': memberFeesFormGroup.get('shared_money')?.invalid && (memberFeesFormGroup.get('shared_money')?.touched || memberFeesFormGroup.get('shared_money')?.dirty)}">
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('shared_money')?.errors?.['required']">
+                                    Shared Money is required.
+                                </div>
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('shared_money')?.errors?.['min']">
+                                    Value must be 0 or more.
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-4">
-                            <label for="horizontal-email-input" class="col-sm-3 col-form-label">Compulsory Deposit</label>
+                            <label for="horizontal-compulsory-deposit-input" class="col-sm-3 col-form-label">Compulsory Deposit</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="horizontal-email-input" formControlName="compulsory_deposit">
+                                <input type="number" class="form-control" id="horizontal-compulsory-deposit-input" formControlName="compulsory_deposit" [ngClass]="{'is-invalid': memberFeesFormGroup.get('compulsory_deposit')?.invalid && (memberFeesFormGroup.get('compulsory_deposit')?.touched || memberFeesFormGroup.get('compulsory_deposit')?.dirty)}">
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('compulsory_deposit')?.errors?.['required']">
+                                    Compulsory Deposit is required.
+                                </div>
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('compulsory_deposit')?.errors?.['min']">
+                                    Value must be 0 or more.
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-4">
-                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Refundable Subtotal</label>
+                            <label for="horizontal-refund-subtotal-input" class="col-sm-3 col-form-label">Refundable Subtotal</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" disabled id="horizontal-password-input" [value]="number(memberFeesFormGroup.get('shared_money')?.value) + number(memberFeesFormGroup.get('compulsory_deposit')?.value)"  >
+                                <input type="number" class="form-control" disabled id="horizontal-refund-subtotal-input" [value]="number(memberFeesFormGroup.get('shared_money')?.value) + number(memberFeesFormGroup.get('compulsory_deposit')?.value)"  >
                             </div>
                         </div>
 
                         <h5 class="card-header bg-transparent border-bottom">Non-Refundable Fees</h5>
                         <div class="row mb-4 mt-2">
-                            <label for="horizontal-firstname-input" class="col-sm-3 col-form-label">Admission Fee</label>
+                            <label for="horizontal-admission-fees-input" class="col-sm-3 col-form-label">Admission Fee</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="horizontal-firstname-input" formControlName="admission_fees">
+                                <input type="number" class="form-control" id="horizontal-admission-fees-input" formControlName="admission_fees" [ngClass]="{'is-invalid': memberFeesFormGroup.get('admission_fees')?.invalid && (memberFeesFormGroup.get('admission_fees')?.touched || memberFeesFormGroup.get('admission_fees')?.dirty)}">
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('admission_fees')?.errors?.['required']">
+                                    Admission Fee is required.
+                                </div>
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('admission_fees')?.errors?.['min']">
+                                    Value must be 0 or more.
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-4">
-                            <label for="horizontal-email-input" class="col-sm-3 col-form-label">Building Fund</label>
+                            <label for="horizontal-building-fund-input" class="col-sm-3 col-form-label">Building Fund</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="horizontal-email-input" formControlName="building_fund">
+                                <input type="number" class="form-control" id="horizontal-building-fund-input" formControlName="building_fund" [ngClass]="{'is-invalid': memberFeesFormGroup.get('building_fund')?.invalid && (memberFeesFormGroup.get('building_fund')?.touched || memberFeesFormGroup.get('building_fund')?.dirty)}">
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('building_fund')?.errors?.['required']">
+                                    Building Fund is required.
+                                </div>
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('building_fund')?.errors?.['min']">
+                                    Value must be 0 or more.
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-4">
-                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Welfare Fund</label>
+                            <label for="horizontal-welfare-fund-input" class="col-sm-3 col-form-label">Welfare Fund</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="horizontal-password-input" formControlName="welfare_fund">
+                                <input type="number" class="form-control" id="horizontal-welfare-fund-input" formControlName="welfare_fund" [ngClass]="{'is-invalid': memberFeesFormGroup.get('welfare_fund')?.invalid && (memberFeesFormGroup.get('welfare_fund')?.touched || memberFeesFormGroup.get('welfare_fund')?.dirty)}">
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('welfare_fund')?.errors?.['required']">
+                                    Welfare Fund is required.
+                                </div>
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('welfare_fund')?.errors?.['min']">
+                                    Value must be 0 or more.
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-4">
-                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Other Deposit</label>
+                            <label for="horizontal-other-deposit-input" class="col-sm-3 col-form-label">Other Deposit</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="horizontal-password-input" formControlName="other_deposit">
+                                <input type="number" class="form-control" id="horizontal-other-deposit-input" formControlName="other_deposit" [ngClass]="{'is-invalid': memberFeesFormGroup.get('other_deposit')?.invalid && (memberFeesFormGroup.get('other_deposit')?.touched || memberFeesFormGroup.get('other_deposit')?.dirty)}">
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('other_deposit')?.errors?.['required']">
+                                    Other Deposit is required.
+                                </div>
+                                <div class="invalid-feedback" *ngIf="memberFeesFormGroup.get('other_deposit')?.errors?.['min']">
+                                    Value must be 0 or more.
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-4">
-                            <label for="horizontal-password-input" class="col-sm-3 col-form-label">Non-Refundable Subtotal</label>
+                            <label for="horizontal-nonrefund-subtotal-input" class="col-sm-3 col-form-label">Non-Refundable Subtotal</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" disabled id="horizontal-password-input" [value]="number(memberFeesFormGroup.get('admission_fees')?.value) + number(memberFeesFormGroup.get('building_fund')?.value)+ number(memberFeesFormGroup.get('welfare_fund')?.value)+ number(memberFeesFormGroup.get('other_deposit')?.value)">
+                                <input type="number" class="form-control" disabled id="horizontal-nonrefund-subtotal-input" [value]="number(memberFeesFormGroup.get('admission_fees')?.value) + number(memberFeesFormGroup.get('building_fund')?.value)+ number(memberFeesFormGroup.get('welfare_fund')?.value)+ number(memberFeesFormGroup.get('other_deposit')?.value)">
                             </div>
                         </div>
 
                         <h5 class="card-header bg-transparent border-bottom">Fees</h5>
                         <div class="row mb-4 mt-2">
-                            <label for="horizontal-firstname-input" class="col-sm-3 col-form-label">Total Fees</label>
+                            <label for="horizontal-total-fees-input" class="col-sm-3 col-form-label">Total Fees</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="horizontal-firstname-input" disabled [value]="number(memberFeesFormGroup.get('shared_money')?.value) + number(memberFeesFormGroup.get('compulsory_deposit')?.value) + number(memberFeesFormGroup.get('admission_fees')?.value) + number(memberFeesFormGroup.get('building_fund')?.value) + number(memberFeesFormGroup.get('welfare_fund')?.value) + number(memberFeesFormGroup.get('other_deposit')?.value)">
+                                <input type="number" class="form-control" id="horizontal-total-fees-input" disabled [value]="number(memberFeesFormGroup.get('shared_money')?.value) + number(memberFeesFormGroup.get('compulsory_deposit')?.value) + number(memberFeesFormGroup.get('admission_fees')?.value) + number(memberFeesFormGroup.get('building_fund')?.value) + number(memberFeesFormGroup.get('welfare_fund')?.value) + number(memberFeesFormGroup.get('other_deposit')?.value)">
                             </div>
                         </div>
-                        <button class="btn btn-primary" >Submit</button>
+                        <button class="btn btn-primary" [disabled]="memberFeesFormGroup.invalid">Submit</button>
                     </form>
                 </div>
             </div>

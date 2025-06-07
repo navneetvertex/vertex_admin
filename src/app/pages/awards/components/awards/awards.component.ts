@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { AwardsService } from 'src/app/core/services/awards.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-awards',
@@ -27,6 +28,7 @@ export class AwardsComponent implements OnInit {
 
   ngOnInit(): void {
      this.breadCrumbItems = [{ label: 'Awards' }, { label: 'All', active: true }];
+     this.getAwards();
      this.createFormGroup = new FormGroup({
         title: new FormControl('', { nonNullable: true }),
         description: new FormControl('', { nonNullable: true }),
@@ -41,13 +43,12 @@ export class AwardsComponent implements OnInit {
   }
 
   getAwards() {
-    this.awardsService.getAwards(this.page, this.pageSize).subscribe((res: any) => {
+    this.awardsService.getAwards(this.page, this.pageSize, this.search).subscribe((res: any) => {
       this.awardsList = res.data.awards;
       this.total = res.data.total;
     });
   }
   createAward() {
-
     if (this.createFormGroup.invalid) {
       this.toast.error('Please fill all required fields', 'Error');
       this.createFormGroup.markAllAsTouched();
@@ -56,6 +57,11 @@ export class AwardsComponent implements OnInit {
     }
 
     this.awardsService.createAward(this.createFormGroup.value).subscribe((res: any) => {
+      this.toast.success('Award created successfully', 'Success');
+      this.modalService.dismissAll();
+      this.createFormGroup.markAsPristine();
+      this.createFormGroup.markAsUntouched();
+      this.createFormGroup.markAsPending();
       this.getAwards();
       this.createFormGroup.reset();
     });
@@ -71,13 +77,29 @@ export class AwardsComponent implements OnInit {
 
     this.awardsService.updateAward(this.editFormGroup.get('_id').value,   this.editFormGroup.value).subscribe((res: any) => {
       this.getAwards();
+       this.modalService.dismissAll();
+      this.toast.success('Award updated successfully', 'Success');
       this.editFormGroup.reset();
     });
   }
   deleteAward(id: string) {
-    this.awardsService.deleteAward(id).subscribe((res: any) => {
-      this.getAwards();
-    });
+    Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.awardsService.deleteAward(id).subscribe((res: any) => {
+              this.toast.success('Award deleted successfully', 'Success');
+              this.getAwards();
+            });
+          }
+        });
+    
   }
   openEditModal(content: any, award: any) {
     this.modalService.open(content, { backdrop: 'static' });
