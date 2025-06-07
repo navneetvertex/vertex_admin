@@ -5,4 +5,5 @@ export class User {
     name?: string;
     accessToken?: string;
     email_id: string;
+    profile_image?: string;
 }

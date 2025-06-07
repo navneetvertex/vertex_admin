@@ -8,7 +8,7 @@
                     <div class="row mb-0">
                         <div class="col-sm-4">
                             <div class="search-box me-2 mb-2 d-inline-block">
-                                <div class="position-relative"><input type="text"  autocomplete="off" id="searchTableList" placeholder="Search..." class="form-control"><i class="bx bx-search-alt search-icon"></i></div>
+                                <div class="position-relative"><input type="text" (keydown.enter)="onSearch($event)" autocomplete="off" id="searchTableList" placeholder="Search..." class="form-control"><i class="bx bx-search-alt search-icon"></i></div>
                             </div>
                         </div>
                     </div>
@@ -33,13 +33,17 @@
                                         <tbody>
                                             <ng-container *ngFor="let pin of pinList; let i = index">
                                                 <tr>
-                                                    <td>{{ i + 1 }}</td>
-                                                    <td>{{ pin.assigned_user[0].name }} ({{pin.assigned_user[0].user_id}})  </td>
+                                                    <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                                    <td>{{ pin.assigned_user[0]?.name }} ({{pin.assigned_user[0]?.user_id}})  </td>
                                                     <td>{{ pin.assigned_on | date }}</td>
                                                     <td>{{ pin.pin }}</td>
-                                                    <td>{{ pin.used_by_user[0]?.name }} ({{pin.used_by_user[0]?.user_id}})</td>
-                                                    <td>{{ pin.used_on ? (pin.usedOn | date) : 'N/A' }}</td>
-                                                    <td><span class="badge" [ngClass]="{'bg-success': pin.status === 'Assigned', 'bg-danger': pin.status === 'Inactive'}">{{ pin.status }}</span></td>
+                                                    <td>
+                                                        <span *ngIf="pin.used_by_user[0]?.name">{{ pin.used_by_user[0]?.name }} ({{pin.used_by_user[0]?.user_id}})</span>
+                                                        <span *ngIf="!pin.used_by_user[0]?.name">-</span>
+                                                        
+                                                    </td>
+                                                    <td>{{ pin.used_on ? (pin.usedOn | date) : '-' }}</td>
+                                                    <td><span class="badge" [ngClass]="{'bg-success': pin.status === 'Assigned', 'bg-danger': pin.status === 'Inactive', 'bg-info': pin.status === 'Active'}">{{ pin.status }}</span></td>
                                                 </tr>
                                             </ng-container>
                                             

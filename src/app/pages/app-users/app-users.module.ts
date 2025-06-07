@@ -48,6 +48,7 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     ImageCropperModule,
     NgbPaginationModule,
     NgbDatepickerModule,
-  ]
+  ],
+  exports: [ImageCropperComponent]
 })
 export class AppUsersModule { }

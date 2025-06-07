@@ -7,7 +7,7 @@
                 <div class="card-body">
                     <div class="row">
                         <form [formGroup]="addMessageFormGroup"  class="col-12">
-                            <div class="mb-3">
+                            <div class="mb-3 col-lg-12">
                                 <label for="messageTitle" class="form-label">Title</label>
                                 <input type="text" class="form-control" id="messageTitle" formControlName="title"
                                     placeholder="Enter title">
@@ -17,7 +17,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-3 col-lg-12">
                                 <label for="messageBody" class="form-label">Message</label>
                                 <textarea class="form-control" id="messageBody" formControlName="message" rows="4"
                                     placeholder="Enter message body"></textarea>
@@ -26,9 +26,18 @@
                                     Message is required.
                                 </div>
                             </div>
+                            <div class="row" >
+                                <div class="mb-3 col-lg-6">
+                                    <label>Attachment Image</label>
+                                    <input type="file" class="form-control" (change)="onFileSelected($event, 'profile')" />
+                                </div>
+                                 <div class="col-lg-6" >
+                                    <img [src]="addMessageFormGroup.get('attachment')?.value" style="max-width: 100px; max-height: 100px;">
+                                </div>
+                            </div>
 
                             <button type="submit" class="btn btn-primary"
-                                [disabled]="addMessageFormGroup.invalid">Submit</button>
+                                [disabled]="addMessageFormGroup.invalid" (click)="onSubmit()" >Submit</button>
                         </form>
 
                     </div>

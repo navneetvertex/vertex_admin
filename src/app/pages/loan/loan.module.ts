@@ -8,13 +8,15 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoanTransanctionComponent } from './components/loan-transanction/loan-transanction.component';
 import { AdminLoanTransanctionComponent } from './components/admin-loan-transanction/admin-loan-transanction.component';
+import { PayLoanComponent } from './components/pay-loan/pay-loan.component';
 
 
 @NgModule({
   declarations: [
     LoanRequestedComponent,
     LoanTransanctionComponent,
-    AdminLoanTransanctionComponent
+    AdminLoanTransanctionComponent,
+    PayLoanComponent
   ],
   imports: [
     CommonModule,

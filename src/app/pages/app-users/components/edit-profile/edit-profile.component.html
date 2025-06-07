@@ -79,19 +79,28 @@
         <div class="col-md-4">
           <div class="mb-3">
             <label for="formrow-text-input">PAN</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event, 'pan')" />
+            <input type="file" class="form-control" (change)="onFileSelected($event, 'pan')" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('pan_image')?.invalid}" />
+            <div *ngIf="typeKYCsubmit && kycFormGroup.get('pan_image')?.errors" class="invalid-feedback">
+              <span *ngIf="kycFormGroup.get('pan_image')?.errors?.required">PAN image is required.</span>
+            </div>
           </div>
         </div>
         <div class="col-md-4">
           <div class="mb-3">
             <label for="formrow-text-input">Aadhar Front</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_front')" />
+            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_front')" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('aadhar_front')?.invalid}" />
+            <div *ngIf="typeKYCsubmit && kycFormGroup.get('aadhar_front')?.errors" class="invalid-feedback">
+              <span *ngIf="kycFormGroup.get('aadhar_front')?.errors?.required">Aadhar front image is required.</span>
+            </div>
           </div>
         </div>
         <div class="col-md-4">
           <div class="mb-3">
             <label for="formrow-text-input">Aadhar Back</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_back')"/>
+            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_back')" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('aadhar_back')?.invalid}" />
+            <div *ngIf="typeKYCsubmit && kycFormGroup.get('aadhar_back')?.errors" class="invalid-feedback">
+              <span *ngIf="kycFormGroup.get('aadhar_back')?.errors?.required">Aadhar back image is required.</span>
+            </div>
           </div>
         </div>
         <div class="col-lg-4" >
@@ -190,7 +199,7 @@
     <div class="col-md-4">
       <div class="mb-3">
         <label>Date of Birth</label>
-        <input type="date" class="form-control" formControlName="date_of_birth"
+        <input type="date" class="form-control" [max]="maxDOB" formControlName="date_of_birth"
                [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('date_of_birth')?.invalid}">
         <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('date_of_birth')?.errors">
           Date of birth is required.
@@ -330,8 +339,8 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end" style="left: auto; right: 0px;" ngbDropdownMenu>
                   <a href="javascript:void(0);" id="taskedit" data-id="#uptask-2" class="dropdown-item edittask-details">Edit</a>
-                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask">Delete</a>
-                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask">{{address.status ? 'InActive': 'Active'}}</a>
+                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="deleteAddress(address._id)" >Delete</a>
+                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="editAddress(address._id, {status: !address.status})" >{{address.status ? 'InActive': 'Active'}}</a>
                 </div>
               </div>
               <div class="float-end ms-2">
@@ -376,11 +385,16 @@
                   </a>
                   <div class="dropdown-menu dropdown-menu-end" style="left: auto; right: 0px;" ngbDropdownMenu>
                     <a href="javascript:void(0);" id="taskedit" data-id="#uptask-2" class="dropdown-item edittask-details">Edit</a>
-                    <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask">Delete</a>
+                    <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="deleteBank(bank._id)" >Delete</a>
+                    <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="editBank(bank._id, {status: !bank.status})" >{{bank.status ? 'InActive': 'Active'}}</a>
                   </div>
                 </div>
-                <div class="float-end ms-2"><span
-                    class="badge rounded-pill badge-soft-primary font-size-12">Active</span></div>
+                <div class="float-end ms-2">
+                  <div class="float-end ms-2">
+                  <span *ngIf="bank.status" class="badge rounded-pill badge-soft-primary font-size-12">Active</span>
+                  <span *ngIf="!bank.status" class="badge rounded-pill badge-soft-danger font-size-12">InActive</span>
+                  </div>
+                </div>
                 <div>
                   <h5 class="font-size-15">
                     <a href="javascript: void(0);" class="text-dark">{{bank.bank_name}}</a></h5>
@@ -521,7 +535,7 @@
 
             <div class="mb-3 col-lg-6">
               <label for="pincode" class="col-form-label">PinCode:</label>
-              <input type="text" class="form-control" id="pincode" formControlName="pincode"
+              <input type="text" class="form-control" id="pincode" formControlName="pincode" (blur)="validatePincode($event.target.value)"
                 [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('pincode')?.invalid}">
               <div *ngIf="typeAddressSubmit && addressFormGroup.get('pincode')?.errors" class="invalid-feedback">
                 <div *ngIf="addressFormGroup.get('pincode')?.errors?.required">Pincode is required.</div>
@@ -580,7 +594,7 @@
 
             <div class="mb-3 col-lg-6">
               <label for="corr_pincode" class="col-form-label">Pincode:</label>
-              <input type="text" class="form-control" id="corr_pincode" formControlName="corr_pincode"
+              <input type="text" class="form-control" id="corr_pincode" formControlName="corr_pincode" (blur)="validateCorrPincode($event.target.value)"
                 [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_pincode')?.invalid}">
               <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_pincode')?.errors" class="invalid-feedback">
                 <div *ngIf="addressFormGroup.get('corr_pincode')?.errors?.required">Pincode is required.</div>

@@ -8,7 +8,11 @@
                     <div class="row mb-0">
                         <div class="col-sm-4">
                             <div class="search-box me-2 mb-2 d-inline-block">
-                                <div class="position-relative"><input type="text"  autocomplete="off" id="searchTableList" placeholder="Search..." class="form-control"><i class="bx bx-search-alt search-icon"></i></div>
+                                <div class="position-relative">
+                                    <input type="text" autocomplete="off" id="searchTableList" placeholder="Search..." class="form-control"
+                                        (keydown.enter)="onSearch($event)">
+                                    <i class="bx bx-search-alt search-icon"></i>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-8">
@@ -51,7 +55,7 @@
                                                             <input type="checkbox" class="form-check-input" [value]="pins.pin" (change)="pinChecked($event)" ><label class="form-check-label" for="transactionCheck1"></label>
                                                         </div>
                                                     </td>
-                                                    <td>{{i+1}}</td>
+                                                   <td>{{ (page - 1) * pageSize + i + 1 }}</td>
                                                     <td>{{pins.pin}}</td>
                                                     <td>
                                                         <span [ngClass]="{
@@ -63,8 +67,8 @@
                                                     <td>{{pins.created_date | date}}</td>
                                                     <td>
                                                     <ul class="list-unstyled hstack gap-1 mb-0">
-                                                        <li data-bs-toggle="tooltip"  (click)="disablePin()"  data-bs-placement="top" title="Delete"><a  href="javascript:void(0);" data-bs-toggle="modal" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-book-edit-outline"></i></a>
-                                                        </li>
+                                                        <li data-bs-toggle="tooltip" *ngIf=" pins.status === 'Active'"  (click)="disablePin(pins._id)"  data-bs-placement="top" title="Delete"><a  href="javascript:void(0);" data-bs-toggle="modal" class="btn btn-sm btn-soft-danger"><i class="mdi mdi-book-edit-outline"></i></a></li>
+                                                        <li data-bs-toggle="tooltip" *ngIf=" pins.status === 'Inactive'" (click)="enablePin(pins._id)"  data-bs-placement="top" title="Delete"><a  href="javascript:void(0);" data-bs-toggle="modal" class="btn btn-sm btn-soft-primary"><i class="mdi mdi-book-edit-outline"></i></a></li>
                                                     </ul>
                                                     </td>
                                                 </tr>

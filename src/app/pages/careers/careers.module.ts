@@ -5,6 +5,7 @@ import { CareersRoutingModule } from './careers-routing.module';
 import { CareersComponent } from './components/careers/careers.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UIModule } from 'src/app/shared/ui/ui.module';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import { UIModule } from 'src/app/shared/ui/ui.module';
   imports: [
     CommonModule,
     UIModule,
+    NgbPaginationModule,
     ReactiveFormsModule ,
     CareersRoutingModule
   ]

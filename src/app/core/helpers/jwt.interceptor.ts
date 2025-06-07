@@ -29,6 +29,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((error) => {
+        console.log("Error Status",error.status);
         if (
           error instanceof HttpErrorResponse &&
           error.status === 401 &&
@@ -49,6 +50,7 @@ export class JwtInterceptor implements HttpInterceptor {
       })
     );
 
+    
     
   }
 

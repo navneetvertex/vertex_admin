@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { DepositService } from 'src/app/core/services/deposit.service';
+import { UserProfileService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'app-recurring-deposit',
@@ -15,9 +16,12 @@ export class RecurringDepositComponent implements OnInit {
   constructor(private modalService: NgbModal,
     private depositService: DepositService,
     private toast: ToastrService,
+    private userService: UserProfileService,
+    private router: Router,
     private route: ActivatedRoute
   ) { 
     this.user_id = this.route.snapshot.paramMap.get('user') || '';
+    this.getProfile(this.user_id)
     this.getDepositSettings();
   }
 
@@ -28,6 +32,7 @@ export class RecurringDepositComponent implements OnInit {
   editDepositFormGroup: FormGroup
   rdSettlementFormGroup: FormGroup;
   user_id: string = ''; 
+  profile: any = null;
 
   depositSettingsList: any = [];
   depositList: any = [];
@@ -88,6 +93,19 @@ export class RecurringDepositComponent implements OnInit {
       settlement_date: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
+  }
+
+  getProfile(user_id: string) {
+    this.userService.getBasicUserProfile(user_id).subscribe((res: any) => {
+      if (res && res.status === 'success') {
+        this.profile = res.data.user || {};
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    }, (err: any) => {
+      console.error('Error fetching user profile:', err);
+      this.router.navigate(['/dashboard']);
+    });
   }
 
   openModal(content: any) {

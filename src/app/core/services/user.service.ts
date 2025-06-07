@@ -6,8 +6,12 @@ import { environment } from 'src/environments/environment';
 export class UserProfileService {
     constructor(private http: HttpClient) { }
 
-    getAllUsers(page: number = 0, limit: number = 10) {
-        return this.http.get(`${environment.api_url}users?page=${page}&limit=${limit}`);
+    getBasicUserProfile(userId: string) {
+        return this.http.get(`${environment.api_url}users/profile/${userId}`);
+    }
+
+    getAllUsers(page: number = 0, limit: number = 10, queryParams: string) {
+        return this.http.get(`${environment.api_url}users?page=${page}&limit=${limit}&${queryParams}`);
     }
 
     changeUserStatus(userId: string, status: string) {
@@ -40,6 +44,22 @@ export class UserProfileService {
 
     getAllUserIds() {
         return this.http.get(`${environment.api_url}users/getAllUserId/all`);
+    }
+
+    deleteBank(bankId: string) {
+        return this.http.delete(`${environment.api_url}users/bank/${bankId}`);
+    }
+
+    deleteAddress(addressId: string) {
+        return this.http.delete(`${environment.api_url}users/address/${addressId}`);
+    }
+
+    editBank(bankId: string, bankData: any) {
+        return this.http.put(`${environment.api_url}users/bank/${bankId}`, bankData);
+    }
+
+    editAddress(addressId: string, addressData: any) {
+        return this.http.put(`${environment.api_url}users/address/${addressId}`, addressData);
     }
 
     

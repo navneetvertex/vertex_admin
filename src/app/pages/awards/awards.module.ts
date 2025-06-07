@@ -5,6 +5,7 @@ import { AwardsRoutingModule } from './awards-routing.module';
 import { AwardsComponent } from './components/awards/awards.component';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     UIModule,
+    NgbPaginationModule,
     ReactiveFormsModule, 
     AwardsRoutingModule
   ]

@@ -21,6 +21,7 @@ export class AddPinsComponent implements OnInit {
   breadCrumbItems: Array<{}>;
   addPinFormGroup : FormGroup
   assignFormGroup: FormGroup;
+  searchTerm: string = '';
 
   pinList: any[] = []
   total: number = 0;
@@ -56,7 +57,7 @@ export class AddPinsComponent implements OnInit {
   }
 
   getPins(request: string) {
-    this.pinService.getPins(request, this.page, this.pageSize).subscribe((res: any) => {
+    this.pinService.getPins(request, this.page, this.pageSize, this.searchTerm).subscribe((res: any) => {
       if (res && res.data) {
         this.pinList = res?.data?.pins || [];
         this.total = res?.data?.total || 0;
@@ -67,6 +68,12 @@ export class AddPinsComponent implements OnInit {
       console.error('Error fetching pin list:', err);
       this.pinList = [];
     });
+  }
+
+  onSearch(event: any) {
+    this.searchTerm = event.target.value.toLowerCase();
+    this.page = 1;
+    this.getPins('unassigned');
   }
 
 
@@ -100,6 +107,7 @@ export class AddPinsComponent implements OnInit {
       next: (res: any) => {
         this.toast.success('Pins created successfully');
         this.addPinFormGroup.reset();
+        this.getPins('unassigned');
         this.modalService.dismissAll();
       }
       , error: (err: any) => {  
@@ -131,7 +139,7 @@ export class AddPinsComponent implements OnInit {
     });
   }
 
-  disablePin() {
+  disablePin(pin: string) {
     Swal.fire({
       title: "Are you sure?",
       text: "You want to disable this pin?",
@@ -142,7 +150,43 @@ export class AddPinsComponent implements OnInit {
       confirmButtonText: "Yes, disable it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        this.toast.success('Pin disabled successfully');
+        this.pinService.inactivePin(pin, {status: 'Inactive'}).subscribe({
+          next: (res: any) => {
+            this.getPins('unassigned');
+            this.toast.success('Pin disabled successfully');
+            this.modalService.dismissAll();
+          },
+          error: (err: any) => {
+            this.toast.error('Failed to disable pin');
+          }
+        });
+        
+      }
+    });
+  }
+
+  enablePin(pin: string) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to enable this pin?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, enable it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.pinService.inactivePin(pin, {status: 'Active'}).subscribe({
+          next: (res: any) => {
+            this.getPins('unassigned');
+            this.toast.success('Pin disabled successfully');
+            this.modalService.dismissAll();
+          },
+          error: (err: any) => {
+            this.toast.error('Failed to disable pin');
+          }
+        });
+        
       }
     });
   }

@@ -23,6 +23,7 @@ export class AwardsComponent implements OnInit {
   pageSize: number = 10;
   createFormGroup: FormGroup 
   editFormGroup: FormGroup
+  search: string = ''
 
   ngOnInit(): void {
      this.breadCrumbItems = [{ label: 'Awards' }, { label: 'All', active: true }];
@@ -41,8 +42,8 @@ export class AwardsComponent implements OnInit {
 
   getAwards() {
     this.awardsService.getAwards(this.page, this.pageSize).subscribe((res: any) => {
-      this.awardsList = res.data;
-      this.total = res.total;
+      this.awardsList = res.data.awards;
+      this.total = res.data.total;
     });
   }
   createAward() {
@@ -101,6 +102,24 @@ export class AwardsComponent implements OnInit {
   onPageSizeChange(pageSize: number) {
     this.pageSize = pageSize;
     this.getAwards();
+  }
+
+  onSearch($event: any) {
+    this.search = $event.target.value
+    this.page = 1
+    this.getAwards()
+  }
+
+  openModal(content: any) {
+    this.modalService.open(content)
+  }
+
+  findPageShowing(): number {
+    return Math.min(this.page * this.pageSize, this.total)
+  }
+
+  pageChange($event: number) {
+    this.page = $event
   }
 
 }

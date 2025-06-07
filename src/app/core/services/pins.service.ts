@@ -9,8 +9,8 @@ export class PinsService {
 
 constructor(private http: HttpClient) { }
 
-getPins(request: string, page: number = 0, limit: number = 10) {
-  return this.http.get(`${environment.api_url}pins?request=${request}&page=${page}&limit=${limit}`);
+getPins(request: string, page: number = 0, limit: number = 10, searchTerm: string = '') {
+  return this.http.get(`${environment.api_url}pins?request=${request}&page=${page}&limit=${limit}&search=${searchTerm}`);
 }
 
 createPin(payload: any) {
@@ -18,6 +18,10 @@ createPin(payload: any) {
 }
 assignPins(payload: any) {
   return this.http.put(`${environment.api_url}pins/assignPins`, payload);
+}
+
+inactivePin(pin: string, payload: any) {
+  return this.http.put(`${environment.api_url}pins/inactivePin/${pin}`, payload);
 }
 
 }

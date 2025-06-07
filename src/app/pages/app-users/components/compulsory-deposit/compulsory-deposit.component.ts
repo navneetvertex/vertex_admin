@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { DepositService } from 'src/app/core/services/deposit.service';
+import { UserProfileService } from 'src/app/core/services/user.service';
+import { UtilsService } from 'src/app/core/services/utils.service';
 
 @Component({
   selector: 'app-compulsory-deposit',
@@ -16,9 +18,11 @@ export class CompulsoryDepositComponent implements OnInit {
     private route: ActivatedRoute,
     private depositService: DepositService,
     private toast: ToastrService,
-    private router: Router
+    private router: Router,
+    private userService: UserProfileService,
   ) { 
     this.user_id = this.route.snapshot.paramMap.get('user') || '';
+    this.getProfile(this.user_id);
     this.getDepositSettings();
   }
 
@@ -35,12 +39,13 @@ export class CompulsoryDepositComponent implements OnInit {
   total: number = 0;
   page: number = 1;
   pageSize: number = 10;
-
+  profile: any = {};
   isSettingsAdded: boolean = false;
+
+  
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Member' }, { label: 'Compulsory Deposit', active: true }];
-
     this.saveDepositSettings = new FormGroup({
       annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       interval: new FormControl('', [Validators.required]),
@@ -77,6 +82,19 @@ export class CompulsoryDepositComponent implements OnInit {
       status: new FormControl('', [Validators.required])
     });
 
+  }
+
+  getProfile(user_id: string) {
+    this.userService.getBasicUserProfile(user_id).subscribe((res: any) => {
+      if (res && res.status === 'success') {
+        this.profile = res.data.user || {};
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    }, (err: any) => {
+      console.error('Error fetching user profile:', err);
+      this.router.navigate(['/dashboard']);
+    });
   }
 
   openModal(content: any) {
@@ -120,7 +138,6 @@ export class CompulsoryDepositComponent implements OnInit {
 
   getDepositSettings() {
     this.depositService.getCompulsoryDeposits(this.user_id).subscribe((res: any) => {
-      console.log('Deposit Settings Response:', res);
       if (res && res.status === 'success' && res.data) {
         const depositData = res.data.deposits || null;
         this.total = depositData.allDeposits?.length || 0;

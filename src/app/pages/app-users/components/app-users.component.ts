@@ -26,6 +26,7 @@ export class AppUsersComponent implements OnInit {
   total: number = 0;
   page: number = 1;
   pageSize: number = 10;
+  searchFormGroup: FormGroup ;
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'User List' }, { label: 'User', active: true }];
@@ -33,7 +34,24 @@ export class AppUsersComponent implements OnInit {
       title: new FormControl('', Validators.required),
       message: new FormControl('', Validators.required)
     });
+    this.searchFormGroup = new FormGroup({
+      name: new FormControl(''),
+      user_id: new FormControl(''),
+      account_number: new FormControl(''),
+      status: new FormControl(''),
+    });
     this.getAllUsers();
+  }
+
+  search() {
+    this.page = 1;
+    this.getAllUsers();
+  }
+
+  reset() {
+    this.page = 1
+    this.searchFormGroup.reset()
+    this.getAllUsers()
   }
 
   pageChange(page: number) {
@@ -42,7 +60,18 @@ export class AppUsersComponent implements OnInit {
   }
 
   getAllUsers() {
-    this.userService.getAllUsers(this.page, this.pageSize).subscribe((res: any) => {
+    const searchParams = this.searchFormGroup.value;
+    const queryParamArray = [];
+    
+    Object.keys(searchParams).forEach(key => {
+      if (searchParams[key] !== null && searchParams[key] !== '') {
+      queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+      }
+    });
+
+    const queryParams = queryParamArray.join('&');
+
+    this.userService.getAllUsers(this.page, this.pageSize, queryParams).subscribe((res: any) => {
       if (res && res.data) {
         this.userList = res?.data?.users?.data || [];
         this.total = res?.data?.users?.metadata[0]?.total || 0;

@@ -7,28 +7,33 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="card-body border-bottom">
-                          <div class="row">
-                              <div class="col-lg-3">
-                                  <input type="search" class="form-control" id="searchInput" placeholder="Search for Name...">
-                              </div>
-                              <div class="col-lg-3">
-                                  <input type="search" class="form-control" id="searchInput" placeholder="Search for Aadhar Number...">
-                              </div>
-                              <div class="col-lg-3">
-                                  <input type="search" class="form-control" id="searchInput" placeholder="Search for User id...">
-                              </div>
-                              <div class="col-lg-2">
-                                  <select class="form-control select2" >
-                                      <option value="">Select Status</option>
-                                      <option value="All">All</option>
-                                      <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
-                                  </select>
-                              </div>
-                              
-                              <div class="col-lg-1">
-                                  <button type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
-                              </div>
-                          </div>
+                          <form [formGroup]="searchFormGroup">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
+                                </div>
+                                <div class="col-lg-3">
+                                    <input type="search" class="form-control" id="searchInput" formControlName="account_number" placeholder="Search for Account Number...">
+                                </div>
+                                <div class="col-lg-2">
+                                    <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
+                                </div>
+                                <div class="col-lg-2">
+                                    <select class="form-control select2" formControlName="status" >
+                                        <option value="">Select Status</option>
+                                        <option value="All">All</option>
+                                        <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-lg-1">
+                                    <button type="button" (click)="search()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                                </div>
+                                <div class="col-lg-1" >
+                                        <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                    </div>
+                            </div>
+                          </form>
                       </div>
                         <div class="row">
                             <div class="col-md-12">

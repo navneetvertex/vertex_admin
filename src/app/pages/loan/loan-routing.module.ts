@@ -3,9 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoanRequestedComponent } from './components/loan-requested/loan-requested.component';
 import { LoanTransanctionComponent } from './components/loan-transanction/loan-transanction.component';
 import { AdminLoanTransanctionComponent } from './components/admin-loan-transanction/admin-loan-transanction.component';
+import { PayLoanComponent } from './components/pay-loan/pay-loan.component';
 
 const routes: Routes = [
-  { path: '', component: LoanRequestedComponent },
+  { path: 'loans', component: LoanRequestedComponent },
+  { path: 'pay-loan', component: PayLoanComponent },
   { path: 'user-transanction',component: LoanTransanctionComponent },
   { path: 'admin-transanction', component: AdminLoanTransanctionComponent }
 ];

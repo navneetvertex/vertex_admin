@@ -45,6 +45,9 @@ export class AuthenticationService {
     }
 
     refreshToken() {
+        // If running on localhost, some browsers block cookies for cross-site requests unless
+        // the backend sets SameSite=None and Secure on cookies. Make sure your backend is configured correctly.
+        // The withCredentials: true option is required to send cookies.
         return this.http.post<any>(`${environment.api_url}auth/refresh-token`, {}, { withCredentials: true });
     }
 
