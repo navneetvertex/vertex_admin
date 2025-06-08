@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Form, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { OwlOptions } from 'ngx-owl-carousel-o';
+import { ToastrService } from 'ngx-toastr';
+import { first } from 'rxjs/operators';
+import { AuthenticationService } from 'src/app/core/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-lockscreen2',
@@ -8,24 +14,56 @@ import { OwlOptions } from 'ngx-owl-carousel-o';
 })
 export class Lockscreen2Component implements OnInit {
 
-  constructor() { }
-  // set the currenr year
+  constructor(private authenticationService: AuthenticationService,
+    private router: Router,
+    private toast: ToastrService
+  ) { }
+  data : any = null
   year: number = new Date().getFullYear();
+  name: string = '';
+  email: string = '';
+  passwordFormGroup: FormGroup;
 
   ngOnInit(): void {
     document.body.classList.add('auth-body-bg')
+    this.data = JSON.parse(localStorage.getItem('currentUser'))
+    if(this.data) {
+      this.name = this.data.user.name
+      this.email = this.data.user.email_id
+    }
+
+    this.passwordFormGroup = new FormGroup({
+      password: new FormControl('', Validators.required),
+      email: new FormControl(this.email),
+    });
+
+    history.pushState(null, '', location.href);
+    window.addEventListener('popstate', () => {
+      history.pushState(null, '', location.href); // Cancel back
+    });
   }
 
-  carouselOption: OwlOptions = {
-    items: 1,
-    loop: false,
-    margin: 0,
-    nav: false,
-    dots: true,
-    responsive: {
-      680: {
-        items: 1
-      },
+  onSignIn() {
+
+    if (this.passwordFormGroup.invalid) {
+       this.toast.error('Password is required.', 'Error');
+      return;
     }
-  }
+    const password = this.passwordFormGroup.get('password').value;
+
+    this.authenticationService.login(this.email, password)
+      .pipe(first())
+      .subscribe(
+        data => {
+          this.router.navigate(['/dashboard']);
+        },
+        error => {
+          this.toast.error('Login failed, Redirecting to Login Page', 'Error');
+          this.authenticationService.logout();
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('token');
+          this.router.navigate(['/account/login']);
+        });
+      }
+  
 }

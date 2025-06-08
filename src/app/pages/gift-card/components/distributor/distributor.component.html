@@ -13,7 +13,7 @@
                         </div>
                         <div class="col-sm-8">
                             <div class="text-sm-end">
-                                <button type="button" class="btn btn-success btn-rounded mb-2 me-2">
+                                <button type="button" (click)="openModal(addDistrubutorModal)" class="btn btn-success btn-rounded mb-2 me-2">
                                     <i class="mdi mdi-plus mr-1"></i> Add Distributor
                                 </button>
                                 
@@ -22,12 +22,11 @@
                     </div>
                 </div>
                 <div  class="card-body">
-                    <!-- <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;">
+                    <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!distributorList || distributorList.length === 0">
                         <img src="assets/img/not-found.png" width="300px" alt="">
-                        <p class="text-mutes mt-2">No Assigned Card found.</p>
-                    </div> -->
-                    <div  class="row">
-                        <div  class="col-lg-12">
+                        <p class="text-mutes mt-2">No Distributor found.</p>
+                    </div>
+                    <div  class="row" *ngIf="distributorList && distributorList.length > 0">
                             <div class="table-responsive">
                                     <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
                                         <thead>
@@ -60,3 +59,50 @@
         </div>
     </div>
 </div>
+
+<ng-template #addDistrubutorModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Create Distributor</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <form [formGroup]="addDistrubutorForm">
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="mb-3">
+            <label for="distributorName" class="form-label">Name</label>
+            <input type="text" id="distributorName" class="form-control" formControlName="name" placeholder="Enter name">
+            <div *ngIf="addDistrubutorForm.get('name')?.touched && addDistrubutorForm.get('name')?.invalid" class="text-danger">
+                <small *ngIf="addDistrubutorForm.get('name')?.errors?.['required']">Name is required.</small>
+                <small *ngIf="addDistrubutorForm.get('name')?.errors?.['minlength']">Name must be at least 3 characters.</small>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="distributorEmail" class="form-label">Email</label>
+            <input type="email" id="distributorEmail" class="form-control" formControlName="email" placeholder="Enter email">
+            <div *ngIf="addDistrubutorForm.get('email')?.touched && addDistrubutorForm.get('email')?.invalid" class="text-danger">
+                <small *ngIf="addDistrubutorForm.get('email')?.errors?.['required']">Email is required.</small>
+                <small *ngIf="addDistrubutorForm.get('email')?.errors?.['email']">Enter a valid email.</small>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="distributorPhone" class="form-label">Phone</label>
+            <input type="text" id="distributorPhone" class="form-control" formControlName="phone" placeholder="Enter phone number">
+            <div *ngIf="addDistrubutorForm.get('phone')?.touched && addDistrubutorForm.get('phone')?.invalid" class="text-danger">
+                <small *ngIf="addDistrubutorForm.get('phone')?.errors?.['required']">Phone is required.</small>
+                <small *ngIf="addDistrubutorForm.get('phone')?.errors?.['pattern']">Enter a valid 10-digit phone number.</small>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+    <button type="submit" class="btn btn-primary waves-effect waves-light" [disabled]="addDistrubutorForm.invalid" (click)="createDistrubutor()" >Create</button>
+  </div>
+</form>
+
+</ng-template>

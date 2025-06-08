@@ -66,7 +66,7 @@
                                            
                                           </td>
                                           <td>{{ user.user_id }}</td>
-                                          <td>{{ user.parent_id?.user_id || '-' }}</td>
+                                          <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
                                           <td>{{ user.direct_id?.user_id || '-' }}</td>
                                           <td>{{ user.indirect_id?.user_id || '-' }}</td>
                                           <td>{{ user.account_number || '-' }}</td>

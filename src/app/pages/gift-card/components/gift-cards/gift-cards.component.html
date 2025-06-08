@@ -2,107 +2,53 @@
     <app-page-title title="Gift Card" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
     <div class="row" >
-        <div class="col-lg-4">
-            <div class="ng-star-inserted">
-                <div class="card text-center">
-                    <div class="card-body mb-0">
-                        <img src="assets/img/gift-card.png" alt="Header Avatar" width="150">
-                        <div class="mt-2">
-                            <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark"> Lorem Ipsum</a>
-                            </h5>
-                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-top mb-0">
-                        <div class="contact-links d-flex font-size-20">
-                            <div class="flex-fill">
-                                <a href="javascript: void(0);" tooltip="Message"><i class="bx bx-edit"></i> </a>
+
+        <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!giftList || giftList.length === 0">
+            <img src="assets/img/not-found.png" width="300px" alt="">
+            <p class="text-mutes mt-2">No Gifts found.</p>
+            <button class="btn btn-primary" routerLink="/gift-card-management/add" >Add Gift Card</button>
+        </div>
+
+        <ng-container *ngFor="let gift of giftList" >
+            <div class="col-lg-4">
+                <div class="ng-star-inserted">
+                    <div class="card text-center">
+                        <div class="card-body mb-0">
+                            <img src="{{gift.gift_image || 'assets/img/gift-card.png'}}" alt="Header Avatar" width="150">
+                            <div class="mt-2">
+                                <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark"> {{gift.gift_name}}</a>
+                                </h5>
+                                <p class="text-muted">{{gift.description}}</p>
                             </div>
-                            <div class="flex-fill" (click)="deleteGiftCard('id')">
-                                <a href="javascript: void(0);" tooltip="Projects"><i class="bx bxs-trash"></i></a>
+                        </div>
+                        <div class="card-footer bg-transparent border-top mb-0">
+                            <div class="contact-links d-flex font-size-20">
+                                <div class="flex-fill"  (click)="editGiftCard(gift.gift_id)">
+                                    <a href="javascript: void(0);" tooltip="Message"><i class="bx bx-edit"></i> </a>
+                                </div>
+                                <div class="flex-fill" (click)="deleteGiftCard(gift._id)">
+                                    <a href="javascript: void(0);" tooltip="Projects"><i class="bx bxs-trash"></i></a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </ng-container>
 
-        <div class="col-lg-4">
-            <div class="ng-star-inserted">
-                <div class="card text-center">
-                    <div class="card-body mb-0">
-                        <img src="assets/img/gift-card.png" alt="Header Avatar" width="150">
-                        <div class="mt-2">
-                            <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark"> Lorem Ipsum</a>
-                            </h5>
-                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-top mb-0">
-                        <div class="contact-links d-flex font-size-20">
-                            <div class="flex-fill">
-                                <a href="javascript: void(0);" tooltip="Message"><i class="bx bx-edit"></i> </a>
-                            </div>
-                            <div class="flex-fill" (click)="deleteGiftCard('id')">
-                                <a href="javascript: void(0);" tooltip="Projects"><i class="bx bxs-trash"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="row justify-content-md-between align-items-md-center mt-2"  *ngIf="giftList.length > 10">
+            <div class="col-sm-12 col-md-5">
+            <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                {{ findPageShowing() }} of {{ total }}
+                entries
+            </div>
+            </div>
+            <div class="col-sm-12 col-md-5">
+            <div class="text-md-right float-md-end pagination-rounded">
+                <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)"></ngb-pagination>
+            </div>
             </div>
         </div>
-
-
-        <div class="col-lg-4">
-            <div class="ng-star-inserted">
-                <div class="card text-center">
-                    <div class="card-body mb-0">
-                        <img src="assets/img/gift-card.png" alt="Header Avatar" width="150">
-                        <div class="mt-2">
-                            <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark"> Lorem Ipsum</a>
-                            </h5>
-                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-top mb-0">
-                        <div class="contact-links d-flex font-size-20">
-                            <div class="flex-fill">
-                                <a href="javascript: void(0);" tooltip="Message"><i class="bx bx-edit"></i> </a>
-                            </div>
-                            <div class="flex-fill" (click)="deleteGiftCard('id')">
-                                <a href="javascript: void(0);" tooltip="Projects"><i class="bx bxs-trash"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="ng-star-inserted">
-                <div class="card text-center">
-                    <div class="card-body mb-0">
-                        <img src="assets/img/gift-card.png" alt="Header Avatar" width="150">
-                        <div class="mt-2">
-                            <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark"> Lorem Ipsum</a>
-                            </h5>
-                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-top mb-0">
-                        <div class="contact-links d-flex font-size-20">
-                            <div class="flex-fill">
-                                <a href="javascript: void(0);" tooltip="Message"><i class="bx bx-edit"></i> </a>
-                            </div>
-                            <div class="flex-fill" (click)="deleteGiftCard('id')">
-                                <a href="javascript: void(0);" tooltip="Projects"><i class="bx bxs-trash"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        
 
 </div>

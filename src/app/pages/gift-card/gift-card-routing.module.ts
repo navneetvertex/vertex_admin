@@ -7,6 +7,7 @@ import { GiftCardsComponent } from './components/gift-cards/gift-cards.component
 
 const routes: Routes = [
   { path: 'add', component: AddGiftCardComponent },
+  { path: 'edit', component: AddGiftCardComponent },
   { path: 'list', component: GiftCardsComponent },
   { path: 'distributor', component: DistributorComponent },
   { path: 'receive', component: ReceiveGiftCardsComponent },

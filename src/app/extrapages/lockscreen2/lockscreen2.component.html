@@ -13,11 +13,11 @@
                                     <div class="col-lg-7">
                                         <div class="text-center">
 
-                                            <h4 class="mb-3"><i
+                                            <!-- <h4 class="mb-3"><i
                                                     class="bx bxs-quote-alt-left text-primary h1 align-middle me-3"></i><span
-                                                    class="text-primary">5k</span>+ Satisfied clients</h4>
+                                                    class="text-primary">5k</span>+ Satisfied clients</h4> -->
 
-                                            <div dir="ltr">
+                                            <!-- <div dir="ltr">
                                                 <owl-carousel-o class="owl-theme auth-review-carousel"
                                                     [options]="carouselOption">
                                                     <ng-template carouselSlide>
@@ -60,7 +60,7 @@
                                                         </div>
                                                     </ng-template>
                                                 </owl-carousel-o>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -78,8 +78,8 @@
                         <div class="d-flex flex-column h-100">
                             <div class="mb-4 mb-md-5">
                                 <a routerLink="/" class="d-block auth-logo">
-                                    <img src="assets/images/logo-dark.png" alt="" height="18" class="auth-logo-dark">
-                                    <img src="assets/images/logo-light.png" alt="" height="18" class="auth-logo-light">
+                                    <img src="assets/images/logo-dark.png" alt="" height="100" class="auth-logo-dark">
+                                    <img src="assets/images/logo-tr.png" alt="" height="100" class="auth-logo-light">
                                 </a>
                             </div>
                             <div class="my-auto">
@@ -90,36 +90,37 @@
                                 </div>
 
                                 <div class="mt-4">
-                                    <form class="form-horizontal">
+                                    <form class="form-horizontal" [formGroup]="passwordFormGroup" >
 
                                         <div class="user-thumb text-center mb-4">
-                                            <img src="assets/images/users/avatar-1.jpg"
+                                            <img src="assets/images/users/user_placeholder.png"
                                                 class="rounded-circle img-thumbnail avatar-md" alt="thumbnail">
-                                            <h5 class="font-size-15 mt-3">Maria Laird</h5>
+                                            <h5 class="font-size-15 mt-3">{{name}}</h5>
                                         </div>
 
 
                                         <div class="mb-3">
                                             <label for="userpassword">Password</label>
-                                            <input type="password" class="form-control" id="userpassword"
+                                            <input type="password" formControlName="password" class="form-control" id="userpassword"
                                                 placeholder="Enter password">
                                         </div>
 
                                         <div class="text-end">
-                                            <button class="btn btn-primary w-md waves-effect waves-light"
-                                                type="submit">Unlock</button>
+                                            <button (click)="onSignIn()" class="btn btn-primary w-md waves-effect waves-light"
+                                                type="button">Unlock</button>
                                         </div>
                                     </form>
                                     <div class="mt-5 text-center">
-                                        <p>Not you ? return <a routerLink="/account/login-2"
+                                        <p>Not you ? return <a routerLink="/account/login" 
                                                 class="fw-medium text-primary"> Sign In </a> </p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mt-4 mt-md-5 text-center">
-                                <p class="mb-0">©{{year}}Skote. Crafted with <i class="mdi mdi-heart text-danger"></i>
-                                    by Themesbrand</p>
+                                <p class="mb-0">©
+                                    {{year}} Vertex. Crafted with <i class="mdi mdi-heart text-danger"></i> by
+                                    Piyush Sahay</p>
                             </div>
                         </div>
                     </div>

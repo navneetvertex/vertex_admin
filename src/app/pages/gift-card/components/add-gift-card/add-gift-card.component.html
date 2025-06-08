@@ -1,11 +1,11 @@
 <div class="container-fluid">
-    <app-page-title title="Add Gift Card" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <app-page-title title="Gift Card" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
     <div class="row">
         <div class="col-lg-9">
             <div class="card">
                 <div class="card-body">
-                    <form [formGroup]="addGiftFormGroup">
+                    <form *ngIf="!this.id" [formGroup]="addGiftFormGroup">
                         <div class="row">
                             <div class="col-12">
 
@@ -52,6 +52,16 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label>Profile Image <span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control" (change)="onFileSelected($event, 'gift_image')" [attr.required]="true" />
+                                        <div *ngIf="addGiftFormGroup.get('gift_image')?.touched && addGiftFormGroup.get('gift_image')?.invalid" class="text-danger">
+                                            <small *ngIf="addGiftFormGroup.get('gift_image')?.errors?.['required']">Profile image is required.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Status -->
                                 <div class="mb-3">
                                     <label for="status_" class="form-label">Status</label>
@@ -67,8 +77,87 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary"
+                                <button type="submit" class="btn btn-primary" (click)="onSubmit()"
                                     [disabled]="addGiftFormGroup.invalid">Submit</button>
+
+                            </div>
+                        </div>
+                    </form>
+
+                    <form *ngIf="this.id" [formGroup]="editGiftFormGroup">
+                        <div class="row">
+                            <div class="col-12">
+
+                                <!-- Gift Name -->
+                                <div class="mb-3">
+                                    <label for="giftName" class="form-label">Gift Name</label>
+                                    <input type="text" id="giftName" formControlName="gift_name" class="form-control"
+                                        placeholder="Gift Name">
+                                    <div *ngIf="editGiftFormGroup.get('gift_name')?.touched && editGiftFormGroup.get('gift_name')?.invalid"
+                                        class="text-danger">
+                                        <small *ngIf="editGiftFormGroup.get('gift_name')?.errors?.['required']">Gift name
+                                            is required.</small>
+                                        <small *ngIf="editGiftFormGroup.get('gift_name')?.errors?.['maxlength']">Max 100
+                                            characters allowed.</small>
+                                    </div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea id="description" formControlName="description" class="form-control"
+                                        rows="4" placeholder="Enter description"></textarea>
+                                    <div *ngIf="editGiftFormGroup.get('description')?.touched && editGiftFormGroup.get('description')?.invalid"
+                                        class="text-danger">
+                                        <small
+                                            *ngIf="editGiftFormGroup.get('description')?.errors?.['required']">Description
+                                            is required.</small>
+                                        <small *ngIf="editGiftFormGroup.get('description')?.errors?.['maxlength']">Max
+                                            500 characters allowed.</small>
+                                    </div>
+                                </div>
+
+                                <!-- Quantity -->
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Available Quantity</label>
+                                    <input type="number" id="quantity" formControlName="quantity" class="form-control"
+                                        placeholder="Available Quantity">
+                                    <div *ngIf="editGiftFormGroup.get('quantity')?.touched && editGiftFormGroup.get('quantity')?.invalid"
+                                        class="text-danger">
+                                        <small *ngIf="editGiftFormGroup.get('quantity')?.errors?.['required']">Quantity
+                                            is required.</small>
+                                        <small *ngIf="editGiftFormGroup.get('quantity')?.errors?.['min']">Minimum
+                                            quantity is 1.</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label>Profile Image <span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control" (change)="onFileSelected($event, 'gift_image')" [attr.required]="true" />
+                                        <div *ngIf="editGiftFormGroup.get('gift_image')?.touched && editGiftFormGroup.get('gift_image')?.invalid" class="text-danger">
+                                            <small *ngIf="editGiftFormGroup.get('gift_image')?.errors?.['required']">Profile image is required.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="mb-3">
+                                    <label for="status_" class="form-label">Status</label>
+                                    <select id="status_" formControlName="status" class="form-select">
+                                        <option value="" disabled selected>Select Status</option>
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                    <div *ngIf="editGiftFormGroup.get('status')?.touched && editGiftFormGroup.get('status')?.invalid"
+                                        class="text-danger">
+                                        <small *ngIf="editGiftFormGroup.get('status')?.errors?.['required']">Status is
+                                            required.</small>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" (click)="onEdit()"
+                                    [disabled]="editGiftFormGroup.invalid">Submit</button>
 
                             </div>
                         </div>
@@ -78,15 +167,32 @@
             </div>
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-3" *ngIf="!this.id">
             <div class="ng-star-inserted">
                 <div class="card text-center">
                     <div class="card-body">
-                        <img src="assets/img/gift-card.png" alt="Header Avatar" width="150">
+                        
+                        <img src="{{addGiftFormGroup.get('gift_image')?.value || 'assets/img/gift-card.png'}}" alt="Header Avatar" width="150">
                         <div class="mt-2">
                             <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark"> {{addGiftFormGroup.get('gift_name')?.value  === "" ? 'Gift Name' : addGiftFormGroup.get('gift_name')?.value}}</a>
                             </h5>
                             <p class="text-muted">{{addGiftFormGroup.get('description')?.value  === "" ? 'Gift Description' : addGiftFormGroup.get('description')?.value}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3" *ngIf="this.id">
+            <div class="ng-star-inserted">
+                <div class="card text-center">
+                    <div class="card-body">
+                        
+                        <img src="{{editGiftFormGroup.get('gift_image')?.value || 'assets/img/gift-card.png'}}" alt="Header Avatar" width="150">
+                        <div class="mt-2">
+                            <h5 class="font-size-15 mb-1"><a href="javascript: void(0);" class="text-dark"> {{editGiftFormGroup.get('gift_name')?.value  === "" ? 'Gift Name' : editGiftFormGroup.get('gift_name')?.value}}</a>
+                            </h5>
+                            <p class="text-muted">{{editGiftFormGroup.get('description')?.value  === "" ? 'Gift Description' : editGiftFormGroup.get('description')?.value}}</p>
                         </div>
                     </div>
                 </div>

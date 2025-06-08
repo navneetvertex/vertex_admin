@@ -41,7 +41,7 @@ const routes: Routes = [
         component: LockscreenComponent
     },
     {
-        path: 'lock-screen-2',
+        path: 'lock-screen',
         component: Lockscreen2Component
     },
     {

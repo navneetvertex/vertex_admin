@@ -8,6 +8,9 @@ import { DistributorComponent } from './components/distributor/distributor.compo
 import { ReceiveGiftCardsComponent } from './components/receive-gift-cards/receive-gift-cards.component';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ImageCropperComponent } from './components/add-gift-card/image-cropper/image-cropper.component';
+import { ImageCropperModule } from 'ngx-image-cropper';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -15,11 +18,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     AddGiftCardComponent,
     GiftCardsComponent,
     DistributorComponent,
-    ReceiveGiftCardsComponent
+    ReceiveGiftCardsComponent,
+    ImageCropperComponent
   ],
   imports: [
     CommonModule,
     UIModule,
+    NgbPaginationModule,
+    ImageCropperModule,
     ReactiveFormsModule,
     GiftCardRoutingModule
   ]
