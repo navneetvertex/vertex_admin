@@ -78,8 +78,8 @@ class Login2Component {
         document.body.classList.add('auth-body-bg');
         this.element = document.documentElement;
         this.loginForm = this.formBuilder.group({
-            email: ['admin@vertex.com', [_angular_forms__WEBPACK_IMPORTED_MODULE_3__.Validators.required, _angular_forms__WEBPACK_IMPORTED_MODULE_3__.Validators.email]],
-            password: ['Admin@1234', [_angular_forms__WEBPACK_IMPORTED_MODULE_3__.Validators.required]],
+            email: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_3__.Validators.required, _angular_forms__WEBPACK_IMPORTED_MODULE_3__.Validators.email]],
+            password: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_3__.Validators.required]],
         });
     }
     get f() { return this.loginForm.controls; }

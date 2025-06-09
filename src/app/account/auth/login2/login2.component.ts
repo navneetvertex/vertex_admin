@@ -32,8 +32,8 @@ export class Login2Component implements OnInit {
     document.body.classList.add('auth-body-bg')
     this.element = document.documentElement;
     this.loginForm = this.formBuilder.group({
-      email: ['admin@vertex.com', [Validators.required, Validators.email]],
-      password: ['Admin@1234', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
     });
   }
 
