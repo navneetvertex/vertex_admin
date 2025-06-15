@@ -43,7 +43,6 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     FormsModule, 
     ReactiveFormsModule ,
     NgbTooltipModule,
-    NgbPaginationModule,
     NgbNavModule,
     ImageCropperModule,
     NgbPaginationModule,
