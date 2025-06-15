@@ -29,4 +29,20 @@ getUserFundRequests(page: number = 0, limit: number = 10, queryParams: any) {
   return this.http.get(`${environment.api_url}credit-cards/getUserFundRequests?page=${page}&limit=${limit}&${queryParams}`);
 }
 
+approveUserFundRequest(id: string) {
+  return this.http.get(`${environment.api_url}credit-cards/approveUserFundRequest/${id}`);
+}
+
+rejectUserFundRequest(id: string) {
+  return this.http.get(`${environment.api_url}credit-cards/rejectUserFundRequest/${id}`);
+}
+
+getAdminCreditCardTransactions(page: number = 0, limit: number = 10, searchText: string = '') {
+  return this.http.get(`${environment.api_url}credit-cards/getAdminCreditCardTransactions?page=${page}&limit=${limit}&search=${searchText}`);
+}
+
+getUserCreditCardTransactions(id: string, page: number = 0, limit: number = 10, searchText: string = '') {
+  return this.http.get(`${environment.api_url}credit-cards/getUserCreditCardTransactions/${id}?page=${page}&limit=${limit}&search=${searchText}`);
+}
+
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { CreditCardService } from 'src/app/core/services/credit-card.service';
 
 @Component({
   selector: 'app-all-transanction',
@@ -8,7 +9,7 @@ import { FormGroup } from '@angular/forms';
 })
 export class AllTransanctionComponent implements OnInit {
 
-  constructor() { }
+  constructor(private creditCardService: CreditCardService) { }
   breadCrumbItems: Array<{}>;
   transactionList: any[] = [];
   total: number = 0;
@@ -17,7 +18,21 @@ export class AllTransanctionComponent implements OnInit {
   searchFormGroup: FormGroup;
 
   ngOnInit(): void {
-    this.breadCrumbItems = [{ label: 'Credit Management' }, { label: 'All transanction', active: true }];
+    this.breadCrumbItems = [{ label: 'Credit Management' }, { label: 'Admin transanctions', active: true }];
+    this.getAdminTransactionList();
+  }
+
+  getAdminTransactionList() {
+    this.creditCardService.getAdminCreditCardTransactions(this.page, this.pageSize).subscribe({
+      next: (response: any) => {
+        this.transactionList = response.data.transactions;
+        console.log('Transaction List:', this.transactionList);
+        this.total = response.data.total;
+      },
+      error: (error) => {
+        console.error('Error fetching transaction list:', error);
+      }
+    });
   }
 
 }

@@ -4,7 +4,7 @@
     <div  class="row">
         <div  class="col-lg-12">
             <div  class="card">
-                
+
                 <div class="card-body border-bottom">
                     <!---->
                     <div class="row g-3">
@@ -32,34 +32,41 @@
                              <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!transactionList || transactionList.length === 0">
                                 <img src="assets/img/not-found.png" width="300px" alt="">
                                 <p class="text-mutes mt-2">No Transanction found.</p>
-                            </div> 
+                            </div>
                             <div class="table-responsive" *ngIf="transactionList && transactionList.length > 0">
                                     <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
                                         <thead>
                                             <tr>
                                                 <th>S.No.</th>
-                                                <th>Date</th>
+                                                <th style="width: 30%;">Date</th>
                                                 <th>User</th>
-                                                <th>Description</th>
-                                                <th>Type</th>
-                                                <th>Added</th>
-                                                <th>Used</th>
-                                                <th>Balance</th>
+                                                <th>Card Number</th>
                                                 <th>Status</th>
+                                                <th>Amount</th>
+                                                <th>Description</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                          <ng-container *ngFor="let transanction of transactionList; let i = index; let page = pageIndex">
                                             <tr>
-                                                <td>1</td>
-                                                <td>2025-01-01</td>
-                                                <td>John Doe (111112)</td>
-                                                <td>Payment for services</td>
-                                                <td><span class="badge bg-success">Deposit</span></td>
-                                                <td>$1000</td>
-                                                <td>$0</td>
-                                                <td>$1000</td>
-                                                <td><span class="badge bg-success">Completed</span></td>
+                                              <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                                <td>
+                                                  Transanction Date :{{ transanction.transaction_date | date: 'medium' }} <br>
+                                                  Received Date :{{ transanction.received_date || 'N/A' | date: 'medium' }}
+                                                </td>
+                                                <td>{{ transanction?.user_details?.name }} ({{ transanction?.user_details?.name }})</td>
+                                                <td>{{ transanction.card_number }}</td>
+
+                                                <td>
+                                                    <span class="badge" [ngClass]="transanction.type === 'expected' ? 'bg-primary' : 'bg-success'">
+                                                        {{ transanction.type | titlecase}}
+                                                    </span>
+                                                </td>
+                                                <td>₹{{ transanction.amount }}</td>
+                                                <td>{{ transanction.description }}</td>
                                             </tr>
+                                          </ng-container>
+
                                         </tbody>
                                     </table>
                         </div>

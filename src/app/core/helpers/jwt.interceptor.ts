@@ -44,14 +44,15 @@ export class JwtInterceptor implements HttpInterceptor {
         } else if (error instanceof HttpErrorResponse && error.status >= 500) {
           this.toast.error('An unexpected error occurred. Please try again later.', 'Server Error');
         } else {
-          this.toast.error(error, 'Error');
+          console.log('Error occurred:', error.error.message || error.message || error);
+          this.toast.error(error.error.message || error.message || error, 'Error');
         }
         return throwError(() => error);
       })
     );
 
-    
-    
+
+
   }
 
   private addToken(request: HttpRequest<any>, token: string) {

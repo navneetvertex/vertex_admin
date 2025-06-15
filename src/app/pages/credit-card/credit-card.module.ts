@@ -22,10 +22,10 @@ import { ReactiveFormsModule } from '@angular/forms';
   ],
   imports: [
     CommonModule,
+    UIModule,
     CreditCardRoutingModule,
     ReactiveFormsModule,
-    NgbPaginationModule,
-    UIModule
+    NgbPaginationModule
   ]
 })
 export class CreditCardModule { }

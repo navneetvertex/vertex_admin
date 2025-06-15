@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CreditCardService } from 'src/app/core/services/credit-card.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-amount',
@@ -19,7 +20,7 @@ export class UserAmountComponent implements OnInit {
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Credit Management' }, { label: 'Request to use amount', active: true }];
-    
+
 
     this.searchFormGroup = new FormGroup({
       search : new FormControl(''),
@@ -43,7 +44,7 @@ export class UserAmountComponent implements OnInit {
   getUserFundRequests() {
     const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
-    
+
     Object.keys(searchParams).forEach(key => {
       if (searchParams[key] !== null && searchParams[key] !== '') {
       queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
@@ -59,6 +60,53 @@ export class UserAmountComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error fetching user fund requests:', error);
+      }
+    });
+  }
+
+  approveFundRequest(id: string) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to approve this fund request?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, approve it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.creditCardService.approveUserFundRequest(id).subscribe({
+          next: (response: any) => {
+            this.getUserFundRequests();
+          },
+          error: (error) => {
+            console.error('Error approving fund request:', error);
+          }
+        });
+      }
+    });
+
+  }
+
+  rejectFundRequest(id: string) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to reject this fund request?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, reject it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.creditCardService.rejectUserFundRequest(id).subscribe({
+          next: (response: any) => {
+            this.getUserFundRequests();
+          },
+          error: (error) => {
+            console.log('Error rejecting fund request:', error);
+          }
+        });
       }
     });
   }

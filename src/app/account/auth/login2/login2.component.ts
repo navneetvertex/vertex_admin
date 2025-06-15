@@ -50,7 +50,6 @@ export class Login2Component implements OnInit {
       .pipe(first())
       .subscribe(
         data => {
-          if(environment.production) this.fullscreen()
           this.router.navigate(['/dashboard']);
         },
         error => {
