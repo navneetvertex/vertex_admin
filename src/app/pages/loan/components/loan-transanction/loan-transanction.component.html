@@ -96,7 +96,7 @@
                                             </div>
                                           </td>
                                           <td>
-                                            <span *ngIf="loan.payment_amount">₹{{loan.payment_amount}}</span>
+                                            <span *ngIf="loan.transaction_type === 'debit'  ">₹{{loan.amount}}</span>
                                           </td>
                                           <td>{{loan.payment_method}}</td>
                                           <td>{{loan.transaction_date | date: 'medium'}}</td>

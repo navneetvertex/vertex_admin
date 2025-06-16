@@ -45,4 +45,20 @@ getUserCreditCardTransactions(id: string, page: number = 0, limit: number = 10, 
   return this.http.get(`${environment.api_url}credit-cards/getUserCreditCardTransactions/${id}?page=${page}&limit=${limit}&search=${searchText}`);
 }
 
+getActiveCreditCardsOfUser(userId: string) {
+  return this.http.get(`${environment.api_url}credit-cards/getActiveCreditCardsOfUser/${userId}`);
+}
+
+getAllFundRequestsOfCreditCard(cardId: string) {
+  return this.http.get(`${environment.api_url}credit-cards/getAllFundRequestsOfCreditCard/${cardId}`);
+}
+
+getTotalPaybleAmount(id: string) {
+  return this.http.get(`${environment.api_url}credit-cards/totalPaybleAmount/${id}`);
+}
+
+payCreditCardFees(payload: any) {
+  return this.http.post(`${environment.api_url}credit-cards/payCreditCardFees`, payload);
+}
+
 }

@@ -2,4 +2,64 @@
 
   <app-page-title title="Pay Loan" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
+  <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <form [formGroup]="paymentFormGroup" class="col-12">
+                          <div class="row">
+                            <div class="mb-3 col-lg-12">
+                                <label for="userId" class="form-label">User ID</label>
+                                <input type="text" class="form-control" id="userId" (blur)="getDetails()" formControlName="id" placeholder="Enter user ID">
+                                <div *ngIf="paymentFormGroup.get('id')?.touched && paymentFormGroup.get('id')?.invalid" class="text-danger">
+                                    <small *ngIf="paymentFormGroup.get('id')?.errors?.['required']">User ID is required.</small>
+                                </div>
+                                <div *ngIf="userDetails" class="mt-1">
+                                    <small><strong>Name:</strong> {{ userDetails.name }}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 col-lg-12">
+                                <label for="cardId" class="form-label">Loan</label>
+                                <ng-select (change)="getTotalPaybleAmount($event)" [items]="loanList" [bindValue]="'_id'" [bindLabel]="'label'" formControlName="loanId"></ng-select>
+                                <div *ngIf="paymentFormGroup.get('loanId')?.touched && paymentFormGroup.get('loanId')?.invalid" class="text-danger">
+                                    <small *ngIf="paymentFormGroup.get('loanId')?.errors?.['required']">Loan ID is required.</small>
+                                </div>
+                            </div>
+                            <div class="mb-3 col-lg-12">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="amount" formControlName="amount" placeholder="Enter amount" min="1">
+                                <div *ngIf="paymentFormGroup.get('amount')?.touched && paymentFormGroup.get('amount')?.invalid" class="text-danger">
+                                    <small *ngIf="paymentFormGroup.get('amount')?.errors?.['required']">Amount is required.</small>
+                                    <small *ngIf="paymentFormGroup.get('amount')?.errors?.['min']">Amount must be at least 1.</small>
+                                </div>
+                                <div *ngIf="userDetails" class="mt-1">
+                                    <small><strong>Total Bill Amount:</strong> ₹{{ totalPayableAmount }}</small>
+                                </div>
+                            </div>
+                            <div class="mb-3 col-lg-6">
+                                <label for="paymentMethod" class="form-label">Payment Method</label>
+                                <select class="form-control" id="paymentMethod" formControlName="paymentMethod" > 
+                                   <option *ngFor="let method of paymentMethods" [ngValue]="method" >{{method}}</option>
+                                </select>
+                                <div *ngIf="paymentFormGroup.get('paymentMethod')?.touched && paymentFormGroup.get('paymentMethod')?.invalid" class="text-danger">
+                                    <small *ngIf="paymentFormGroup.get('paymentMethod')?.errors?.['required']">Payment Method is required.</small>
+                                </div>
+                            </div>
+                             <div class="mb-3 col-lg-6">
+                                <label for="transactionId" class="form-label">Transanction Id</label>
+                                <input type="text" class="form-control" id="transactionId" formControlName="transactionId" placeholder="Enter Transanction Id" min="1">
+                                <div *ngIf="paymentFormGroup.get('transactionId')?.touched && paymentFormGroup.get('transactionId')?.invalid" class="text-danger">
+                                    <small *ngIf="paymentFormGroup.get('transactionId')?.errors?.['required']">Transanction Id is required.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" [disabled]="paymentFormGroup.invalid" (click)="payLoanFees()" >Submit</button>
+                        </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

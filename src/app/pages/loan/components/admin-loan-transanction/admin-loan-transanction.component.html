@@ -57,58 +57,22 @@
                                           <th>Sr No</th>
                                           <th>User</th>
                                           <th>Loan ID</th>
-                                          <th>Transanction Id</th>
-                                          <th>Transanction Type</th>
-                                          <th>Intrest</th>
-                                          <th>Principal</th>
                                           <th>Amount</th>
                                           <th>Date</th>
-                                          <th>Payment Method</th>
+                                          <th>Description</th>
                                         </tr>
                                       </thead>
                                       <tbody>
                                         <tr *ngFor="let loan of transanctionList; let i = index">
                                           <td>{{ (page - 1) * pageSize + i + 1 }}</td>
                                           <td>{{loan.user.name}} ({{loan.user.user_id}})  </td>
-                                          <td>₹{{loan.loan}}</td>
-                                          <td>{{loan.transaction_id}}</td>
+                                          <td>{{loan.loan.loan_id}}</td>
+                                          <td>₹{{loan.amount}}</td>
+                                          <td>{{loan.transaction_date | date: 'medium'}}</td>
                                           <td>
-                                             <a *ngIf="loan.transaction_type" href="javascript: void(0);" class="badge font-size-11 m-1"
-                                              [ngClass]="{
-                                                'badge-soft-primary': loan.transaction_type === 'credit' , 
-                                                'badge-soft-warning': loan.transaction_type === 'debit'
-                                              }">
-                                              {{ loan.transaction_type }}
-                                            </a>
+                                              {{ loan.description }}
                                           </td>
-                                          <td>{{loan.interest_component}}</td>
-                                          <td>{{loan.principal_component}}</td>
-                                          <td>{{loan.amount}}</td>
-                                          <td>{{loan.transaction_date}}</td>
-                                          <td>{{loan.payment_method}}</td>
-                                          <td>
-                                             <a *ngIf="loan.transaction_type" href="javascript: void(0);" class="badge font-size-11 m-1"
-                                              [ngClass]="{
-                                                'badge-soft-primary': loan.transaction_type === 'credit' , 
-                                                'badge-soft-warning': loan.transaction_type === 'debit'
-                                              }">
-                                              {{ loan.transaction_type }}
-                                            </a>
-                                          </td>
-                                          <td>
-                                            <!-- <ul class="list-inline font-size-20 contact-links mb-0" >
-                                              <li *ngIf="loan.status === 'Pending'" (click)="openLoanModal(loanModal, loan)" data-bs-toggle="modal" data-bs-target="#myModal"  class="list-inline-item px-2">
-                                                <a href="javascript:void(0);" tooltip="Message">
-                                                  <i class="bx bx-check-double"></i>
-                                                </a>
-                                              </li>
-                                              <li class="list-inline-item px-2" *ngIf="loan.status !== 'Pending' || loan.status !== 'Rejected'" >
-                                                <a (click)="viewLoan(loanViewModal, loan)" tooltip="Profile">
-                                                  <i class="bx bx-detail"></i>
-                                                </a>
-                                              </li>
-                                            </ul> -->
-                                          </td>
+                                          
                                         </tr>
                                       </tbody>
                                     </table>

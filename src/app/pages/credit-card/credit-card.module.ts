@@ -10,6 +10,7 @@ import { AllTransanctionComponent } from './components/all-transanction/all-tran
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     UIModule,
+    NgSelectModule,
     CreditCardRoutingModule,
     ReactiveFormsModule,
     NgbPaginationModule

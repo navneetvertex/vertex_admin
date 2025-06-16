@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { LoanService } from 'src/app/core/services/loan.service';
 
 @Component({
   selector: 'app-admin-loan-transanction',
@@ -8,7 +9,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class AdminLoanTransanctionComponent implements OnInit {
 
-  constructor() { }
+  constructor(private loanService: LoanService) { }
   breadCrumbItems: Array<{}>;
 
   transanctionList: any[] = []
@@ -20,12 +21,13 @@ export class AdminLoanTransanctionComponent implements OnInit {
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Loans' }, { label: 'Admin Loan Transanction', active: true }];
     this.searchFormGroup = new FormGroup({
-          name: new FormControl(''),
-          transaction_id: new FormControl(''),
-          transaction_type: new FormControl(''),
-          payment_method: new FormControl(''),
-          transaction_date: new FormControl(''),
-        });
+      name: new FormControl(''),
+      transaction_id: new FormControl(''),
+      transaction_type: new FormControl(''),
+      payment_method: new FormControl(''),
+      transaction_date: new FormControl(''),
+    });
+    this.getTransanctionList();
   }
 
   findPageShowing(): number {
@@ -38,6 +40,21 @@ export class AdminLoanTransanctionComponent implements OnInit {
   }
 
   getTransanctionList() {
+    const searchParams = this.searchFormGroup.value;
+    const queryParamArray = [];
+    
+    Object.keys(searchParams).forEach(key => {
+      if (searchParams[key] !== null && searchParams[key] !== '') {
+      queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+      }
+    });
+
+    const queryParams = queryParamArray.join('&');
+
+    this.loanService.getAdminTransaction(this.page, this.pageSize, queryParams).subscribe((data: any) => {
+      this.transanctionList = data.data.adminTransanction
+      this.total = data.data.total
+    })
   }
 
   refresh() {

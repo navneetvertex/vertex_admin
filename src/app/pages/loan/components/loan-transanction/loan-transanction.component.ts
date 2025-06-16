@@ -52,7 +52,7 @@ export class LoanTransanctionComponent implements OnInit {
 
     const queryParams = queryParamArray.join('&');
 
-    this.loanService.getUserTransaction(queryParams).subscribe((data: any) => {
+    this.loanService.getUserTransaction(this.page, this.pageSize, queryParams).subscribe((data: any) => {
       this.transanctionList = data.data.userTransaction
       this.total = data.data.total
     })
@@ -60,6 +60,7 @@ export class LoanTransanctionComponent implements OnInit {
 
   refresh() {
     this.page = 1;
+    this.searchFormGroup.reset();
     this.getTransanctionList();
   }
 

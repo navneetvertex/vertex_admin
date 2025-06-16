@@ -60,26 +60,20 @@ export class CompulsoryDepositComponent implements OnInit {
     });
 
     this.depositFormGroup = new FormGroup({
-      pay_day_rate: new FormControl({value:'', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      required_amount: new FormControl({value:'', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_interval: new FormControl({value:'', disabled: true}, [Validators.required]),
       paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl('', [Validators.required]),
       transanction_id: new FormControl('', [Validators.required]),
       notes: new FormControl(''),
-      status: new FormControl('', [Validators.required])
     });
 
     this.editDepositFormGroup = new FormGroup({
       _id: new FormControl('', [Validators.required]),
-      pay_day_rate: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      required_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_interval: new FormControl('', [Validators.required]),
       paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl('', [Validators.required]),
       transanction_id: new FormControl('', [Validators.required]),
       notes: new FormControl(''),
-      status: new FormControl('', [Validators.required])
     });
 
   }
@@ -106,8 +100,6 @@ export class CompulsoryDepositComponent implements OnInit {
       const payload = this.depositFormGroup.value;
       payload.user = this.user_id;
       payload.c_deposit_setting = this.allDepositLists._id
-      payload.pay_day_rate =  +(this.depositAnnualRate / 365).toFixed(2)
-      payload.required_amount = this.allDepositLists.amount;
       payload.payment_interval = this.allDepositLists.interval;
       this.depositService.createCDeposit(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {

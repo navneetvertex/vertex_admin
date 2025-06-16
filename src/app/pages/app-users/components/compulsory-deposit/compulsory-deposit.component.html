@@ -91,9 +91,8 @@
                         <div class="col-xxl-2 col-lg-6">
                             <select class="form-control select2" >
                                 <option value="">Select Status</option>
-                                 <option value="Active">Active</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Closed">Closed</option>
+                                 <option value="Active">Paid</option>
+                                <option value="Interest">Interest</option>
                             </select>
                         </div>
                         <div class="col-xxl-2 col-lg-4">
@@ -107,7 +106,7 @@
                         </div>
                         <div class="col-xxl-2 col-lg-4">
                             <div id="datepicker1">
-                                <input type="text" class="form-control" placeholder="Select date" data-date-format="dd M, yyyy" data-date-autoclose="true" data-date-container='#datepicker1' data-provide="datepicker">
+                                <input type="date" class="form-control" placeholder="Select date" data-date-format="dd M, yyyy" data-date-autoclose="true" data-date-container='#datepicker1' data-provide="datepicker">
                             </div><!-- input-group -->
                         </div>
                         <div class="col-xxl-2 col-lg-4">
@@ -131,39 +130,33 @@
                                                 <th>Amount</th>
                                                 <th>Payment Method</th>
                                                 <th>Transanction</th>
-                                                <th>Rate / Day</th>
                                                 <th>Payment Interval</th>
-                                                <th>Interest Amount</th>
-                                                <th>Penalty Amount</th>
-                                                <th>Total Amount</th>
+                                                <!-- <th>Penalty Amount</th> -->
                                                 <th>Status</th>
-                                                <th>Action</th>
+                                                <!-- <th>Action</th> -->
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <ng-container *ngFor="let deposit of allDepositLists.allDeposits; let i = index">
                                                 <tr>
                                                     <td>{{ i + 1 }}</td>
-                                                    <td>{{ deposit.created_date | date: 'yyyy-MM-dd' }}</td>
+                                                    <td>{{ deposit.transaction_date | date: 'medium' }}</td>
                                                     <td>₹{{ deposit.paid_amount }}</td>
                                                     <td>{{ deposit.payment_method }}</td>
                                                     <td>{{ deposit.transanction_id }}</td>
-                                                    <td>{{ deposit.pay_day_rate }}%</td>
                                                     <td>{{ deposit.payment_interval }}</td>
-                                                    <td>₹{{ deposit.paid_amount * deposit.pay_day_rate / 100 | number:'1.2-2' }}</td>
-                                                    <td>₹{{ deposit.penalty_amount || 0 }}</td>
-                                                    <td>₹{{ (deposit.paid_amount + (deposit.paid_amount * deposit.pay_day_rate / 100) + (deposit.penalty_amount || 0)) | number:'1.2-2' }}</td>
+                                                    <!-- <td>₹{{ deposit.penalty_amount || 0 }}</td> -->
                                                     <td>
                                                         <span class="badge"
                                                             [ngClass]="{
-                                                                'bg-success': deposit.status === 'Active',
-                                                                'bg-warning': deposit.status === 'Pending',
+                                                                'bg-success': deposit.status === 'Paid',
+                                                                'bg-warning': deposit.status === 'Interest',
                                                                 'bg-danger': deposit.status === 'Closed'
                                                             }">
                                                             {{ deposit.status }}
                                                         </span>
                                                     </td>
-                                                    <td>
+                                                    <!-- <td>
                                                         <ul class="list-unstyled hstack gap-1 mb-0">
                                                             <li data-bs-toggle="tooltip" (click)="editDepositForm(editDepositModal, deposit)" data-bs-placement="top" title="Edit">
                                                                 <a href="javascript:void(0);" class="btn btn-sm btn-soft-danger">
@@ -171,7 +164,7 @@
                                                                 </a>
                                                             </li>
                                                         </ul>
-                                                    </td>
+                                                    </td> -->
                                                 </tr>
                                             </ng-container>
                                             
@@ -346,28 +339,7 @@
     <form [formGroup]="depositFormGroup">
         <div class="modal-body">
             <div class="row">
-                <div class="mb-3 col-lg-6">
-                    <label for="pay-day-rate" class="col-form-label">Pay Day Rate</label>
-                    <input type="number" class="form-control" id="pay-day-rate" formControlName="pay_day_rate"
-                        placeholder="Pay Day Rate">
-                    <div *ngIf="depositFormGroup.get('pay_day_rate')?.touched && depositFormGroup.get('pay_day_rate')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="depositFormGroup.get('pay_day_rate')?.errors?.['required']">Required</small>
-                        <small *ngIf="depositFormGroup.get('pay_day_rate')?.errors?.['pattern']">Invalid rate</small>
-                    </div>
-                </div>
-
-                <div class="mb-3 col-lg-6">
-                    <label for="required-amount" class="col-form-label">Required Amount</label>
-                    <input type="number" class="form-control" id="required-amount" formControlName="required_amount"
-                        placeholder="Required Amount">
-                    <div *ngIf="depositFormGroup.get('required_amount')?.touched && depositFormGroup.get('required_amount')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="depositFormGroup.get('required_amount')?.errors?.['required']">Required</small>
-                        <small *ngIf="depositFormGroup.get('required_amount')?.errors?.['pattern']">Invalid
-                            amount</small>
-                    </div>
-                </div>
+                
 
                 <div class="mb-3 col-lg-6">
                     <label for="payment-interval" class="col-form-label">Payment Interval</label>
@@ -425,19 +397,7 @@
                         placeholder="Notes"></textarea>
                 </div>
 
-                <div class="mb-3 col-lg-6">
-                    <label for="status_" class="col-form-label">Status</label>
-                    <select class="form-control" id="status_" formControlName="status">
-                        <option value="" disabled>Select Status</option>
-                        <option value="Active">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Closed">Closed</option>
-                    </select>
-                    <div *ngIf="depositFormGroup.get('status')?.touched && depositFormGroup.get('status')?.invalid"
-                        class="text-danger">
-                        <small>Required</small>
-                    </div>
-                </div>
+                
             </div>
         </div>
 
@@ -461,28 +421,7 @@
     <form [formGroup]="editDepositFormGroup">
         <div class="modal-body">
             <div class="row">
-                <div class="mb-3 col-lg-6">
-                    <label for="pay-day-rate" class="col-form-label">Pay Day Rate</label>
-                    <input type="number" class="form-control" id="pay-day-rate" formControlName="pay_day_rate"
-                        placeholder="Pay Day Rate">
-                    <div *ngIf="editDepositFormGroup.get('pay_day_rate')?.touched && editDepositFormGroup.get('pay_day_rate')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editDepositFormGroup.get('pay_day_rate')?.errors?.['required']">Required</small>
-                        <small *ngIf="editDepositFormGroup.get('pay_day_rate')?.errors?.['pattern']">Invalid rate</small>
-                    </div>
-                </div>
-
-                <div class="mb-3 col-lg-6">
-                    <label for="required-amount" class="col-form-label">Required Amount</label>
-                    <input type="number" class="form-control" id="required-amount" formControlName="required_amount"
-                        placeholder="Required Amount">
-                    <div *ngIf="editDepositFormGroup.get('required_amount')?.touched && editDepositFormGroup.get('required_amount')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editDepositFormGroup.get('required_amount')?.errors?.['required']">Required</small>
-                        <small *ngIf="editDepositFormGroup.get('required_amount')?.errors?.['pattern']">Invalid
-                            amount</small>
-                    </div>
-                </div>
+                
 
                 <div class="mb-3 col-lg-6">
                     <label for="payment-interval" class="col-form-label">Payment Interval</label>
@@ -540,19 +479,7 @@
                         placeholder="Notes"></textarea>
                 </div>
 
-                <div class="mb-3 col-lg-6">
-                    <label for="status_" class="col-form-label">Status</label>
-                    <select class="form-control" id="status_" formControlName="status">
-                        <option value="" disabled>Select Status</option>
-                        <option value="Active">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Closed">Closed</option>
-                    </select>
-                    <div *ngIf="editDepositFormGroup.get('status')?.touched && editDepositFormGroup.get('status')?.invalid"
-                        class="text-danger">
-                        <small>Required</small>
-                    </div>
-                </div>
+                
             </div>
         </div>
 
