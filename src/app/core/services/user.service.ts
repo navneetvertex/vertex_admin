@@ -62,5 +62,9 @@ export class UserProfileService {
         return this.http.put(`${environment.api_url}users/address/${addressId}`, addressData);
     }
 
+    getUserDashboard(userId: string) {
+        return this.http.get(`${environment.api_url}dashboard/user?userId=${userId}`);
+    }
+
     
 }

@@ -33,12 +33,12 @@
 
                 <div class="row">
                   <div class="col-6">
-                    <h5 class="font-size-15">{{userDetails?.kyc?.aadhar || '-'}}</h5>
-                    <p class="text-muted mb-0">Aadhar <i  *ngIf="userDetails?.kyc?.aadhar_front" class="bx bx-info-circle" (mouseover)="openAadhar()" ></i> </p>
+                    <h5 class="font-size-15">{{kyc?.aadhar || '-'}}</h5>
+                    <p class="text-muted mb-0">Aadhar <i  *ngIf="kyc?.aadhar_front" class="bx bx-info-circle" (mouseover)="openAadhar()" ></i> </p>
                   </div>
                   <div class="col-6">
                     <h5 class="font-size-15">{{userDetails?.kyc?.pan || '-'}}</h5>
-                    <p class="text-muted mb-0">PAN <i *ngIf="userDetails?.kyc?.pan_image" class="bx bx-info-circle"  (mouseover)="openPan()" ></i></p>
+                    <p class="text-muted mb-0">PAN <i *ngIf="kyc?.pan_image" class="bx bx-info-circle"  (mouseover)="openPan()" ></i></p>
                   </div>
                 </div>
                 <div class="mt-4">
@@ -76,7 +76,7 @@
                 </tr>
                 <tr>
                   <th scope="row">DOB :</th>
-                  <td>{{userDetails?.date_of_birth| date}}</td>
+                  <td>{{userDetails?.date_of_birth | date}}</td>
                 </tr>
                  <tr>
                   <th scope="row">Registered On :</th>
@@ -104,10 +104,10 @@
                   <td>
                     <a href="javascript: void(0);" class="badge font-size-11 m-1"
                                               [ngClass]="{
-                                                'badge-soft-primary': userDetails.kyc_status === 'Approved',
-                                                'badge-soft-warning': userDetails.kyc_status === 'Requested',
-                                                'badge-soft-danger': userDetails.kyc_status === 'Rejected'
-                                              }"> {{ userDetails.kyc_status }}</a> <i *ngIf="userDetails.kyc_status" class="mdi mdi-cursor-default-click"></i>
+                                                'badge-soft-primary': kyc.status === 'Approved',
+                                                'badge-soft-warning': kyc.status === 'Requested',
+                                                'badge-soft-danger': kyc.status === 'Rejected'
+                                              }"> {{ kyc.status }}</a> <i *ngIf="kyc.status" class="mdi mdi-cursor-default-click"></i>
                   </td>
                 </tr>
                 <tr>
@@ -135,27 +135,31 @@
                 <tr>
                   <th scope="row">Loan  :</th>
                   <td>
-                    <a  href="javascript: void(0);" class="badge font-size-11 m-1"
-                                              [ngClass]="{
-                                                'badge-soft-primary': userDetails.loan_status === 'Approved',
-                                                'badge-soft-warning': userDetails.loan_status === 'Requested',
-                                                'badge-soft-danger': userDetails.loan_status === 'Rejected',
-                                                'badge-soft-secondary': userDetails.loan_status === 'Closed',
-                                                'badge-soft-success': userDetails.loan_status === 'Disbursed'
-                                              }">
-                                              Loan {{ userDetails.loan_status }}
-                                            </a> <i *ngIf="userDetails.loan_status" class="mdi mdi-cursor-default-click"></i>
+                    <ng-container *ngFor="let loan of loans">
+                      <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                                                [ngClass]="{
+                                                  'badge-soft-primary': loan.status === 'Approved',
+                                                  'badge-soft-warning': loan.status === 'Requested',
+                                                  'badge-soft-danger': loan.status === 'Rejected',
+                                                  'badge-soft-secondary': loan.status === 'Closed',
+                                                  'badge-soft-success': loan.status=== 'Disbursed'
+                                                }">
+                                                {{loan.loan_id}}( {{ loan.status }})
+                                              </a> <i *ngIf="loan.status" class="mdi mdi-cursor-default-click"></i>
+                    </ng-container>
                     </td>
                   </tr>
                   <tr>
                     <th scope="row">Card</th>
                     <td>
-                      <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                      <ng-container *ngFor="let credit of creditCards">
+                        <a  href="javascript: void(0);" class="badge font-size-11 m-1"
                                               [ngClass]="{
-                                                'badge-soft-primary': userDetails.card_status === 'Approved',
-                                                'badge-soft-warning': userDetails.card_status === 'Requested',
-                                                'badge-soft-danger': userDetails.card_status === 'Rejected'
-                                              }">  {{ userDetails.card_status }} </a> <i *ngIf="userDetails.card_status" class="mdi mdi-cursor-default-click"></i>
+                                                'badge-soft-primary': credit.status === 'Approved',
+                                                'badge-soft-warning': credit.status === 'Requested',
+                                                'badge-soft-danger': credit.status === 'Rejected'
+                                              }"> {{credit.card_number}}({{ credit.status }}) </a> <i *ngIf="credit.status" class="mdi mdi-cursor-default-click"></i>
+                      </ng-container>
                     </td>
                   </tr>
               </tbody>
@@ -177,11 +181,17 @@
       <div class="card">
         <div class="card-body">
           <h4 class="card-title mb-4">Revenue</h4>
-          <apx-chart dir="ltr" class="apex-charts" [series]="revenueBarChart.series" [chart]="revenueBarChart.chart"
+          <apx-chart *ngIf="revenueBarChart && revenueBarChart.chart && revenueBarChart.series" dir="ltr" class="apex-charts" [series]="revenueBarChart.series" [chart]="revenueBarChart.chart"
             [xaxis]="revenueBarChart.xaxis" [colors]="revenueBarChart.colors" [yaxis]="revenueBarChart.yaxis"
             [dataLabels]="revenueBarChart.dataLabels" [stroke]="revenueBarChart.stroke"
             [plotOptions]="revenueBarChart.plotOptions" [fill]="revenueBarChart.fill">
           </apx-chart>
+          <!-- <apx-chart #chart dir="ltr" class="apex-charts" [chart]="revenueBarChart.chart"
+                [series]="revenueBarChart.series" [legend]="revenueBarChart.legend"
+                [colors]="revenueBarChart.colors" [fill]="revenueBarChart.fill"
+                [dataLabels]="revenueBarChart.dataLabels" [xaxis]="revenueBarChart.xaxis"
+                [plotOptions]="revenueBarChart.plotOptions">
+            </apx-chart> -->
         </div>
       </div>
 
