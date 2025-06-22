@@ -31,16 +31,41 @@ export class RecurringDepositComponent implements OnInit {
   depositFormGroup: FormGroup
   editDepositFormGroup: FormGroup
   rdSettlementFormGroup: FormGroup;
+
+  searchFormGroup: FormGroup ;
   user_id: string = ''; 
   profile: any = null;
 
   depositSettingsList: any = [];
   depositList: any = [];
   selectedSetting: any = null;
+  outstandingAmount: any = null;
+  depositSummary: any = null;
 
   total: number = 0;
   page: number = 1;
   pageSize: number = 10;
+
+  outstanding(user: string) {
+    this.depositService.findOutstandingDepositsOfRecurring(user).subscribe((res: any) => {
+      if (res && res.status === 'success') {
+        const outstandingDeposits = res.data || [];
+        this.outstandingAmount = outstandingDeposits;
+        this.depositSummary = res.data.depositSummary
+        if (outstandingDeposits !== 0) {
+          this.depositFormGroup.patchValue({paid_amount: this.outstandingAmount.outstanding });
+          this.rdSettlementFormGroup.patchValue({total_principal: this.depositSummary.paid, total_penalty: this.depositSummary.penalty, total_interest: this.depositSummary.interest, total_net: this.depositSummary.total });
+          this.toast.info(`Outstanding compulsory deposits found: ₹${outstandingDeposits.outstanding}`);
+        } else {
+          this.toast.success('No outstanding compulsory deposits found.');
+        }
+      } else {
+        this.toast.error('Failed to fetch outstanding amount', 'Error');
+      }
+    }, error => {
+      console.error('Error fetching outstanding amount:', error);
+    });
+  }
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Member' }, { label: 'Recurring Deposit', active: true }];
@@ -63,36 +88,38 @@ export class RecurringDepositComponent implements OnInit {
     });
 
     this.depositFormGroup = new FormGroup({
-      pay_day_rate: new FormControl({value:'', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      required_amount: new FormControl({value:'', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_interval: new FormControl({value:'', disabled: true}, [Validators.required]),
-      paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      paid_amount: new FormControl({value:'', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl('', [Validators.required]),
       transanction_id: new FormControl('', [Validators.required]),
       notes: new FormControl(''),
-      status: new FormControl('', [Validators.required])
+    });
+
+    this.searchFormGroup = new FormGroup({
+      created_date: new FormControl(''),
+      status: new FormControl(''),
+      payment_method: new FormControl(''),
+      transanction_id: new FormControl(''),
     });
 
     this.editDepositFormGroup = new FormGroup({
       _id: new FormControl('', [Validators.required]),
-      pay_day_rate: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      required_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_interval: new FormControl('', [Validators.required]),
       paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl('', [Validators.required]),
       transanction_id: new FormControl('', [Validators.required]),
       notes: new FormControl(''),
-      status: new FormControl('', [Validators.required])
     });
 
     this.rdSettlementFormGroup = new FormGroup({
       total_principal: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       total_penalty: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      total_interest: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      total_interest: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       total_net: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       settlement_date: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
+    this.outstanding(this.user_id)
   }
 
   getProfile(user_id: string) {
@@ -139,9 +166,9 @@ export class RecurringDepositComponent implements OnInit {
         if(this.depositSettingsList.length > 0) {
           this.getDeposits(this.depositSettingsList[0]._id);
           this.selectedSetting = this.depositSettingsList[0]
-          console.log('Selected Setting:', this.selectedSetting);
           this.editDepositSettings.patchValue(this.depositSettingsList[0])
-          this.depositFormGroup.patchValue({ transanction_id: this.generateUniqueId(),  required_amount: this.depositSettingsList[0].amount, payment_interval: this.depositSettingsList[0].interval, pay_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2), });
+
+          this.depositFormGroup.patchValue({ transanction_id: this.generateUniqueId(),  payment_interval: this.depositSettingsList[0].interval});
         }
       } else {
         this.toast.error('Failed to fetch deposit settings', 'Error');
@@ -152,8 +179,26 @@ export class RecurringDepositComponent implements OnInit {
     });
   }
 
+  reset() {
+    this.searchFormGroup.reset()
+    this.page = 1
+    this.getDepositSettings()
+  }
+
   getDeposits(setting: string) {
-    this.depositService.getRDeposits(setting).subscribe((res: any) => {
+    const searchParams = this.searchFormGroup.value;
+    const queryParamArray = [];
+    
+    Object.keys(searchParams).forEach(key => {
+      if (searchParams[key] !== null && searchParams[key] !== '') {
+      queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+      }
+    });
+
+    const queryParams = queryParamArray.join('&');
+
+
+    this.depositService.getRDeposits(setting,this.page, this.pageSize, queryParams).subscribe((res: any) => {
       if (res && res.status === 'success') {
         this.depositList = res.data.deposits;
         this.total = this.depositList.length;
@@ -190,16 +235,23 @@ export class RecurringDepositComponent implements OnInit {
   addDeposit() {
     if (this.depositFormGroup.valid) {
       const payload = this.depositFormGroup.value;
+
+      if(payload.paid_amount > this.selectedSetting.amount) {
+        this.toast.error('Paid amount must be lower than or equal to the required amount', 'Error');
+        return;
+      }
+      
       payload.user = this.user_id;
       payload.r_deposit_settings = this.selectedSetting._id;
-      payload.pay_day_rate = 0.1; // Assuming this is a fixed value
       payload.required_amount = this.selectedSetting.amount;
       payload.payment_interval = this.selectedSetting.interval;
+      payload.paid_amount = this.selectedSetting.amount
       this.depositService.createRDeposit(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.toast.success('Deposit created successfully');
           this.depositFormGroup.reset();
           this.modalService.dismissAll();
+          this.outstanding(this.user_id);
           this.getDeposits(payload.r_deposit_settings);
         }
       }, error => {

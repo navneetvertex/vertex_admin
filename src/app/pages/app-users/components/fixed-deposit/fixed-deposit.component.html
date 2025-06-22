@@ -1,6 +1,8 @@
 <div class="container-fluid">
     <app-page-title title="Fixed Deposit" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
+    <div role="alert" *ngIf="profile.requested_for_fixed_deposit && depositSettings.length > 0" class="alert alert-warning ng-star-inserted">User have requested for open an Fixed Deposit. </div>
+
     <div  class="row" *ngIf="profile">
         <div  class="col-lg-12">
             <div  class="card">
@@ -13,7 +15,7 @@
                                         class="avatar-md rounded-circle img-thumbnail"></div>
                                 <div  class="flex-grow-1 align-self-center">
                                     <div  class="text-muted">
-                                        <p  class="mb-2">Welcome to Compulsory Deposit</p>
+                                        <p  class="mb-2">Welcome to Fixed Deposit</p>
                                         <h5  class="mb-1">{{profile.name}}</h5>
                                         <p  class="mb-0">{{profile.account_number}}</p>
                                     </div>
@@ -37,15 +39,24 @@
                                     </div>
                                     <div  class="col-4">
                                         <div >
-                                            <p  class="text-muted text-truncate mb-2">Registered On </p>
-                                            <h5  class="mb-0">{{profile.created_date | date}}</h5>
+                                            <p  class="text-muted text-truncate mb-2">Approved On </p>
+                                            <h5  class="mb-0">
+                                                 {{ profile.approved_date ? (profile.approved_date | date) : 'Not Approved' }}
+                                            </h5>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div  class="col-lg-4 d-none d-lg-block">
+                        <div  class="col-lg-4 d-none d-lg-block" *ngIf="profile.requested_for_fixed_deposit">
                             <div  class="clearfix mt-4 mt-lg-0">
+                                <div class="dropdown float-end ms-2"  *ngIf="depositList.length > 0">
+                                    <button type="button" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
+                                        class="btn btn-secondary dropdown-toggle">
+                                        <i class="mdi mdi-account-cash-outline align-middle me-1"></i> Settlement
+                                    </button>
+                                </div>
                                 <div  (click)="openModal(settingModal)" class="dropdown float-end"><button
                                          type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
@@ -53,7 +64,6 @@
                                             class="bx bxs-cog align-middle me-1"></i> Setting </button>
                                 </div>
                             </div>
-                            
                         </div>
                     </div>
                 </div>
@@ -80,7 +90,7 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Principal</p>
-                                    <h5 class="mb-0">₹ 0</h5>
+                                    <h5 class="mb-0">₹{{selectedSetting?.amount}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -97,8 +107,8 @@
                         <div class="card-body">
                             <div class="d-flex flex-wrap">
                                 <div class="me-3">
-                                    <p class="text-muted mb-2">Total Maturity Amount</p>
-                                    <h5 class="mb-0">₹ 0</h5>
+                                    <p class="text-muted mb-2">Maturity Amount</p>
+                                    <h5 class="mb-0">₹{{selectedSetting?.maturity_amount - selectedSetting?.amount}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -115,7 +125,7 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Interest</p>
-                                    <h5 class="mb-0">₹ 0</h5>
+                                    <h5 class="mb-0">{{selectedSetting.annual_rate}}%</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -131,8 +141,8 @@
                         <div class="card-body">
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
-                                    <p class="text-muted mb-2">Total Current Amount</p>
-                                    <h5 class="mb-0">₹ 0</h5>
+                                    <p class="text-muted mb-2">Total Amount</p>
+                                    <h5 class="mb-0">₹{{selectedSetting?.maturity_amount}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -154,12 +164,12 @@
                     <div class="d-flex align-items-center">
                         <h5 class="mb-0 card-title flex-grow-1">Deposit History</h5>
                         <div class="flex-shrink-0 d-flex gap-1">
-                            <a href="javascript:void(0);" class="btn btn-primary" *ngIf="depositSettings.length > 0"  (click)="openModal(addDepositModal)" >Add Deposit</a>
+                            <a href="javascript:void(0);" class="btn btn-primary" *ngIf="depositSettings.length > 0 && depositList.length == 0"  (click)="openModal(addDepositModal)" >Add Deposit</a>
                             <a href="javascript:void(0);" *ngIf="depositList.length !== 0" class="btn btn-light"><i class="mdi mdi-refresh"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="card-body border-bottom" *ngIf="depositList.length !== 0">
+                <!-- <div class="card-body border-bottom" *ngIf="depositList.length !== 0">
                     <div class="row g-3">
                         <div class="col-xxl-4 col-lg-6">
                             <input type="search" class="form-control" id="searchInput" placeholder="Search for Transaction...">
@@ -184,13 +194,13 @@
                         <div class="col-xxl-2 col-lg-4">
                             <div id="datepicker1">
                                 <input type="text" class="form-control" placeholder="Select date" data-date-format="dd M, yyyy" data-date-autoclose="true" data-date-container='#datepicker1' data-provide="datepicker">
-                            </div><!-- input-group -->
+                            </div>
                         </div>
                         <div class="col-xxl-2 col-lg-4">
                             <button type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div  class="card-body">
                     <div  class="row">
                         <div  class="col-lg-12" >
@@ -207,10 +217,8 @@
                                                 <th>Amount</th>
                                                 <th>Payment Method</th>
                                                 <th>Transanction</th>
-                                                <th>Pay Day Rate</th>
-                                                <th>Total Amount</th>
                                                 <th>Status</th>
-                                                <th>Action</th>
+                                                <!-- <th>Action</th> -->
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -221,15 +229,13 @@
                                                     <td>₹{{deposit.tot_paid_amt}}</td>
                                                     <td>{{deposit.payment_method}}</td>
                                                     <td>{{deposit.transaction_id}}</td>
-                                                    <td>{{deposit.per_day_rate}}%</td>
-                                                    <td>₹ 0</td>
-                                                    <td><span class="badge bg-{{deposit.status === 'Active' ? 'success' : deposit.status === 'Pending' ? 'warning' : 'danger'}}">{{deposit.status}}</span></td>
-                                                    <td>
+                                                    <td><span class="badge bg-{{deposit.status === 'Paid' ? 'success' : deposit.status === 'Interest' ? 'warning' : 'danger'}}">{{deposit.status}}</span></td>
+                                                    <!-- <td>
                                                         <ul class="list-unstyled hstack gap-1 mb-0">
                                                             <li data-bs-toggle="tooltip" (click)="editDepositForm(editDepositModal, deposit)"  data-bs-placement="top" title="Edit"><a  href="javascript:void(0);" data-bs-toggle="modal" class="btn btn-sm btn-soft-primary"><i class="mdi mdi-book-edit-outline"></i></a>
                                                             </li>
                                                         </ul>
-                                                    </td>
+                                                    </td> -->
                                                 </tr>
                                             </ng-container>
                                             
@@ -256,7 +262,7 @@
                 <!-- Amount -->
                 <div class="col-md-6 mb-3">
                     <label for="amount" class="form-label">Amount</label>
-                    <input type="number" id="amount" class="form-control" formControlName="amount"
+                    <input type="number" id="amount" class="form-control" formControlName="amount" (blur)="calculateMaturityAmount()"
                         placeholder="Enter amount">
                     <div *ngIf="settingFormGroup.get('amount')?.touched && settingFormGroup.get('amount')?.invalid"
                         class="text-danger">
@@ -269,7 +275,7 @@
                 <!-- Duration -->
                 <div class="col-md-6 mb-3">
                     <label for="duration" class="form-label">Duration</label>
-                    <select type="text" id="duration" class="form-control" formControlName="duration">
+                    <select type="text" id="duration" class="form-control" formControlName="duration"  (blur)="calculateMaturityAmount()">
                         <option value="" disabled selected>Select duration</option>
                         <option value="5">5 Years</option>
                         <option value="6">6 Years</option>
@@ -282,6 +288,22 @@
                         class="text-danger">
                         <small *ngIf="settingFormGroup.get('duration')?.errors?.['required']">Duration is
                             required.</small>
+                    </div>
+                </div>
+
+                <!-- Annual Rate -->
+                <div class="col-md-6 mb-3">
+                    <label for="annualRate" class="form-label">Annual Rate (%)</label>
+                    <input type="number" id="annualRate" class="form-control" formControlName="annual_rate" (blur)="calculateMaturityAmount()"
+                        placeholder="Enter annual rate">
+                    <div *ngIf="settingFormGroup.get('annual_rate')?.touched && settingFormGroup.get('annual_rate')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="settingFormGroup.get('annual_rate')?.errors?.['required']">Annual rate is
+                            required.</small>
+                        <small *ngIf="settingFormGroup.get('annual_rate')?.errors?.['min']">Rate cannot be
+                            negative.</small>
+                        <small *ngIf="settingFormGroup.get('annual_rate')?.errors?.['max']">Rate cannot exceed
+                            100%.</small>
                     </div>
                 </div>
 
@@ -299,21 +321,7 @@
                     </div>
                 </div>
 
-                <!-- Annual Rate -->
-                <div class="col-md-6 mb-3">
-                    <label for="annualRate" class="form-label">Annual Rate (%)</label>
-                    <input type="number" id="annualRate" class="form-control" formControlName="annual_rate"
-                        placeholder="Enter annual rate">
-                    <div *ngIf="settingFormGroup.get('annual_rate')?.touched && settingFormGroup.get('annual_rate')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="settingFormGroup.get('annual_rate')?.errors?.['required']">Annual rate is
-                            required.</small>
-                        <small *ngIf="settingFormGroup.get('annual_rate')?.errors?.['min']">Rate cannot be
-                            negative.</small>
-                        <small *ngIf="settingFormGroup.get('annual_rate')?.errors?.['max']">Rate cannot exceed
-                            100%.</small>
-                    </div>
-                </div>
+                
 
                 <!-- Indirect Referral -->
                 <div class="col-md-6 mb-3">
@@ -481,31 +489,10 @@
     <form [formGroup]="addDepositFormGroup">
         <div class="modal-body">
             <div class="row">
-                <!-- Per Day Rate -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Per Day Rate (%)</label>
-                    <input type="number" class="form-control" formControlName="per_day_rate"
-                        placeholder="Enter per day rate" />
-                    <div *ngIf="addDepositFormGroup.get('per_day_rate')?.invalid && addDepositFormGroup.get('per_day_rate')?.touched"
-                        class="text-danger">
-                        Invalid or required. Up to 4 decimal places allowed.
-                    </div>
-                </div>
-
-                <!-- Required Amount -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Required Amount</label>
-                    <input type="number" class="form-control" formControlName="required_amt"
-                        placeholder="Enter required amount" />
-                    <div *ngIf="addDepositFormGroup.get('required_amt')?.invalid && addDepositFormGroup.get('required_amt')?.touched"
-                        class="text-danger">
-                        Required. Up to 2 decimal places allowed.
-                    </div>
-                </div>
 
                 <!-- Total Paid Amount -->
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Total Paid Amount</label>
+                    <label class="form-label">Paid Amount</label>
                     <input type="number" class="form-control" formControlName="tot_paid_amt"
                         placeholder="Enter total paid amount" />
                     <div *ngIf="addDepositFormGroup.get('tot_paid_amt')?.invalid && addDepositFormGroup.get('tot_paid_amt')?.touched"
@@ -542,20 +529,7 @@
                 </div>
 
                 <!-- Status -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Status</label>
-                    <select class="form-control" formControlName="status">
-                        <option value="" disabled>Select status</option>
-                        <option value="Active">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Closed">Closed</option>
-                    </select>
-                    <div *ngIf="addDepositFormGroup.get('status')?.invalid && addDepositFormGroup.get('status')?.touched"
-                        class="text-danger">
-                        Required.
-                    </div>
-                </div>
-
+                
                 <!-- Notes -->
                 <div class="col-md-12 mb-3">
                     <label class="form-label">Notes</label>

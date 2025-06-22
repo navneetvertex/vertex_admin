@@ -40,7 +40,7 @@ export class FixedDepositComponent implements OnInit {
     this.settingFormGroup = new FormGroup({
       amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       duration: new FormControl('', [Validators.required]),
-      maturity_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
       indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
       direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
@@ -50,7 +50,7 @@ export class FixedDepositComponent implements OnInit {
       _id: new FormControl('', [Validators.required]),
       amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       duration: new FormControl('', [Validators.required]),
-      maturity_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
       indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
       direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
@@ -58,12 +58,11 @@ export class FixedDepositComponent implements OnInit {
 
 
     this.addDepositFormGroup = new FormGroup({
-      per_day_rate: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,4})?$')]),
-      required_amt: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      tot_paid_amt: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      // per_day_rate: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,4})?$')]),
+      // required_amt: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      tot_paid_amt: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl('', [Validators.required]),
       transaction_id: new FormControl('', [Validators.required]),
-      status: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
 
@@ -73,10 +72,23 @@ export class FixedDepositComponent implements OnInit {
       tot_paid_amt: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl({value: '', disabled: true}, [Validators.required]),
       transaction_id: new FormControl({value: '', disabled: true}, [Validators.required]),
-      status: new FormControl('', [Validators.required]),
       _id: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
+  }
+
+  calculateMaturityAmount() {
+    const amount = this.settingFormGroup.get('amount')?.value;
+    const duration = this.settingFormGroup.get('duration')?.value;
+    const annualRate = this.settingFormGroup.get('annual_rate')?.value;
+
+    if (amount && duration && annualRate) {
+      const simpleInterest = (amount * annualRate * duration) / 100;
+      const maturityAmount = amount + simpleInterest;
+      this.settingFormGroup.patchValue({ maturity_amount: maturityAmount.toFixed(2) });
+    } else {
+      this.settingFormGroup.patchValue({ maturity_amount: '' });
+    }
   }
 
   getProfile(user_id: string) {
@@ -102,12 +114,13 @@ export class FixedDepositComponent implements OnInit {
         this.depositSettings = res.data.settings || [];
         if (this.depositSettings.length > 0) {
           this.selectedSetting = this.depositSettings[0];
+          console.log('Selected setting:', this.selectedSetting);
           this.editSettingFormGroup.patchValue(this.selectedSetting);
             this.addDepositFormGroup.patchValue({
-              required_amt: this.selectedSetting.amount,
-              per_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2),
+              tot_paid_amt: this.selectedSetting.amount,
               transaction_id: this.generateUniqueId()
           });
+          
           this.getDeposits(this.selectedSetting._id);
         } else {
           this.selectedSetting = null;
@@ -123,7 +136,13 @@ export class FixedDepositComponent implements OnInit {
 
   saveSetting()  {
     if (this.settingFormGroup.valid) {
-      this.depositService.createFDepositSettings({...this.settingFormGroup.value , user : this.user_id}).subscribe({
+      const payload = this.settingFormGroup.value
+      payload.user = this.user_id;
+      console.log('Payload for creating deposit setting:', payload.amount, payload.annual_rate, Number(payload.duration));
+      const simpleInterest = (payload.amount * payload.annual_rate * Number(payload.duration)) / 100;
+      const maturityAmount = payload.amount + simpleInterest;
+      payload.maturity_amount = parseFloat(maturityAmount.toFixed(2));
+      this.depositService.createFDepositSettings(payload).subscribe({
         next: (res) => {
           this.toast.success('Deposit setting created successfully');
           this.modalService.dismissAll();
@@ -161,10 +180,10 @@ export class FixedDepositComponent implements OnInit {
     this.selectedSetting = selectedSetting
     if (selectedSetting) {
       this.editAddDepositFormGroup.patchValue(selectedSetting)
+      this.editSettingFormGroup.patchValue(this.selectedSetting);
       this.addDepositFormGroup.patchValue({
-        required_amt: this.selectedSetting.amount,
-        per_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2),
-        transaction_id: this.generateUniqueId()
+          tot_paid_amt: this.selectedSetting.amount,
+          transaction_id: this.generateUniqueId()
       });
       this.getDeposits(selectedSetting._id);
     }
@@ -198,7 +217,7 @@ export class FixedDepositComponent implements OnInit {
         ...this.addDepositFormGroup.value,
         f_deposit_setting: this.selectedSetting._id,
         user: this.user_id,
-        required_amt: this.selectedSetting.amount,
+        tot_paid_amt: this.selectedSetting.amount,
         per_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2)
       };
       this.depositService.createFDeposit(payload).subscribe({

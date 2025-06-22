@@ -23,7 +23,8 @@ export class CompulsoryDepositComponent implements OnInit {
   ) { 
     this.user_id = this.route.snapshot.paramMap.get('user') || '';
     this.getProfile(this.user_id);
-    this.getDepositSettings();
+    
+    
   }
 
   user_id: string = '';
@@ -34,7 +35,14 @@ export class CompulsoryDepositComponent implements OnInit {
   editDepositFormGroup: FormGroup 
   listAvialble : boolean = false;
   depositAnnualRate: number = 0;
+
   allDepositLists: any = [];
+  settings: any = {};
+
+  outstandingAmount: any = null;
+  userIsNotActive: boolean = false;
+
+  searchFormGroup: FormGroup;
 
   total: number = 0;
   page: number = 1;
@@ -42,7 +50,25 @@ export class CompulsoryDepositComponent implements OnInit {
   profile: any = {};
   isSettingsAdded: boolean = false;
 
-  
+  outstanding(user_id: string) {
+    this.depositService.findOutstandingDepositsOfCompulsory(user_id).subscribe((res: any) => {
+      console.log('Outstanding Deposits Response:', res);
+      if (res && res.status === 'success') {
+        const outstandingDeposits = res.data || [];
+        this.outstandingAmount = outstandingDeposits;
+        if (outstandingDeposits !== 0) {
+          this.depositFormGroup.patchValue({paid_amount: this.outstandingAmount.outstanding });
+          this.toast.info(`Outstanding compulsory deposits found: ₹${outstandingDeposits.outstanding}`);
+        } else {
+          this.toast.success('No outstanding compulsory deposits found.');
+        }
+      } else {
+        this.toast.error('Failed to fetch outstanding deposits.');
+      }
+    }, (err: any) => {
+      this.userIsNotActive = true;
+    })
+  }
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Member' }, { label: 'Compulsory Deposit', active: true }];
@@ -67,6 +93,13 @@ export class CompulsoryDepositComponent implements OnInit {
       notes: new FormControl(''),
     });
 
+    this.searchFormGroup = new FormGroup({
+      transanction_id: new FormControl(''),
+      status: new FormControl(''),
+      payment_method: new FormControl(''),
+      transaction_date: new FormControl(''),
+    })
+
     this.editDepositFormGroup = new FormGroup({
       _id: new FormControl('', [Validators.required]),
       payment_interval: new FormControl('', [Validators.required]),
@@ -76,6 +109,15 @@ export class CompulsoryDepositComponent implements OnInit {
       notes: new FormControl(''),
     });
 
+    this.getDepositSettings();
+    this.outstanding(this.user_id);
+
+  }
+
+  reset() {
+    this.searchFormGroup.reset();
+    this.page = 1;
+    this.getDepositSettings();
   }
 
   getProfile(user_id: string) {
@@ -106,6 +148,7 @@ export class CompulsoryDepositComponent implements OnInit {
           this.toast.success('Deposit created successfully');
           this.depositFormGroup.reset();
           this.modalService.dismissAll();
+          this.outstanding(this.user_id);
           this.getDepositSettings();
         }
       }, (err: any) => {
@@ -129,22 +172,42 @@ export class CompulsoryDepositComponent implements OnInit {
   }
 
   getDepositSettings() {
-    this.depositService.getCompulsoryDeposits(this.user_id).subscribe((res: any) => {
+    const searchParams = this.searchFormGroup.value;
+    const queryParamArray = [];
+    
+    Object.keys(searchParams).forEach(key => {
+      if (searchParams[key] !== null && searchParams[key] !== '') {
+      queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+      }
+    });
+
+    const queryParams = queryParamArray.join('&');
+
+    this.depositService.getCompulsoryDeposits(this.user_id,queryParams, this.page, this.pageSize).subscribe((res: any) => {
       if (res && res.status === 'success' && res.data) {
         const depositData = res.data.deposits || null;
-        this.total = depositData.allDeposits?.length || 0;
+
+        this.total = res.data.total || 0;
         this.allDepositLists = depositData;
-        if (depositData && Object.keys(depositData).length > 0) {
-          this.listAvialble = depositData.allDeposits && depositData.allDeposits.length > 0;
-          this.depositAnnualRate = depositData.annual_rate || 0;
-          this.depositFormGroup.patchValue({
-            pay_day_rate: +(this.depositAnnualRate / 365).toFixed(2),
-            required_amount: depositData.amount,
-            payment_interval: depositData.interval,
+        this.settings = res.data.settings || {};
+
+        this.listAvialble = depositData.length > 0;
+        this.depositAnnualRate = this.settings.annual_rate || 0;
+
+        this.depositFormGroup.patchValue({
+            payment_interval: this.settings.interval,
             transanction_id: this.generateUniqueId()
-          });
+        });
+
+        if(this.listAvialble) {
+            Object.keys(this.editDepositSettings.controls).forEach(control => {
+              this.editDepositSettings.get(control)?.disable();
+            });
+        }
+
+        if (this.settings && Object.keys(this.settings).length > 0) {
           this.isSettingsAdded = true;
-          this.editDepositSettings.patchValue(depositData);
+          this.editDepositSettings.patchValue(this.settings);
         } else {
           this.listAvialble = false;
           this.isSettingsAdded = false;

@@ -25,8 +25,8 @@ editCDepositSettings(payload: any) {
   return this.http.put(`${environment.api_url}deposit/c_deposit_settings`, payload);
 }
 
-getCompulsoryDeposits(userId: string) {
-  return this.http.get(`${environment.api_url}deposit/c_deposit/${userId}`);
+getCompulsoryDeposits(userId: string, queryParams: string = '', page: number = 0, limit: number = 10) {
+  return this.http.get(`${environment.api_url}deposit/c_deposit/${userId}?page=${page}&limit=${limit}&${queryParams}`);
 }
 
 
@@ -51,8 +51,8 @@ editRDeposit(payload: any) {
   return this.http.put(`${environment.api_url}deposit/r_deposit`, payload);
 }
 
-getRDeposits(setting: string) {
-  return this.http.get(`${environment.api_url}deposit/r_deposit/${setting}`);
+getRDeposits(setting: string,  page: number = 0, limit: number = 10, queryParams: string = '') {
+  return this.http.get(`${environment.api_url}deposit/r_deposit/${setting}?page=${page}&limit=${limit}&${queryParams}`);
 }
 
 createFDepositSettings(payload: any) {
@@ -77,6 +77,14 @@ editFDeposit(payload: any) {
 
 getFDeposits(setting: string) {
   return this.http.get(`${environment.api_url}deposit/fd_deposit/${setting}`);
+}
+
+findOutstandingDepositsOfCompulsory(user_id: string) {
+  return this.http.get(`${environment.api_url}deposit/findOutstandingDepositsOfCompulsory?user_id=${user_id}`);
+}
+
+findOutstandingDepositsOfRecurring(user_id: string) {
+  return this.http.get(`${environment.api_url}deposit/findOutstandingDepositsOfRecurring?user_id=${user_id}`);
 }
 
 }

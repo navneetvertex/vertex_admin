@@ -37,7 +37,7 @@
                     <p class="text-muted mb-0">Aadhar <i  *ngIf="kyc?.aadhar_front" class="bx bx-info-circle" (mouseover)="openAadhar()" ></i> </p>
                   </div>
                   <div class="col-6">
-                    <h5 class="font-size-15">{{userDetails?.kyc?.pan || '-'}}</h5>
+                    <h5 class="font-size-15">{{kyc?.pan || '-'}}</h5>
                     <p class="text-muted mb-0">PAN <i *ngIf="kyc?.pan_image" class="bx bx-info-circle"  (mouseover)="openPan()" ></i></p>
                   </div>
                 </div>
@@ -104,10 +104,10 @@
                   <td>
                     <a href="javascript: void(0);" class="badge font-size-11 m-1"
                                               [ngClass]="{
-                                                'badge-soft-primary': kyc.status === 'Approved',
-                                                'badge-soft-warning': kyc.status === 'Requested',
-                                                'badge-soft-danger': kyc.status === 'Rejected'
-                                              }"> {{ kyc.status }}</a> <i *ngIf="kyc.status" class="mdi mdi-cursor-default-click"></i>
+                                                'badge-soft-primary': kyc?.status === 'Approved',
+                                                'badge-soft-warning': kyc?.status === 'Requested',
+                                                'badge-soft-danger': kyc?.status === 'Rejected'
+                                              }"> {{ kyc?.status }}</a> <i *ngIf="kyc?.status" class="mdi mdi-cursor-default-click"></i>
                   </td>
                 </tr>
                 <tr>
@@ -138,14 +138,14 @@
                     <ng-container *ngFor="let loan of loans">
                       <a  href="javascript: void(0);" class="badge font-size-11 m-1"
                                                 [ngClass]="{
-                                                  'badge-soft-primary': loan.status === 'Approved',
-                                                  'badge-soft-warning': loan.status === 'Requested',
-                                                  'badge-soft-danger': loan.status === 'Rejected',
-                                                  'badge-soft-secondary': loan.status === 'Closed',
-                                                  'badge-soft-success': loan.status=== 'Disbursed'
+                                                  'badge-soft-primary': loan?.status === 'Approved',
+                                                  'badge-soft-warning': loan?.status === 'Requested',
+                                                  'badge-soft-danger': loan?.status === 'Rejected',
+                                                  'badge-soft-secondary': loan?.status === 'Closed',
+                                                  'badge-soft-success': loan?.status=== 'Disbursed'
                                                 }">
-                                                {{loan.loan_id}}( {{ loan.status }})
-                                              </a> <i *ngIf="loan.status" class="mdi mdi-cursor-default-click"></i>
+                                                {{loan?.loan_id}}( {{ loan?.status }})
+                                              </a> <i *ngIf="loan?.status" class="mdi mdi-cursor-default-click"></i>
                     </ng-container>
                     </td>
                   </tr>
@@ -180,7 +180,22 @@
       </div>
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title mb-4">Revenue</h4>
+          <div class="d-sm-flex flex-wrap">
+                <h4 class="card-title mb-4">Transanction</h4>
+                <div class="ms-auto">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript: void(0);" (click)="monthlyreport()"
+                                [ngClass]="{'active': isActive === 'month'}">Month</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript: void(0);"
+                                [ngClass]="{'active': isActive === 'week'}" (click)="weeklyreport()">Week</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
           <apx-chart *ngIf="revenueBarChart && revenueBarChart.chart && revenueBarChart.series" dir="ltr" class="apex-charts" [series]="revenueBarChart.series" [chart]="revenueBarChart.chart"
             [xaxis]="revenueBarChart.xaxis" [colors]="revenueBarChart.colors" [yaxis]="revenueBarChart.yaxis"
             [dataLabels]="revenueBarChart.dataLabels" [stroke]="revenueBarChart.stroke"

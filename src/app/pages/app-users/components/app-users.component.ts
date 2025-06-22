@@ -20,7 +20,9 @@ export class AppUsersComponent implements OnInit {
   notificationFormGroup: FormGroup
   currStatus: string = 'Pending';
   currUserId: string = '';
+  currKYCStatus: string = ''
   statusList: any[] = ['Pending', 'Active', 'Inactive', 'Blocked', 'Deleted'];
+  kycStatusList: any[] = ['Requested', 'Approved', 'Rejected']
 
   userList: any[] = []
   total: number = 0;
@@ -139,6 +141,36 @@ export class AppUsersComponent implements OnInit {
     this.openModal(content);
     this.currStatus = user.status;
     this.currUserId = user._id;
+  }
+
+  openKYCModal( user: any, content: any,) {
+    this.openModal(content);
+    this.currKYCStatus = user?.kyc[0]?.status;
+    this.currUserId = user?._id;
+  }
+
+  changeKYCStatusAccount() {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You want to ${this.currKYCStatus} this account?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${this.currKYCStatus} it!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.upsertKyc({status: this.currKYCStatus, user: this.currUserId}).subscribe((res: any) => {
+          this.modalService.dismissAll();
+          this.toast.success(`Account ${this.currStatus} Successfully`);
+          this.getAllUsers();
+        }, (err: any) => {
+          console.error('Error changing user status:', err);
+          this.modalService.dismissAll();
+          this.toast.error(`Failed to ${this.currStatus} account`);
+        });
+      }
+    });
   }
 
   changeStatus() {

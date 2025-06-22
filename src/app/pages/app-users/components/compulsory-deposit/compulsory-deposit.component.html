@@ -39,14 +39,16 @@
                                     </div>
                                     <div  class="col-4">
                                         <div >
-                                            <p  class="text-muted text-truncate mb-2">Registered On </p>
-                                            <h5  class="mb-0">{{profile.created_date | date}}</h5>
+                                            <p  class="text-muted text-truncate mb-2">Approved On </p>
+                                            <h5 class="mb-0">
+                                                {{ profile.approved_date ? (profile.approved_date | date) : 'Not Approved' }}
+                                            </h5>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div  class="col-lg-4 d-none d-lg-block">
+                        <div  class="col-lg-4 d-none d-lg-block" *ngIf="!userIsNotActive">
                             <div  class="clearfix mt-4 mt-lg-0" *ngIf="!isSettingsAdded">
                                 <div  (click)="openModal(settingModal)" class="dropdown float-end"><button
                                          type="button" data-toggle="dropdown"
@@ -60,7 +62,7 @@
                                          type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
                                         class="btn btn-secondary dropdown-toggle"><i 
-                                            class="bx bxs-pen align-middle me-1"></i> View/Edit Setting </button>
+                                            class="bx bxs-pen align-middle me-1"></i> View Setting </button>
                                 </div>
                             </div>
                         </div>
@@ -77,42 +79,47 @@
                     <div class="d-flex align-items-center">
                         <h5 class="mb-0 card-title flex-grow-1">Deposit History</h5>
                         <div class="flex-shrink-0 d-flex gap-1">
-                            <a href="javascript:void(0);" class="btn btn-primary"  *ngIf="isSettingsAdded" (click)="openModal(addDepositModal)" >Add Deposit</a>
+                            <a href="javascript:void(0);"  class="btn btn-primary"  *ngIf="isSettingsAdded && outstandingAmount?.outstanding !== 0" (click)="openModal(addDepositModal)" >Add Deposit</a>
                             <a href="javascript:void(0);"  *ngIf="listAvialble" class="btn btn-light"><i class="mdi mdi-refresh"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="card-body border-bottom"  *ngIf="listAvialble">
-                    <!--  -->
-                    <div class="row g-3">
-                        <div class="col-xxl-4 col-lg-6">
-                            <input type="search" class="form-control" id="searchInput" placeholder="Search for Transaction...">
+                <div class="card-body border-bottom" >
+                    <form [formGroup]="searchFormGroup">
+                        <div class="row g-3">
+                            <div class="col-xxl-4 col-lg-6">
+                                <input type="search" class="form-control" id="searchInput" placeholder="Search for Transaction..." formControlName="transanction_id" >
+                            </div>
+                            <div class="col-xxl-2 col-lg-6">
+                                <select class="form-control select2" formControlName="status">
+                                    <option value="">Select Status</option>
+                                     <option value="Paid">Paid</option>
+                                    <option value="Interest">Interest</option>
+                                    <option value="Penality">Penality</option>
+                                </select>
+                            </div>
+                            <div class="col-xxl-2 col-lg-4">
+                                <select class="form-control select2" formControlName="payment_method">
+                                    <option value="">Select Payment Method</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="UPI">UPI</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                            <div class="col-xxl-2 col-lg-4">
+                                <div id="datepicker1">
+                                    <input type="date" formControlName="transaction_date" class="form-control" placeholder="Select date" data-date-format="dd M, yyyy" data-date-autoclose="true" data-date-container='#datepicker1' data-provide="datepicker">
+                                </div><!-- input-group -->
+                            </div>
+                            <div class="col-lg-1">
+                                    <button type="button" (click)="getDepositSettings()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                            </div>
+                            <div class="col-lg-1" >
+                                <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                            </div>
                         </div>
-                        <div class="col-xxl-2 col-lg-6">
-                            <select class="form-control select2" >
-                                <option value="">Select Status</option>
-                                 <option value="Active">Paid</option>
-                                <option value="Interest">Interest</option>
-                            </select>
-                        </div>
-                        <div class="col-xxl-2 col-lg-4">
-                            <select class="form-control select2">
-                                <option value="">Select Payment Method</option>
-                                <option value="Bank Transfer">Bank Transfer</option>
-                                <option value="Cash">Cash</option>
-                                <option value="UPI">UPI</option>
-                                <option value="Cheque">Cheque</option>
-                            </select>
-                        </div>
-                        <div class="col-xxl-2 col-lg-4">
-                            <div id="datepicker1">
-                                <input type="date" class="form-control" placeholder="Select date" data-date-format="dd M, yyyy" data-date-autoclose="true" data-date-container='#datepicker1' data-provide="datepicker">
-                            </div><!-- input-group -->
-                        </div>
-                        <div class="col-xxl-2 col-lg-4">
-                            <button type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
-                        </div>
-                    </div>
+                    </form>
                 </div>
                 <div  class="card-body">
                     <div  class="row">
@@ -120,7 +127,7 @@
                             <div class="table">
                                 <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!listAvialble">
                                     <img src="assets/img/not-found.png" width="300px" alt="">
-                                    <p class="text-mutes mt-2">No deposit found.</p>
+                                    <p class="text-mutes mt-2">No deposit found in current filter.</p>
                                 </div>
                                     <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline"   *ngIf="listAvialble">
                                         <thead>
@@ -137,7 +144,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <ng-container *ngFor="let deposit of allDepositLists.allDeposits; let i = index">
+                                            <ng-container *ngFor="let deposit of allDepositLists; let i = index">
                                                 <tr>
                                                     <td>{{ i + 1 }}</td>
                                                     <td>{{ deposit.transaction_date | date: 'medium' }}</td>
@@ -265,7 +272,7 @@
 
 <ng-template #viewSettingModal role="document" let-modal>
   <div class="modal-header">
-      <h5 class="modal-title" id="myModalLabel">View/Edit Settings</h5>
+      <h5 class="modal-title" id="myModalLabel">View Settings</h5>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
   </div>
   <form [formGroup]="editDepositSettings">
@@ -324,7 +331,7 @@
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
                 (click)="modal.close('Close click')">Close</button>
-            <button type="button" class="btn btn-primary waves-effect waves-light"
+            <button type="button" class="btn btn-primary waves-effect waves-light" *ngIf="allDepositLists?.allDeposits.length == 0"
                 [disabled]="editDepositSettings.invalid" (click)="editSettings()" >Submit</button>
         </div>
     </form>

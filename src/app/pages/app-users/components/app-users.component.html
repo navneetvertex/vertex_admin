@@ -86,13 +86,13 @@
                                               }">
                                               Account {{ user.status }}
                                             </a>
-                                            <a *ngIf="user.kyc_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                            <a *ngIf="user.kyc.length == 1" href="javascript: void(0);" class="badge font-size-11 m-1"
                                               [ngClass]="{
-                                                'badge-soft-primary': user.kyc_status === 'Approved',
-                                                'badge-soft-warning': user.kyc_status === 'Requested',
-                                                'badge-soft-danger': user.kyc_status === 'Rejected'
+                                                'badge-soft-primary': user?.kyc[0]?.status === 'Approved',
+                                                'badge-soft-warning': user?.kyc[0]?.status === 'Requested',
+                                                'badge-soft-danger': user?.kyc[0]?.status === 'Rejected'
                                               }">
-                                              KYC {{ user.kyc_status }}
+                                              KYC {{ user?.kyc[0]?.status }}
                                             </a>
                                             <a *ngIf="user.franchise_status" href="javascript: void(0);" class="badge font-size-11 m-1"
                                               [ngClass]="{
@@ -102,24 +102,33 @@
                                               }">
                                               Franchise {{ user.franchise_status }}
                                             </a>
-                                            <a *ngIf="user.loan_status" href="javascript: void(0);" class="badge font-size-11 m-1"
-                                              [ngClass]="{
-                                                'badge-soft-primary': user.loan_status === 'Approved',
-                                                'badge-soft-warning': user.loan_status === 'Requested',
-                                                'badge-soft-danger': user.loan_status === 'Rejected',
-                                                'badge-soft-secondary': user.loan_status === 'Closed',
-                                                'badge-soft-success': user.loan_status === 'Disbursed'
-                                              }">
-                                              Loan {{ user.loan_status }}
-                                            </a>
-                                            <a *ngIf="user.card_status" href="javascript: void(0);" class="badge font-size-11 m-1"
-                                              [ngClass]="{
-                                                'badge-soft-primary': user.card_status === 'Approved',
-                                                'badge-soft-warning': user.card_status === 'Requested',
-                                                'badge-soft-danger': user.card_status === 'Rejected'
-                                              }">
-                                              Card {{ user.card_status }}
-                                            </a>
+                                            <div *ngIf="user.loans.length > 0">
+                                              <ng-container *ngFor="let loan of user.loans">
+                                                <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                                                  [ngClass]="{
+                                                    'badge-soft-success': loan?.status === 'Approved',
+                                                    'badge-soft-warning': loan?.status === 'Requested',
+                                                    'badge-soft-danger': loan?.status === 'Rejected',
+                                                    'badge-soft-secondary': loan?.status === 'Closed',
+                                                    'badge-soft-primary': loan?.status === 'Disbursed'
+                                                  }">
+                                                  {{loan?.loan_id}}({{ loan?.status }})
+                                                </a>
+                                              </ng-container>
+                                            </div>
+                                            <div *ngIf="user.creditcards.length !== 0">
+                                              <ng-container *ngFor="let card of user.creditcards">
+                                                <a  href="javascript: void(0);" class="badge font-size-11 m-1"
+                                                  [ngClass]="{
+                                                    'badge-soft-primary': card.status === 'Approved',
+                                                    'badge-soft-success': card.status === 'Active',
+                                                    'badge-soft-warning': card.status === 'Requested',
+                                                    'badge-soft-danger': card.status === 'Rejected'
+                                                  }">
+                                                  Card {{ card.status }}
+                                                </a>
+                                              </ng-container>
+                                            </div>
                                             <a *ngIf="user.advisor_status" href="javascript: void(0);" class="badge font-size-11 m-1"
                                               [ngClass]="{
                                                 'badge-soft-primary': user.advisor_status === 'Approved',
@@ -152,9 +161,14 @@
                                                         <i class="mdi mdi-pencil font-size-16 text-success me-1"></i> Edit
                                                       </a>
                                                     </li>
+                                                    <li *ngIf="user?.kyc[0]?.status !== 'Approved'">
+                                                      <a href="javascript:void(0);"  (click)="openKYCModal(user, changeKYCStatusModal)" class="dropdown-item remove-list">
+                                                        <i class="mdi mdi-account-check font-size-16 text-success me-1"></i> Approve KYC
+                                                      </a>
+                                                    </li>
                                                     <li>
                                                       <a href="javascript:void(0);"  (click)="changeStatusAccount(user, changeStatusModal)" class="dropdown-item remove-list">
-                                                        <i class="mdi mdi-trash-can font-size-16 text-danger me-1"></i> Change Status
+                                                        <i class="mdi mdi-trash-can font-size-16 text-danger me-1"></i> Change Account Status
                                                       </a>
                                                     </li>
                                                     <li>
@@ -296,5 +310,29 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
         <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeStatus()" >Submit</button>
+      </div>
+</ng-template>
+
+<ng-template #changeKYCStatusModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">KYC Status</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Change Status:</label>
+              <select type="number" class="form-control" [(ngModel)]="currKYCStatus"  >
+                <option *ngFor="let status of kycStatusList" [ngValue]="status" >{{status}}</option>
+              </select>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeKYCStatusAccount()" >Submit</button>
       </div>
 </ng-template>

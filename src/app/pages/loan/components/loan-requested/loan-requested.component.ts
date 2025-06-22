@@ -109,7 +109,7 @@ export class LoanRequestedComponent implements OnInit {
 
     const queryParams = queryParamArray.join('&');
     
-    this.loanService.getLoanList(this.page - 1, this.pageSize, queryParams).subscribe({
+    this.loanService.getLoanList(this.page, this.pageSize, queryParams).subscribe({
       next: (res) => {
         console.log('Loan list fetched successfully:', res);
         this.loanList = res.data.loans;
