@@ -18,6 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ArchwizardModule } from 'angular-archwizard';
 import { ImageCropperComponent } from './components/edit-profile/image-cropper/image-cropper.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
+import { KycRequestComponent } from './components/kyc-request/kyc-request.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
     CompulsoryDepositComponent,
     RecurringDepositComponent,
     FixedDepositComponent,
-    ImageCropperComponent
+    ImageCropperComponent,
+    KycRequestComponent
   ],
   imports: [
     CommonModule,

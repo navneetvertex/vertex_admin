@@ -12,7 +12,20 @@ export const MENU: MenuItem[] = [
         id: 2,
         label: 'Members',
         icon: 'bx-user',
-        link: '/members'
+        subItems: [
+            {
+                id: 3,
+                parentId: 2,
+                label: 'KYC Requests',
+                link: '/members/kyc'
+            },
+            {
+                id: 2,
+                parentId: 2,
+                label: 'Members',
+                link: '/members/all'
+            },
+        ]
     },
     {
         id: 3,
@@ -168,6 +181,31 @@ export const MENU: MenuItem[] = [
                 link: '/vertex-settings/fees'
             },
             
+        ]
+    },
+    {
+        id: 11,
+        label:'Master Data',
+        icon: 'bx-data',
+        subItems: [
+            {
+                id: 19,
+                parentId: 11,
+                label: 'States',
+                link: '/master-data/states'
+            },
+            {
+                id: 20,
+                parentId: 11,
+                label: 'Districts',
+                link: '/master-data/districts'
+            },
+            {
+                id: 21,
+                parentId: 11,
+                label: 'Areas',
+                link: '/master-data/areas'
+            }
         ]
     }
     

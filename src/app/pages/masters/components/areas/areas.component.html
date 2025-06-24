@@ -1,0 +1,177 @@
+<div class="container-fluid">
+    <app-page-title title="{{title}}" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <app-toast aria-live="polite" aria-atomic="true"></app-toast>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body" *ngIf="addForm">
+                    <h4 class="card-title mb-3">Add {{title}}</h4>
+                    <form [formGroup]="addFormGroup" (ngSubmit)="onSubmit()">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">State Name</label>
+                            <input type="text" id="name" class="form-control" formControlName="name"
+                                placeholder="Enter state name">
+                            <div *ngIf="addFormGroup.get('name')?.invalid && addFormGroup.get('name')?.touched"
+                                class="text-danger">
+                                {{title}} name is required.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="state" class="form-label">Select State</label>
+                            <select id="state" class="form-select" formControlName="state" (change)="getAllDistricts($event.target.value)" >
+                                <option value="">-- Select State --</option>
+                                <option *ngFor="let state of stateList" [value]="state._id">{{ state.name }}</option>
+                            </select>
+                            <div *ngIf="addFormGroup.get('state')?.invalid && addFormGroup.get('state')?.touched" class="text-danger">
+                                State is required.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="district" class="form-label">Select District</label>
+                            <select id="district" class="form-select" formControlName="district">
+                                <option value="">-- Select District --</option>
+                                <option *ngFor="let district of districtList" [value]="district._id">{{ district.name }}</option>
+                            </select>
+                            <div *ngIf="addFormGroup.get('district')?.invalid && addFormGroup.get('district')?.touched" class="text-danger">
+                                District is required.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block">Status</label>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" id="active" class="form-check-input" formControlName="active"
+                                    [value]="true">
+                                <label for="active" class="form-check-label">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" id="inactive" class="form-check-input" formControlName="active"
+                                    [value]="false">
+                                <label for="inactive" class="form-check-label">Inactive</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" [disabled]="addFormGroup.invalid">Submit</button>
+                    </form>
+
+                </div>
+                <div class="card-body" *ngIf="editForm">
+                    <h4 class="card-title mb-3">Edit {{title}}</h4>
+                    <form [formGroup]="editFormGroup" (ngSubmit)="onEdit()">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">State Name</label>
+                            <input type="text" id="name" class="form-control" formControlName="name"
+                                placeholder="Enter state name">
+                            <div *ngIf="editFormGroup.get('name')?.invalid && editFormGroup.get('name')?.touched"
+                                class="text-danger">
+                                
+                                {{title}} is required.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="state" class="form-label">Select State</label>
+                            <select id="state" class="form-select" formControlName="state" (change)="getAllDistricts($event.target.value)">
+                                <option value="">-- Select State --</option>
+                                <option *ngFor="let state of stateList" [value]="state._id">{{ state.name }}</option>
+                            </select>
+                            <div *ngIf="addFormGroup.get('state')?.invalid && addFormGroup.get('state')?.touched" class="text-danger">
+                                State is required.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="district" class="form-label">Select District</label>
+                            <select id="district" class="form-select" formControlName="district">
+                                <option value="">-- Select District --</option>
+                                <option *ngFor="let district of districtList" [value]="district._id">{{ district.name }}</option>
+                            </select>
+                            <div *ngIf="addFormGroup.get('district')?.invalid && addFormGroup.get('district')?.touched" class="text-danger">
+                                District is required.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block">Status</label>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" id="active" class="form-check-input" formControlName="active"
+                                    [value]="true">
+                                <label for="active" class="form-check-label">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="radio" id="inactive" class="form-check-input" formControlName="active"
+                                    [value]="false">
+                                <label for="inactive" class="form-check-label">Inactive</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" [disabled]="editFormGroup.invalid">Submit</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">List</h4>
+                    <p class="card-title-dsec">Total {{total}} no fo {{title}} Listed.</p>
+                    <div class="table">
+                        <table id="basic-datatable"
+                            class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                            <thead>
+                                <tr>
+                                    <th>Sr No</th>
+                                    <th>Area</th>
+                                    <th>District</th>
+                                    <th>State</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let list of listAll; let i = index">
+                                    <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                    <td>
+                                        {{ list.name }} <br>
+                                    </td>
+                                    <td>
+                                        {{ list?.district?.name }} <br>
+                                    </td>
+                                    <td>
+                                        {{ list?.state?.name }}
+                                    <td>
+                                        <span class="badge"
+                                            [ngClass]="{'bg-success': list.status, 'bg-danger': !list.status}">
+                                            {{ list.status ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <ul class="list-inline font-size-20 contact-links mb-0">
+                                            <li class="list-inline-item px-2" (click)="onEditState(list)" >
+                                                <a tooltip="Profile">
+                                                    <i class="bx bx-edit-alt"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row justify-content-md-between align-items-md-center mt-2">
+                            <div class="col-sm-12 col-md-5">
+                                <div class="dataTables_info mb-2" id="tickets-table_info" role="status"
+                                    aria-live="polite">Showing
+                                    <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                    {{ findPageShowing() }} of {{ total }}
+                                    entries
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-5">
+                                <div class="text-md-right float-md-end pagination-rounded">
+                                    <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize"
+                                        (pageChange)="pageChange($event)">
+                                    </ngb-pagination>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

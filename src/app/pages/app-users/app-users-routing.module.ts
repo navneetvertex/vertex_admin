@@ -6,9 +6,11 @@ import { EditProfileComponent } from './components/edit-profile/edit-profile.com
 import { CompulsoryDepositComponent } from './components/compulsory-deposit/compulsory-deposit.component';
 import { RecurringDepositComponent } from './components/recurring-deposit/recurring-deposit.component';
 import { FixedDepositComponent } from './components/fixed-deposit/fixed-deposit.component';
+import { KycRequestComponent } from './components/kyc-request/kyc-request.component';
 
 const routes: Routes = [
-  { path: '', component: AppUsersComponent },
+  { path: 'all', component: AppUsersComponent },
+  { path: 'kyc', component: KycRequestComponent },
   { path: 'profile/:user', component: ViewProfileComponent },
   { path: 'edit/:user', component: EditProfileComponent },
   { path: 'compulsory-deposit/:user', component: CompulsoryDepositComponent },

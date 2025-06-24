@@ -56,6 +56,7 @@ export class CompulsoryDepositComponent implements OnInit {
       if (res && res.status === 'success') {
         const outstandingDeposits = res.data || [];
         this.outstandingAmount = outstandingDeposits;
+        console.log('Outstanding Amount:', this.outstandingAmount);
         if (outstandingDeposits !== 0) {
           this.depositFormGroup.patchValue({paid_amount: this.outstandingAmount.outstanding });
           this.toast.info(`Outstanding compulsory deposits found: ₹${outstandingDeposits.outstanding}`);
@@ -75,6 +76,7 @@ export class CompulsoryDepositComponent implements OnInit {
     this.saveDepositSettings = new FormGroup({
       annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       interval: new FormControl('', [Validators.required]),
+      penalty_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
     });
 
@@ -82,6 +84,7 @@ export class CompulsoryDepositComponent implements OnInit {
       _id: new FormControl('', [Validators.required]),
       annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       interval: new FormControl('', [Validators.required]),
+      penalty_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
     });
 
@@ -141,8 +144,8 @@ export class CompulsoryDepositComponent implements OnInit {
     if (this.depositFormGroup.valid) {
       const payload = this.depositFormGroup.value;
       payload.user = this.user_id;
-      payload.c_deposit_setting = this.allDepositLists._id
-      payload.payment_interval = this.allDepositLists.interval;
+      payload.c_deposit_setting = this.settings._id
+      payload.payment_interval = this.settings.interval;
       this.depositService.createCDeposit(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.toast.success('Deposit created successfully');
