@@ -66,5 +66,9 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}dashboard/user?userId=${userId}`);
     }
 
-    
+    getKycRequests(page: number = 0, limit: number = 10, queryParams: string) {
+        return this.http.get(`${environment.api_url}users/kyc?page=${page}&limit=${limit}&${queryParams}`);
+    }
+
+
 }

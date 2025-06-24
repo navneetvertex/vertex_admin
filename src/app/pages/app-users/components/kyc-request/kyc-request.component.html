@@ -1,3 +1,140 @@
 <div class="container-fluid">
     <app-page-title title="KYC Requests" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+<app-toast aria-live="polite" aria-atomic="true"></app-toast>
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-body border-bottom">
+                      <form [formGroup]="searchFormGroup">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User ID/Name...">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="search" class="form-control" id="searchInput" formControlName="aadhar" placeholder="Search for Aadhar Number...">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for PAN...">
+                            </div>
+                            
+                            <div class="col-lg-1">
+                                <button type="button" (click)="search()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                            </div>
+                            <div class="col-lg-1" >
+                                    <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                </div>
+                        </div>
+                      </form>
+                  </div>
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table id="basic-datatable"
+                              class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                              <thead>
+                                <tr>
+                                  <th>Sr No</th>
+                                  <th>Name</th>
+                                  <th>UserId</th>
+                                  <th>Aadhar Number</th>
+                                  <th>PAN</th>
+                                  <th>Status</th>
+                                  <th>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngFor="let user of kycList; let i = index">
+                                  <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                  <td>
+                                    {{ user?.user_details?.name }}<br>
+                                    
+                                  </td>
+                                  <td>{{ user?.user_details?.user_id }}</td>
+                                  <td> 
+                                    {{user.aadhar}} 
+                                    <ul class="list-inline font-size-20 contact-links mb-0">
+                                      <li *ngIf="user?.aadhar_front"  data-bs-toggle="modal" data-bs-target="#myModal" (click)="openImage(user?.aadhar_front)" class="list-inline-item px-2">
+                                        <a href="javascript:void(0);" tooltip="Message">
+                                          <i class="bx bx-id-card"></i>
+                                        </a>
+                                        <li *ngIf="user?.aadhar_back"  data-bs-toggle="modal" data-bs-target="#myModal" (click)="openImage(user?.aadhar_back)" class="list-inline-item px-2">
+                                        <a href="javascript:void(0);" tooltip="Message">
+                                          <i class="bx bx-id-card" style="transform: scaleX(-1);"></i>
+                                        </a>
+                                      </li>
+                                    </ul>
+                                   </td>
+                                  <td>
+                                    {{ user.pan }}
+                                    <ul class="list-inline font-size-20 contact-links mb-0">
+                                      <li *ngIf="user?.pan_image"  data-bs-toggle="modal" data-bs-target="#myModal" (click)="openImage(user?.pan_image)" class="list-inline-item px-2">
+                                        <a href="javascript:void(0);" tooltip="Message">
+                                          <i class="bx bx-card"></i>
+                                        </a>
+                                    </ul>
+                                  </td>
+                                  <td>
+                                    <a href="javascript: void(0);" class="badge font-size-11 m-1 badge-soft-warning">
+                                      {{ user.status }}
+                                    </a>
+                                  </td>
+                                  <td>
+                                    <ul class="list-inline font-size-20 contact-links mb-0">
+                                      <li (click)="openKYCModal(changeKYCStatusModal, user)" class="list-inline-item px-2">
+                                        <a href="javascript:void(0);" tooltip="Message">
+                                          <i class="bx bx-edit-alt"></i>
+                                        </a>
+                                      </li>
+                                    </ul>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <div class="row justify-content-md-between align-items-md-center mt-2">
+                              <div class="col-sm-12 col-md-5">
+                                <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                  <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                  {{ findPageShowing() }} of {{ total }}
+                                  entries
+                                </div>
+                              </div>
+                              <div class="col-sm-12 col-md-5">
+                                <div class="text-md-right float-md-end pagination-rounded">
+                                  <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                  </ngb-pagination>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                </div>
+            </div>
+        </div>
+    </div>
+
   </div>
+
+  <ng-template #changeKYCStatusModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">KYC Status</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Change Status:</label>
+              <select type="number" class="form-control" [(ngModel)]="currKYCStatus"  >
+                <option *ngFor="let status of kycStatusList" [ngValue]="status" >{{status}}</option>
+              </select>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeKYCStatusAccount()" >Submit</button>
+      </div>
+</ng-template>
