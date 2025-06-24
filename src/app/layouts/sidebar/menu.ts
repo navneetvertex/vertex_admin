@@ -185,7 +185,7 @@ export const MENU: MenuItem[] = [
     },
     {
         id: 11,
-        label:'Master Data',
+        label:'State Management',
         icon: 'bx-data',
         subItems: [
             {
