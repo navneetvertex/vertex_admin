@@ -53,7 +53,6 @@ export class KycRequestComponent implements OnInit {
 
     this.userService.getKycRequests(this.page, this.pageSize, queryParams).subscribe({
       next: (response: any) => {
-        console.log(response);
         if (response && response.data) {
          this.kycList = response.data.kyc || [];
           this.total = response.data.total || 0;
@@ -98,7 +97,6 @@ export class KycRequestComponent implements OnInit {
 
   openKYCModal(  content: any,user: any) {
     this.modalService.open(content);
-    console.log(user);
     this.currKYCStatus = user?.status;
     this.currUserId = user?.user_details._id;
   }

@@ -22,7 +22,7 @@ export const MENU: MenuItem[] = [
             {
                 id: 2,
                 parentId: 2,
-                label: 'Members',
+                label: 'Member List',
                 link: '/members/all'
             },
         ]
@@ -54,7 +54,7 @@ export const MENU: MenuItem[] = [
     },
     {
         id: 5,
-        label: 'Credit Management',
+        label: 'Sahyog Card',
         icon: 'bx-credit-card',
         subItems: [
             {

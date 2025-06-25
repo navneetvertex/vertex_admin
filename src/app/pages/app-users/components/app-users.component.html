@@ -156,11 +156,11 @@
                                                 <i class="mdi mdi-dots-horizontal font-size-18"></i>
                                               </a>
                                               <ul placement="bottom-end" class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
-                                                <li>
+                                                <!-- <li>
                                                   <a [routerLink]="['edit', user._id]" class="dropdown-item edit-list">
                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1"></i> Edit
                                                   </a>
-                                                </li>
+                                                </li> -->
                                                 <li *ngIf="user?.kyc[0]?.status !== 'Approved'">
                                                   <a href="javascript:void(0);"  (click)="openKYCModal(user, changeKYCStatusModal)" class="dropdown-item remove-list">
                                                     <i class="mdi mdi-account-check font-size-16 text-success me-1"></i> Approve KYC

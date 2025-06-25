@@ -139,8 +139,13 @@
                             </div>
                             <div class="col-sm-12 col-md-5">
                                 <div class="text-md-right float-md-end pagination-rounded">
-                                    <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize"
-                                        (pageChange)="pageChange($event)">
+                                    <ngb-pagination 
+                                        [collectionSize]="total" 
+                                        [(page)]="page" 
+                                        [pageSize]="pageSize"
+                                        (pageChange)="pageChange($event);"
+                                        [maxSize]="2" 
+                                        [ellipses]="true">
                                     </ngb-pagination>
                                 </div>
                             </div>

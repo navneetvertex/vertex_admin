@@ -35,4 +35,13 @@ export class AllTransanctionComponent implements OnInit {
     });
   }
 
+  pageChange(event: any) {
+    this.page = event;
+    this.getAdminTransactionList();
+  }
+
+  findPageShowing() {
+    return (this.page - 1) * this.pageSize + 1;
+  }
+
 }

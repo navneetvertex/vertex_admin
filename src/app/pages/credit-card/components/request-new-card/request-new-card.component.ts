@@ -33,12 +33,15 @@ export class RequestNewCardComponent implements OnInit {
     this.getRequestedCreditCard();
 
     const now = new Date();
-    this.minDate = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+    this.minDate = tomorrow.toISOString().split('T')[0];
     this.maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
 
     this.approveCCFormGroup = new FormGroup({
-      approved_credit_limit: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(100)] }),
+      approved_credit_limit: new FormControl({value: '1200', disabled: true}, { nonNullable: true, validators: [Validators.required, Validators.min(100)] }),
       interest_rate: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
+      penalty: new FormControl(null, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),
       start_date: new FormControl(null, { nonNullable: true, validators: [Validators.required] })
     });
 
@@ -69,7 +72,7 @@ export class RequestNewCardComponent implements OnInit {
     const formData = this.approveCCFormGroup.value;
     const data = {
       _id: this.cc_selected._id,
-      approved_credit_limit: formData.approved_credit_limit,
+      approved_credit_limit: 1200,
       interest_rate: formData.interest_rate,
       start_date: formData.start_date
     };

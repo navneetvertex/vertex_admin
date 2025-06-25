@@ -56,13 +56,13 @@
                                                     <td>
                                                         <span (click)="approveCreditCard(ApproveFormModal, cc)"  data-bs-toggle="tooltip" data-bs-placement="top" title="Approve">
                                                             <a href="javascript:void(0);" class="btn btn-sm btn-soft-info">
-                                                                <i class="mdi mdi-pencil-outline"></i>
+                                                                <i class="mdi mdi-close-circle-outline"></i>
                                                             </a>
                                                         </span>
                                                         <span class="mx-1"></span>
                                                         <span (click)="rejectCreditCardModal(RejectFormModal, cc)" data-bs-toggle="tooltip" data-bs-placement="top" title="Reject">
                                                             <a href="javascript:void(0);" class="btn btn-sm btn-soft-danger">
-                                                                <i class="mdi mdi-pencil-outline"></i>
+                                                                <i class="mdi mdi-close"></i>
                                                             </a>
                                                         </span>
                                                     </td>
@@ -143,6 +143,29 @@
                     </div>
                     <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('interest_rate')?.errors?.['max']">
                         Interest rate cannot exceed 100%.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="penalty" class="form-label">Penalty (In Rupees)</label>
+                    <input
+                        type="number"
+                        id="penalty"
+                        class="form-control"
+                        formControlName="penalty"
+                        [class.is-invalid]="approveCCFormGroup.get('penalty')?.invalid && (approveCCFormGroup.get('penalty')?.touched || approveCCFormGroup.get('penalty')?.dirty)"
+                        min="0"
+                        max="100"
+                        required
+                    />
+                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['required']">
+                        Penalty is required.
+                    </div>
+                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['min']">
+                        Penalty cannot be negative.
+                    </div>
+                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['max']">
+                        Penalty cannot exceed 100%.
                     </div>
                 </div>
 
