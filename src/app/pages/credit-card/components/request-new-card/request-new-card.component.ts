@@ -42,7 +42,9 @@ export class RequestNewCardComponent implements OnInit {
       approved_credit_limit: new FormControl({value: '1200', disabled: true}, { nonNullable: true, validators: [Validators.required, Validators.min(100)] }),
       interest_rate: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       penalty: new FormControl(null, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),
-      start_date: new FormControl(null, { nonNullable: true, validators: [Validators.required] })
+      start_date: new FormControl(null, { nonNullable: true, validators: [Validators.required] }),
+      indirect_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
+      direct_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
     });
 
     this.rejectCCFormGroup = new FormGroup({
@@ -74,7 +76,10 @@ export class RequestNewCardComponent implements OnInit {
       _id: this.cc_selected._id,
       approved_credit_limit: 1200,
       interest_rate: formData.interest_rate,
-      start_date: formData.start_date
+      start_date: formData.start_date,
+      penalty: formData.penalty,
+      indirect_refer_per: formData.indirect_refer_per,
+      direct_refer_per: formData.direct_refer_per
     };
     this.creditCardService.approveCreditCard(data._id, data).subscribe({
       next: (response: any) => {

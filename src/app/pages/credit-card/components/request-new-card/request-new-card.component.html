@@ -37,6 +37,8 @@
                                             <tr>
                                                 <th>S.No.</th>
                                                 <th>User Id</th>
+                                                <th>Parent Id</th>
+                                                <th>Indirect Id</th>
                                                 <th>Reqested At</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
@@ -46,7 +48,9 @@
                                             <ng-container *ngFor="let cc of ccList; let i = index">
                                                 <tr>
                                                     <td>{{ (page - 1) * pageSize + i + 1 }}</td>
-                                                    <td>{{ cc?.user?.name }} ({{cc?.user?.user_id}}) </td>
+                                                    <td>{{ cc?.user?.name }} <br> ({{cc?.user?.user_id}}) </td>
+                                                    <td> <span *ngIf="cc?.direct_user">{{ cc?.direct_user?.name }} <br> ({{cc?.direct_user?.user_id}})</span>  </td>
+                                                    <td> <span *ngIf="cc?.indirect_user">{{ cc?.indirect_user?.name }} <br> ({{cc?.indirect_user?.user_id}})</span>  </td>
                                                     <td>{{cc.created_date | date}}</td>
                                                     <td>
                                                         <span class="badge bg-{{cc.status === 'Active' ? 'success' : cc.status === 'Requested' ? 'warning' : 'danger'}}">
@@ -185,6 +189,38 @@
                         Start date is required.
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="indirectReferral" class="form-label">Indirect Referral Percentage</label>
+                        <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
+                            placeholder="Enter indirect referral %">
+                        <div *ngIf="approveCCFormGroup.get('indirect_refer_per')?.touched && approveCCFormGroup.get('indirect_refer_per')?.invalid"
+                            class="text-danger">
+                            <small *ngIf="approveCCFormGroup.get('indirect_refer_per')?.errors?.['required']">Indirect
+                                referral % is required.</small>
+                            <small *ngIf="approveCCFormGroup.get('indirect_refer_per')?.errors?.['min']">Must be at least
+                                0%.</small>
+                            <small *ngIf="approveCCFormGroup.get('indirect_refer_per')?.errors?.['max']">Must be 100% or
+                                less.</small>
+                        </div>
+                    </div>
+    
+                    <!-- Direct Referral -->
+                    <div class="col-md-6 mb-3">
+                        <label for="directReferral" class="form-label">Direct Referral Percentage</label>
+                        <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
+                            placeholder="Enter direct referral %">
+                        <div *ngIf="approveCCFormGroup.get('direct_refer_per')?.touched && approveCCFormGroup.get('direct_refer_per')?.invalid"
+                            class="text-danger">
+                            <small *ngIf="approveCCFormGroup.get('direct_refer_per')?.errors?.['required']">Direct referral %
+                                is required.</small>
+                            <small *ngIf="approveCCFormGroup.get('direct_refer_per')?.errors?.['min']">Must be at least
+                                0%.</small>
+                            <small *ngIf="approveCCFormGroup.get('direct_refer_per')?.errors?.['max']">Must be 100% or
+                                less.</small>
+                        </div>
+                    </div>
+                </div>
           </div>
         </div>
       </div>
@@ -233,6 +269,12 @@
                     <div class="invalid-feedback" *ngIf="rejectCCFormGroup.get('reason')?.errors?.['minlength']">
                         Reason must be at least 10 characters.
                     </div>
+                </div>
+
+                
+
+                <div class="mb-3">
+                    <label for=""></label>
                 </div>
                 
         </div>

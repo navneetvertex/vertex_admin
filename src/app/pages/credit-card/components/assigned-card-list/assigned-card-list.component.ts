@@ -39,6 +39,7 @@ export class AssignedCardListComponent implements OnInit {
       next: (response : any) => {
         this.total = response?.data?.total || 0;
         this.ccList = response?.data?.cc || [];
+        console.log('Assigned Credit Cards:', this.ccList);
       },
       error: (error) => {
         console.error('Error fetching requested credit card:', error);

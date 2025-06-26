@@ -37,6 +37,8 @@
                                             <tr>
                                                 <th>S.No.</th>
                                                 <th>User Id</th>
+                                                <th>Parent Id</th>
+                                                <th>Indirect Id</th>
                                                 <th>Card Limit</th>
                                                 <th>Card Number</th>
                                                 <th>Interest Rate</th>
@@ -49,7 +51,9 @@
                                             <ng-container *ngFor="let cc of ccList; let i = index">
                                                 <tr>
                                                     <td>{{ (page - 1) * pageSize + i + 1 }}</td>
-                                                    <td>{{ cc?.user?.name }} ({{cc?.user?.user_id}}) </td>
+                                                    <td>{{ cc?.user?.name }} <br> ({{cc?.user?.user_id}}) </td>
+                                                    <td> <span *ngIf="cc?.direct_user">{{ cc?.direct_user?.name }} <br> ({{cc?.direct_user?.user_id}})</span>  </td>
+                                                    <td> <span *ngIf="cc?.indirect_user">{{ cc?.indirect_user?.name }} <br> ({{cc?.indirect_user?.user_id}})</span>  </td>
                                                     <td>{{cc.approved_credit_limit}}</td>
                                                     <td>{{cc.card_number}}</td>
                                                     <td>{{cc.interest_rate}}%</td>
