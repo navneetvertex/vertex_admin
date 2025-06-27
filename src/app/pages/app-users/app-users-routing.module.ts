@@ -7,11 +7,13 @@ import { CompulsoryDepositComponent } from './components/compulsory-deposit/comp
 import { RecurringDepositComponent } from './components/recurring-deposit/recurring-deposit.component';
 import { FixedDepositComponent } from './components/fixed-deposit/fixed-deposit.component';
 import { KycRequestComponent } from './components/kyc-request/kyc-request.component';
+import { EditFormComponent } from './components/edit-form/edit-form.component';
 
 const routes: Routes = [
   { path: 'all', component: AppUsersComponent },
   { path: 'kyc', component: KycRequestComponent },
   { path: 'profile/:user', component: ViewProfileComponent },
+  { path: 'profile/form/:user', component: EditFormComponent },
   { path: 'edit/:user', component: EditProfileComponent },
   { path: 'compulsory-deposit/:user', component: CompulsoryDepositComponent },
   { path: 'recurring-deposits/:user', component: RecurringDepositComponent },

@@ -19,6 +19,7 @@ import { ArchwizardModule } from 'angular-archwizard';
 import { ImageCropperComponent } from './components/edit-profile/image-cropper/image-cropper.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { KycRequestComponent } from './components/kyc-request/kyc-request.component';
+import { EditFormComponent } from './components/edit-form/edit-form.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { KycRequestComponent } from './components/kyc-request/kyc-request.compon
     RecurringDepositComponent,
     FixedDepositComponent,
     ImageCropperComponent,
-    KycRequestComponent
+    KycRequestComponent,
+    EditFormComponent
   ],
   imports: [
     CommonModule,

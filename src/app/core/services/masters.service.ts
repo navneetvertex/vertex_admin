@@ -53,4 +53,16 @@ getAllDistricts(districtId: string) {
   return this.http.get<any>(`${environment.api_url}masters/all-districts/${districtId}`);
 }
 
+states() {
+    return this.http.get(`${environment.api_url}unsecure/states`);
+}
+
+districts(state: string) {
+  return this.http.get(`${environment.api_url}unsecure/districts/${state}`);
+}
+
+areas(district: string) {
+  return this.http.get(`${environment.api_url}unsecure/areas/${district}`);
+}
+
 }
