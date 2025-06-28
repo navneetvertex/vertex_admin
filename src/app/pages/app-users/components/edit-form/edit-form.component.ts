@@ -1,11 +1,12 @@
 import { formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthenticationService } from 'src/app/core/services/auth.service';
 import { MastersService } from 'src/app/core/services/masters.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-form',
@@ -72,19 +73,98 @@ export class EditFormComponent implements OnInit {
         pan_image : new FormControl(''),
         aadhar_front : new FormControl(''),
         aadhar_back : new FormControl(''),
-        area: new FormControl(''),
-        state: new FormControl(''),
-        district: new FormControl(''),
-        bank_name: new FormControl(''),
-        bank_account_number: new FormControl('', [Validators.pattern('^[0-9]{9,18}$')]),
-        ifsc_code: new FormControl('', [Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
-        branch_name: new FormControl(''),
-        account_type: new FormControl(''),
         signature: new FormControl(''),
         signed_at: new FormControl(''),
         created_date:new FormControl({value: '', disabled: true}),
+        addresses: new FormArray([
+          new FormGroup({
+            _id: new FormControl(null),
+            state: new FormControl('', [Validators.required]),
+            district: new FormControl('', [Validators.required]),
+            area: new FormControl('', [Validators.required]),
+          })
+        ]),
+        banks: new FormArray([
+          new FormGroup({
+            _id: new FormControl(null),
+            bank_name: new FormControl('', [Validators.required]),
+            account_number: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{9,18}$')]),
+            ifsc_code: new FormControl('', [Validators.required, Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
+            branch_name: new FormControl('', [Validators.required]),
+          })
+        ]),
       })
       this.getProfile();
+    }
+
+    addAddress() {
+      const addressArray = this.profileFormGroup.get('addresses') as FormArray;
+      addressArray.push(
+        new FormGroup({
+          id: new FormControl(null),
+          state: new FormControl('', [Validators.required]),
+          district: new FormControl('', [Validators.required]),
+          area: new FormControl('', [Validators.required]), 
+        })
+      );
+    }
+
+    addBank() {
+      const bankArray = this.profileFormGroup.get('banks') as FormArray;
+      bankArray.push(
+        new FormGroup({
+          _id: new FormControl(null),
+          bank_name: new FormControl('', [Validators.required]),
+          account_number: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{9,18}$')]),
+          ifsc_code: new FormControl('', [Validators.required, Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
+          branch_name: new FormControl('', [Validators.required]),
+        })
+      );
+    }
+
+    removeBank(index: number) {
+      const bankArray = this.profileFormGroup.get('banks') as FormArray;
+      if (bankArray.length > 1) {
+        bankArray.removeAt(index);
+      } else {
+        this.toast.error('At least one bank account is required.');
+      }
+    }
+
+
+    removeAddress(index: number) {
+      const addressArray = this.profileFormGroup.get('addresses') as FormArray;
+      if (addressArray.length > 1) {
+        addressArray.removeAt(index);
+      } else {
+        this.toast.error('At least one address is required.');
+      }
+    }
+
+    uploadFile(event: any, fieldName: string) {
+      const file = event.target.files && event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result as string;
+          // Reduce image size by 50%
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width * 0.7; // 0.7 for better quality, adjust as needed
+            canvas.height = img.height * 0.7;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            // 0.5 quality for 50% compression
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5);
+            this.profileFormGroup.patchValue({ [fieldName]: compressedBase64 });
+            
+            console.log(`Selected ${fieldName}:`, compressedBase64);
+          };
+          img.src = base64;
+        };
+        reader.readAsDataURL(file);
+      }
     }
   
     formSubmit() {
@@ -94,7 +174,17 @@ export class EditFormComponent implements OnInit {
         this.userService.updateProfile(profileData).subscribe({
           next: (response: any) => {
             if (response.status === 'success') {
-              this.toast.show('Profile updated successfully!');
+              Swal.fire({
+                title: 'Profile Updated Successfully',
+                text: 'Your profile has been updated successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+              }).then(() => {
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+              });
+              
             } else {
               this.toast.error('Failed to update profile. Please try again.');
             }
@@ -105,19 +195,12 @@ export class EditFormComponent implements OnInit {
         });
   
         profileData.user = this.user;
-        this.userService.upsertKyc(profileData).subscribe({
-          next: (response: any) => {
-            console.log('KYC Update Response:', response);
-          },
-          error: (error: any) => {
-            console.error('Error updating KYC:', error);
-          }
-        });
   
       }
     }
   
     getProfile() {
+      console.log('Fetching user profile for user:', this.user);
       this.userService.getUserById(this.user).subscribe({
         next: (response: any) => {
           console.log('User Profile Response:', response);
@@ -127,18 +210,86 @@ export class EditFormComponent implements OnInit {
             this.profileFormGroup.patchValue(response.data.user);
             delete response?.data.user?.kyc._id
             this.selected_photo = profile?.profile_image || null;
-            delete response?.data.user?.bank[0]?._id
-
             this.profileFormGroup.patchValue(response?.data.user?.kyc);
-            this.profileFormGroup.patchValue(response?.data.user?.bank[0]);
   
-            this.getDistricts({_id: profile.state[0]?._id });
-            this.profileFormGroup.patchValue({ state: profile.state[0]?._id });
-            this.profileFormGroup.patchValue({ district: profile.district[0]?._id });
-  
-            this.getAreas({_id: profile.district[0]?._id });
-            this.profileFormGroup.patchValue({ area: profile.area[0]?._id });
-  
+            if(profile.state[0]?._id) {
+              this.getDistricts({_id: profile.state[0]?._id });
+              this.profileFormGroup.patchValue({ state: profile.state[0]?._id });
+              this.profileFormGroup.patchValue({ district: profile.district[0]?._id });
+            }
+
+            if(profile.addresses && profile.addresses.length > 0) {
+              const addressArray = this.profileFormGroup.get('addresses') as FormArray;
+              addressArray.clear();
+              profile.addresses.forEach((address: any, index: number) => {
+                this.getDistricts({_id: address.state }, index);
+                this.getAreas({_id: address.district }, index);
+                addressArray.push(
+                  new FormGroup({
+                    _id: new FormControl(address._id),
+                    state: new FormControl(address.state, [Validators.required]),
+                    district: new FormControl(address.district, [Validators.required]),
+                    area: new FormControl(address.area, [Validators.required]),
+                  })
+                );
+              });
+            } else {
+              const addressArray = this.profileFormGroup.get('addresses') as FormArray;
+              addressArray.clear();
+              addressArray.push(
+                new FormGroup({
+                  _id: new FormControl(null), 
+                  state: new FormControl('', [Validators.required]),
+                  district: new FormControl('', [Validators.required]),
+                  area: new FormControl('', [Validators.required]),
+                })
+              );
+            }
+
+            if (profile.bank && profile.bank.length > 0) {
+              const bankArray = this.profileFormGroup.get('banks') as FormArray;
+              bankArray.clear();
+              profile.bank.forEach((bank: any) => {
+                console.log('Bank:', bank);
+                bankArray.push(
+                  new FormGroup({
+                    _id: new FormControl(bank._id),
+                    bank_name: new FormControl(bank.bank_name, [Validators.required]),
+                    account_number: new FormControl(bank.account_number, [Validators.required, Validators.pattern('^[0-9]{9,18}$')]),
+                    ifsc_code: new FormControl(bank.ifsc_code, [Validators.required, Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
+                    branch_name: new FormControl(bank.branch_name, [Validators.required]),
+                  })
+                );
+              });
+            } else {
+              const bankArray = this.profileFormGroup.get('banks') as FormArray;
+              bankArray.clear();
+              bankArray.push(
+                new FormGroup({
+                  _id: new FormControl(null),
+                  bank_name: new FormControl('', [Validators.required]),
+                  account_number: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{9,18}$')]),
+                  ifsc_code: new FormControl('', [Validators.required, Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
+                  branch_name: new FormControl('', [Validators.required]),
+                })
+              );
+            }
+
+            const addressArray = this.profileFormGroup.get('addresses') as FormArray;
+            if (addressArray.length > profile.addresses.length) {
+              for (let i = addressArray.length - 1; i >= profile.addresses.length; i--) {
+                addressArray.removeAt(i);
+              }
+            }
+
+            const bankArray = this.profileFormGroup.get('banks') as FormArray;
+            if (bankArray.length > profile.bank.length) {
+              for (let i = bankArray.length - 1; i >= profile.bank.length; i--) {
+                bankArray.removeAt(i);
+              }
+            }
+
+
             this.profileFormGroup.patchValue({date_of_birth: formatDate(new Date(profile.date_of_birth),'dd-MM-yyyy','en')})
             this.profileFormGroup.patchValue({created_date: formatDate(new Date(profile.created_date),'dd-MM-yyyy','en')})
             this.maritalStatus = response.data.marital_status;
@@ -166,35 +317,32 @@ export class EditFormComponent implements OnInit {
           });
     }
   
-    getDistricts(state: any) {
-        if (!state) {
-            this.allDistricts = [];
-            return;
+    getDistricts(state: any, index: number = 0) {
+      if (!state) {
+        this.allDistricts[index] = [];
+        return;
+      }
+      this.masterService.districts(state._id).subscribe({
+        next: (response: any) => {
+          if (response && response.data) {
+            this.allDistricts[index] = response.data || [];
+          } 
+        },
+        error: (error) => {
+          console.error('Error loading districts:', error);
         }
-  
-  
-  
-        this.masterService.districts(state._id).subscribe({
-            next: (response: any) => {
-                if (response && response.data) {
-                    this.allDistricts = response.data || [];
-                } 
-            },
-            error: (error) => {
-                console.error('Error loading districts:', error);
-            }
-        });
+      });
     }
   
-    getAreas(district: any) {
+    getAreas(district: any, index: number = 0) {
         if (!district) {
-            this.allAreas = [];
+            this.allAreas[index] = [];
             return;
         }
         this.masterService.areas(district._id).subscribe({
             next: (response: any) => {
                 if (response && response.data) {
-                    this.allAreas = response.data || [];
+                    this.allAreas[index] = response.data || [];
                 } 
             },
             error: (error) => {

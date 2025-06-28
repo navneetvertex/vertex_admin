@@ -140,11 +140,11 @@
                                 Enter valid 12 digit Aadhar number.
                             </div>
                         </div>
-                        <div class="col-sm-2">
-                            <input type="file" id="aadhar_front" formControlName="aadhar_front" placeholder="Aadhar Front" class="form-control">
+                        <div class="col-sm-2" *ngIf="!profileFormGroup.get('aadhar_front')?.value">
+                            <input type="file"  id="aadhar_front" placeholder="Aadhar Front" class="form-control" (change)="uploadFile($event, 'aadhar_front')">
                         </div>
-                        <div class="col-sm-2">
-                            <input type="file" id="aadhar_back" formControlName="aadhar_back" placeholder="Aadhar Back" class="form-control">
+                        <div class="col-sm-2" *ngIf="!profileFormGroup.get('aadhar_back')?.value">
+                            <input type="file" id="aadhar_back" placeholder="Aadhar Back" class="form-control" (change)="uploadFile($event, 'aadhar_back')">
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -155,8 +155,8 @@
                                 Enter valid PAN number.
                             </div>
                         </div>
-                        <div class="col-sm-2">
-                            <input type="file" id="pan_image" formControlName="pan_image" placeholder="PAN Image" class="form-control">
+                        <div class="col-sm-2" *ngIf="!profileFormGroup.get('pan_image')?.value">
+                            <input type="file" id="pan_image" placeholder="PAN Image" class="form-control" (change)="uploadFile($event, 'pan_image')">
                         </div>
                     </div>
 
@@ -178,14 +178,28 @@
 
                     <div class="row mb-4">
                         <label for="state" class="col-sm-3 col-form-label">Present / correspondence address</label>
-                        <div class="col-sm-2">
-                            <ng-select [items]="allStates" formControlName="state" placeholder="Search for a state..." bindLabel="name" bindValue="_id" (change)="getDistricts($event)" ></ng-select>
-                        </div>
-                        <div class="col-sm-2">
-                            <ng-select [items]="allDistricts" formControlName="district" placeholder="Search for a district..." bindLabel="name" bindValue="_id" (change)="getAreas($event)" > </ng-select>
-                        </div>
-                        <div class="col-sm-2">
-                            <ng-select [items]="allAreas" formControlName="area" placeholder="Search for areas..." bindLabel="name" bindValue="_id" class="custom-ng-select"></ng-select>
+                        <div formArrayName="addresses" class="col-sm-9">
+                            <div *ngFor="let address of profileFormGroup.get('addresses')['controls']; let i = index" [formGroupName]="i" class="row mb-2 align-items-center">
+                                <div class="col-sm-3 mb-1">
+                                    <ng-select [items]="allStates" formControlName="state" placeholder="Search for a state..." bindLabel="name" bindValue="_id" (change)="getDistricts($event, i)"></ng-select>
+                                </div>
+                                <div class="col-sm-3 mb-1">
+                                    <ng-select [items]="allDistricts[i]" formControlName="district" placeholder="Search for a district..." bindLabel="name" bindValue="_id" (change)="getAreas($event, i)"></ng-select>
+                                </div>
+                                <div class="col-sm-3 mb-1">
+                                    <ng-select [items]="allAreas[i]" formControlName="area" placeholder="Search for areas..." bindLabel="name" bindValue="_id" class="custom-ng-select"></ng-select>
+                                </div>
+                                <div class="col-sm-1 mb-1 d-flex align-items-center">
+                                    <button type="button" class="btn btn-danger btn-sm" (click)="removeAddress(i)" *ngIf="profileFormGroup.get('addresses')['controls'].length > 1">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-success btn-sm" (click)="addAddress()">
+                                    <i class="fa fa-plus"></i> Add Address
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -276,34 +290,37 @@
 
                     <p>Bank Details</p>
 
-                    <div class="row mb-4">
-                        <label for="bank_name" class="col-sm-3 col-form-label">Bank Name</label>
-                        <div class="col-sm-2">
-                            <input type="text" id="bank_name" formControlName="bank_name" placeholder="Enter Bank Name" class="form-control">
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <label for="bank_account_number" class="col-sm-3 col-form-label">Account Number</label>
-                        <div class="col-sm-2">
-                            <input type="text" id="bank_account_number" formControlName="bank_account_number" placeholder="Enter Account Number" class="form-control">
-                            <div *ngIf="profileFormGroup.get('bank_account_number')?.invalid && profileFormGroup.get('bank_account_number')?.touched" class="text-danger small">
-                                Enter valid account number.
+                    <div formArrayName="banks">
+                        <div *ngFor="let bank of profileFormGroup.get('banks')['controls']; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
+                            <div class="col-sm-3">
+                                <input type="text" formControlName="bank_name" placeholder="Bank Name" class="form-control mb-2">
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" formControlName="account_number" placeholder="Account Number" class="form-control mb-2">
+                                <div *ngIf="bank.get('account_number')?.invalid && bank.get('account_number')?.touched" class="text-danger small">
+                                    Enter valid account number.
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" formControlName="ifsc_code" placeholder="IFSC Code" class="form-control mb-2"
+                                    (input)="bank.get('ifsc_code')?.setValue($event.target.value.toUpperCase())">
+                                <div *ngIf="bank.get('ifsc_code')?.invalid && bank.get('ifsc_code')?.touched" class="text-danger small">
+                                    Enter valid IFSC code.
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" formControlName="branch_name" placeholder="Branch Name" class="form-control mb-2">
+                            </div>
+                            <div class="col-sm-1 d-flex align-items-center">
+                                <button type="button" class="btn btn-danger btn-sm" (click)="removeBank(i)" *ngIf="profileFormGroup.get('banks')['controls'].length > 1">
+                                    <i class="fa fa-trash"></i>
+                                </button>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-4">
-                        <label for="ifsc_code" class="col-sm-3 col-form-label">IFSC Code</label>
-                        <div class="col-sm-2">
-                            <input type="text" id="ifsc_code" formControlName="ifsc_code" placeholder="Enter IFSC Code" class="form-control">
-                            <div *ngIf="profileFormGroup.get('ifsc_code')?.invalid && profileFormGroup.get('ifsc_code')?.touched" class="text-danger small">
-                                Enter valid IFSC code.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <label for="branch_name" class="col-sm-3 col-form-label">Branch Name</label>
-                        <div class="col-sm-2">
-                            <input type="text" id="branch_name" formControlName="branch_name" placeholder="Enter Branch Name" class="form-control">
+                        <div class="mt-1">
+                            <button type="button" class="btn btn-success btn-sm" (click)="addBank()">
+                                <i class="fa fa-plus"></i> Add Bank
+                            </button>
                         </div>
                     </div>
 

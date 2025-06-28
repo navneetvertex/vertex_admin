@@ -1,0 +1,65 @@
+.line {
+    width: 100%;
+    height: 1px;
+    background-color: black;
+    margin: 10px 0;
+}
+
+.self-photo {
+    width: 130px;
+    height: 170px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: #000000 solid 1px;
+}
+
+.self-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.sign_box  {
+    width: 180px;
+    height: 50px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: #000000 solid 1px;
+}
+
+.sign_box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.oval {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: #000000 solid 1px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    font-weight: 700;
+
+    // Responsive font-size and font-weight based on oval size
+    @media (max-width: 50px), (max-height: 50px) {
+        font-size: 16px;
+        font-weight: 600;
+    }
+    @media (max-width: 40px), (max-height: 40px) {
+        font-size: 12px;
+        font-weight: 500;
+    }
+}
