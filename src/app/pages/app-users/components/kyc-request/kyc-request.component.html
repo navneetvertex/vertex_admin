@@ -11,14 +11,16 @@
                             <div class="col-lg-4">
                                 <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User ID/Name...">
                             </div>
+
                             <div class="col-lg-3">
-                                <input type="search" class="form-control" id="searchInput" formControlName="aadhar" placeholder="Search for Aadhar Number...">
+                                <select class="form-select" formControlName="status" id="statusSelect">
+                                    <option value="">All Statuses</option>
+                                    <option *ngFor="let status of kycStatusList" [value]="status">{{ status }}</option>
+                                </select>
+
                             </div>
-                            <div class="col-lg-3">
-                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for PAN...">
-                            </div>
-                            
-                            <div class="col-lg-1">
+
+                            <div class="col-lg-2">
                                 <button type="button" (click)="search()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
                             </div>
                             <div class="col-lg-1" >
@@ -36,8 +38,8 @@
                                   <th>Sr No</th>
                                   <th>Name</th>
                                   <th>UserId</th>
+                                  <th>Refer ID</th>
                                   <th>Aadhar Number</th>
-                                  <th>PAN</th>
                                   <th>Status</th>
                                   <th>Date</th>
                                   <th>Action</th>
@@ -48,11 +50,12 @@
                                   <td>{{ (page - 1) * pageSize + i + 1 }}</td>
                                   <td>
                                     {{ user?.user_details?.name }}<br>
-                                    
+
                                   </td>
                                   <td>{{ user?.user_details?.user_id }}</td>
-                                  <td> 
-                                    {{user.aadhar}} 
+                                  <td>TODO: PARENT_ID</td>
+                                  <td>
+                                    {{user.aadhar}}
                                     <ul class="list-inline font-size-20 contact-links mb-0">
                                       <li *ngIf="user?.aadhar_front"  data-bs-toggle="modal" data-bs-target="#myModal" (click)="openImage(user?.aadhar_front)" class="list-inline-item px-2">
                                         <a href="javascript:void(0);" tooltip="Message">
@@ -65,15 +68,7 @@
                                       </li>
                                     </ul>
                                    </td>
-                                  <td>
-                                    {{ user.pan }}
-                                    <ul class="list-inline font-size-20 contact-links mb-0">
-                                      <li *ngIf="user?.pan_image"  data-bs-toggle="modal" data-bs-target="#myModal" (click)="openImage(user?.pan_image)" class="list-inline-item px-2">
-                                        <a href="javascript:void(0);" tooltip="Message">
-                                          <i class="bx bx-card"></i>
-                                        </a>
-                                    </ul>
-                                  </td>
+
                                   <td>
                                     <a href="javascript: void(0);" class="badge font-size-11 m-1 badge-soft-warning">
                                       {{ user.status }}
@@ -84,11 +79,6 @@
                                   </td>
                                   <td>
                                     <ul class="list-inline font-size-20 contact-links mb-0">
-                                      <li (click)="openKYCModal(changeKYCStatusModal, user)" class="list-inline-item px-2">
-                                        <a href="javascript:void(0);" tooltip="Message">
-                                          <i class="bx bx-edit-alt"></i>
-                                        </a>
-                                      </li>
                                       <li class="list-inline-item px-2" >
                                         <a routerLink="/members/profile/form/{{user.user_details._id}}" tooltip="Profile">
                                           <i class="bx bx-user-circle"></i>
@@ -116,7 +106,7 @@
                             </div>
                         </div>
                     </div>
-                        
+
                 </div>
             </div>
         </div>
@@ -138,7 +128,7 @@
                 <option *ngFor="let status of kycStatusList" [ngValue]="status" >{{status}}</option>
               </select>
             </div>
-            
+
           </div>
         </div>
       </div>

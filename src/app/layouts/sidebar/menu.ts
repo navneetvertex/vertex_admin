@@ -180,7 +180,7 @@ export const MENU: MenuItem[] = [
                 label: 'Member Fees',
                 link: '/vertex-settings/fees'
             },
-            
+
         ]
     },
     {
@@ -208,6 +208,6 @@ export const MENU: MenuItem[] = [
             }
         ]
     }
-    
-    
+
+
 ]

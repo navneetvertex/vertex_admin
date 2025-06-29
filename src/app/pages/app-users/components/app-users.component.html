@@ -1,7 +1,7 @@
 <div class="container-fluid">
 
     <app-page-title title="All Users" [breadcrumbItems]="breadCrumbItems"></app-page-title>
-  
+
     <div class="row">
         <div class="col-xl-12">
             <div class="card">
@@ -25,7 +25,7 @@
                                     <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
                                 </select>
                             </div>
-                            
+
                             <div class="col-lg-1">
                                 <button type="button" (click)="search()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
                             </div>
@@ -49,6 +49,7 @@
                                       <th>Direct Ref</th>
                                       <th>InDirect Ref</th>
                                       <th>Account Number</th>
+                                      <th>Aadhar Number</th>
                                       <th>Gender</th>
                                       <th>Age</th>
                                       <th>Date</th>
@@ -63,13 +64,14 @@
                                       <td>
                                         {{ user.name }} <br>
                                         <span *ngIf="user.guardian_name" class="text-muted" > Gardian  : {{ user.guardian_name || '-' }} ({{user.guardian_relation}}) <br></span>
-                                        
+
                                       </td>
                                       <td>{{ user.user_id }}</td>
                                       <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
                                       <td>{{ user.direct_id?.user_id || '-' }}</td>
                                       <td>{{ user.indirect_id?.user_id || '-' }}</td>
                                       <td>{{ user.account_number || '-' }}</td>
+                                      <td>{{ user?.kyc[0]?.aadhar || '-' }}</td>
                                       <td>{{ user.gender || '-' }}</td>
                                       <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>
                                       <td>
@@ -217,13 +219,13 @@
                               </div>
                         </div>
                     </div>
-                        
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-  
+
 
 
 
@@ -278,7 +280,7 @@
               <label for="recipient-name" class="col-form-label">Recurring Deposit (R D):</label>
               <input type="number" class="form-control" id="recipient-name" placeholder="Settings">
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -303,7 +305,7 @@
                 <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
               </select>
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -327,7 +329,7 @@
                 <option *ngFor="let status of kycStatusList" [ngValue]="status" >{{status}}</option>
               </select>
             </div>
-            
+
           </div>
         </div>
       </div>

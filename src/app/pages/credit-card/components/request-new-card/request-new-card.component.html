@@ -23,7 +23,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div  class="card-body">
                     <div  class="row">
                             <div class="table-responsive">
@@ -31,7 +31,7 @@
                                 <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;" *ngIf="ccList.length === 0" >
                                     <img src="assets/img/not-found.png" width="300px" alt="">
                                     <p class="text-mutes mt-2">No request found.</p>
-                                </div> 
+                                </div>
                                     <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline"  *ngIf="ccList.length !== 0">
                                         <thead>
                                             <tr>
@@ -72,8 +72,8 @@
                                                     </td>
                                                 </tr>
                                             </ng-container>
-                                            
-                                            
+
+
                                         </tbody>
                                     </table>
                                     <div class="row justify-content-md-between align-items-md-center mt-2">
@@ -108,6 +108,27 @@
   <div class="modal-body">
       <div class="row" >
         <div class="col-md-12">
+
+          <div class="mb-3">
+            <label for="card_number" class="form-label">Card Number</label>
+            <input
+              type="number"
+              id="card_number"
+              class="form-control"
+              formControlName="card_number"
+              [class.is-invalid]="approveCCFormGroup.get('card_number')?.invalid && (approveCCFormGroup.get('card_number')?.touched || approveCCFormGroup.get('card_number')?.dirty)"
+
+              required
+              placeholder="Enter card number"
+            />
+            <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('card_number')?.errors?.['required']">
+              Card number is required.
+            </div>
+            <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('card_number')?.errors?.['pattern']">
+              Card number must be 12 to 16 digits.
+            </div>
+          </div>
+
                 <div class="mb-3">
                     <label for="approved_credit_limit" class="form-label">Approved Credit Limit</label>
                     <input
@@ -191,23 +212,21 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="indirectReferral" class="form-label">Indirect Referral Percentage</label>
+                        <label for="indirectReferral" class="form-label">Indirect Referral Rupees</label>
                         <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
                             placeholder="Enter indirect referral %">
                         <div *ngIf="approveCCFormGroup.get('indirect_refer_per')?.touched && approveCCFormGroup.get('indirect_refer_per')?.invalid"
                             class="text-danger">
                             <small *ngIf="approveCCFormGroup.get('indirect_refer_per')?.errors?.['required']">Indirect
-                                referral % is required.</small>
+                                referral amount is required.</small>
                             <small *ngIf="approveCCFormGroup.get('indirect_refer_per')?.errors?.['min']">Must be at least
-                                0%.</small>
-                            <small *ngIf="approveCCFormGroup.get('indirect_refer_per')?.errors?.['max']">Must be 100% or
-                                less.</small>
+                                0.</small>
                         </div>
                     </div>
-    
+
                     <!-- Direct Referral -->
                     <div class="col-md-6 mb-3">
-                        <label for="directReferral" class="form-label">Direct Referral Percentage</label>
+                        <label for="directReferral" class="form-label">Direct Referral Amount</label>
                         <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
                             placeholder="Enter direct referral %">
                         <div *ngIf="approveCCFormGroup.get('direct_refer_per')?.touched && approveCCFormGroup.get('direct_refer_per')?.invalid"
@@ -215,9 +234,7 @@
                             <small *ngIf="approveCCFormGroup.get('direct_refer_per')?.errors?.['required']">Direct referral %
                                 is required.</small>
                             <small *ngIf="approveCCFormGroup.get('direct_refer_per')?.errors?.['min']">Must be at least
-                                0%.</small>
-                            <small *ngIf="approveCCFormGroup.get('direct_refer_per')?.errors?.['max']">Must be 100% or
-                                less.</small>
+                                0.</small>
                         </div>
                     </div>
                 </div>
@@ -271,12 +288,12 @@
                     </div>
                 </div>
 
-                
+
 
                 <div class="mb-3">
                     <label for=""></label>
                 </div>
-                
+
         </div>
       </div>
     </div>

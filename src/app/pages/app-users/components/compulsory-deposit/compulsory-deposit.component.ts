@@ -20,19 +20,19 @@ export class CompulsoryDepositComponent implements OnInit {
     private toast: ToastrService,
     private router: Router,
     private userService: UserProfileService,
-  ) { 
+  ) {
     this.user_id = this.route.snapshot.paramMap.get('user') || '';
     this.getProfile(this.user_id);
-    
-    
+
+
   }
 
   user_id: string = '';
   breadCrumbItems: Array<{}>;
   saveDepositSettings : FormGroup
   editDepositSettings : FormGroup
-  depositFormGroup: FormGroup 
-  editDepositFormGroup: FormGroup 
+  depositFormGroup: FormGroup
+  editDepositFormGroup: FormGroup
   listAvialble : boolean = false;
   depositAnnualRate: number = 0;
 
@@ -77,7 +77,7 @@ export class CompulsoryDepositComponent implements OnInit {
       annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       interval: new FormControl('', [Validators.required]),
       penalty_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      amount: new FormControl('300', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$'), Validators.min(300)]),
     });
 
     this.editDepositSettings = new FormGroup({
@@ -177,7 +177,7 @@ export class CompulsoryDepositComponent implements OnInit {
   getDepositSettings() {
     const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
-    
+
     Object.keys(searchParams).forEach(key => {
       if (searchParams[key] !== null && searchParams[key] !== '') {
       queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);

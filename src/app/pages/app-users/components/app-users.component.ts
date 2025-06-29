@@ -21,7 +21,7 @@ export class AppUsersComponent implements OnInit {
   currStatus: string = 'Pending';
   currUserId: string = '';
   currKYCStatus: string = ''
-  statusList: any[] = ['Pending', 'Active', 'Inactive', 'Blocked', 'Deleted'];
+  statusList: any[] = ['Pending', 'Active', 'Inactive', 'Blocked'];
   kycStatusList: any[] = ['Requested', 'Approved', 'Rejected']
 
   userList: any[] = []
@@ -64,7 +64,7 @@ export class AppUsersComponent implements OnInit {
   getAllUsers() {
     const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
-    
+
     Object.keys(searchParams).forEach(key => {
       if (searchParams[key] !== null && searchParams[key] !== '') {
       queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
@@ -81,7 +81,7 @@ export class AppUsersComponent implements OnInit {
       } else {
         this.userList = [];
       }
-    }, (err: any) => { 
+    }, (err: any) => {
       console.error('Error fetching user list:', err);
       this.userList = [];
     });
@@ -106,7 +106,7 @@ export class AppUsersComponent implements OnInit {
     }
     return age;
   }
-  
+
   addMember(user: any){
 
   }
@@ -134,7 +134,7 @@ export class AppUsersComponent implements OnInit {
       console.error('Error sending notification:', err);
       this.toast.error('Failed to send notification');
     });
-    
+
   }
 
   changeStatusAccount(user: any, content: any) {

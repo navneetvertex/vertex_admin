@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div  class="card-body">
                     <div  class="row">
                             <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!pinList || pinList.length === 0">
@@ -76,7 +76,7 @@
                                                     </td>
                                                 </tr>
                                             </ng-container>
-                                            
+
                                         </tbody>
                                     </table>
                                     <div class="row justify-content-md-between align-items-md-center mt-2">
@@ -111,13 +111,13 @@
     <form [formGroup]="addPinFormGroup">
         <div class="modal-body">
             <!-- Assigned To -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="assignedTo" class="form-label">Assigned To (Optional)</label>
                 <select class="form-select" id="assignedTo" formControlName="assign_to">
                     <option value="">Choose...</option>
                     <option *ngFor="let user of userList" [attr.value]="user._id" >{{user.name}} ({{user.user_id}}) </option>
                 </select>
-            </div>
+            </div> -->
 
             <!-- No of Pins -->
             <div class="mb-3">

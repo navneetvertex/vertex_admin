@@ -39,6 +39,13 @@ export class RequestNewCardComponent implements OnInit {
     this.maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
 
     this.approveCCFormGroup = new FormGroup({
+      card_number: new FormControl('', {
+      nonNullable: true,
+      validators: [
+        Validators.required,
+        Validators.pattern(/^\d{16}$/) // 16 consecutive digits
+      ]
+      }),
       approved_credit_limit: new FormControl({value: '1200', disabled: true}, { nonNullable: true, validators: [Validators.required, Validators.min(100)] }),
       interest_rate: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       penalty: new FormControl(null, { nonNullable: true, validators: [Validators.min(0), Validators.max(100)] }),

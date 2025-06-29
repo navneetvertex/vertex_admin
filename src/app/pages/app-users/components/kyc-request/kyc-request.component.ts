@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 })
 export class KycRequestComponent implements OnInit {
 
-  constructor(private userService: UserProfileService, 
+  constructor(private userService: UserProfileService,
     private toast: ToastService,
     private modalService: NgbModal) { }
 
@@ -20,12 +20,12 @@ export class KycRequestComponent implements OnInit {
 
   kycList: any[] = []
   total: number = 0;
-  kycStatusList: any[] = ['Requested', 'Approved', 'Rejected']
+  kycStatusList: any[] = ['Requested',  'Completed']
   page: number = 1;
   pageSize: number = 10;
   searchFormGroup: FormGroup ;
   currUserId: string = '';
-  
+
 
   currKYCStatus: string = 'Requested';
 
@@ -33,8 +33,7 @@ export class KycRequestComponent implements OnInit {
     this.breadCrumbItems = [{ label: 'Members' }, { label: 'KYC Requested', active: true }];
     this.searchFormGroup = new FormGroup({
       user_id: new FormControl(''),
-      aadhar: new FormControl(''),
-      pan: new FormControl(''),
+      status: new FormControl('Completed'),
     });
     this.getKycRequests();
   }
@@ -42,7 +41,7 @@ export class KycRequestComponent implements OnInit {
   getKycRequests() {
     const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
-    
+
     Object.keys(searchParams).forEach(key => {
       if (searchParams[key] !== null && searchParams[key] !== '') {
       queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
@@ -56,7 +55,7 @@ export class KycRequestComponent implements OnInit {
         if (response && response.data) {
          this.kycList = response.data.kyc || [];
           this.total = response.data.total || 0;
-        } 
+        }
       }
     });
   }
