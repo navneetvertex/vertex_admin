@@ -1,631 +1,350 @@
 <div class="container-fluid">
-  <app-page-title title="Edit Profile" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <app-page-title title="Profile" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
-  <div class="col-lg-12">
-      <div class="card">
-        <div class="card-body">
-          
-          <ul ngbNav #justifiednav="ngbNav" [activeId]="1" class="nav-pills nav-justified">
-            <li [ngbNavItem]="1">
-              <a ngbNavLink>
-                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                <span class="d-none d-sm-block">Know your customer</span>
-              </a>
-              <ng-template ngbNavContent>
-                <ng-template [ngTemplateOutlet]="TabContent"></ng-template>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="2">
-              <a ngbNavLink>
-                <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
-                <span class="d-none d-sm-block">Profile</span>
-              </a>
-              <ng-template ngbNavContent>
-                <ng-template [ngTemplateOutlet]="TabContent1"></ng-template>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="3">
-              <a ngbNavLink>
-                <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
-                <span class="d-none d-sm-block">Address</span>
-              </a>
-              <ng-template ngbNavContent>
-                <ng-template [ngTemplateOutlet]="TabContent2"></ng-template>
-              </ng-template>
-            </li>
-            <li [ngbNavItem]="4">
-              <a ngbNavLink>
-                <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
-                <span class="d-none d-sm-block">Bank</span>
-              </a>
-              <ng-template ngbNavContent>
-                <ng-template [ngTemplateOutlet]="TabContent3"></ng-template>
-              </ng-template>
-            </li>
-          </ul>
-          <div [ngbNavOutlet]="justifiednav"></div>
-        </div>
-      </div>
-    </div>
-
-  
-  
-</div>
-
-  <!-- KYC -->
-  <ng-template #TabContent>
-    <form [formGroup]="kycFormGroup">
-      <div class="row p-3 mb-0 mt-2">
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label for="formrow-email-input">Aadhar Number</label>
-            <input type="number" class="form-control" formControlName="aadhar" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('aadhar')?.invalid}">
-            <div *ngIf="typeKYCsubmit && kycFormGroup.get('aadhar')?.errors" class="invalid-feedback">
-              <span *ngIf="kycFormGroup.get('aadhar')?.errors?.required">This value is required.</span>
-              <span *ngIf="kycFormGroup.get('aadhar')?.errors?.pattern">Aadhar must be a 12-digit number.</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label for="formrow-password-input">Pan Number</label>
-            <input type="text" class="form-control" formControlName="pan" [ngClass]="{ 'is-invalid': typeKYCsubmit && kycFormGroup.get('pan')?.invalid }" />
-            <div *ngIf="typeKYCsubmit && kycFormGroup.get('pan')?.errors" class="invalid-feedback">
-              <span *ngIf="kycFormGroup.get('pan')?.errors?.required">This value is required.</span>
-              <span *ngIf="kycFormGroup.get('pan')?.errors?.pattern">Enter a valid PAN (e.g., ABCDE1234F).</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="mb-3">
-            <label for="formrow-text-input">PAN</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event, 'pan')" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('pan_image')?.invalid}" />
-            <div *ngIf="typeKYCsubmit && kycFormGroup.get('pan_image')?.errors" class="invalid-feedback">
-              <span *ngIf="kycFormGroup.get('pan_image')?.errors?.required">PAN image is required.</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="mb-3">
-            <label for="formrow-text-input">Aadhar Front</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_front')" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('aadhar_front')?.invalid}" />
-            <div *ngIf="typeKYCsubmit && kycFormGroup.get('aadhar_front')?.errors" class="invalid-feedback">
-              <span *ngIf="kycFormGroup.get('aadhar_front')?.errors?.required">Aadhar front image is required.</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="mb-3">
-            <label for="formrow-text-input">Aadhar Back</label>
-            <input type="file" class="form-control" (change)="onFileSelected($event, 'aadhar_back')" [ngClass]="{'is-invalid': typeKYCsubmit && kycFormGroup.get('aadhar_back')?.invalid}" />
-            <div *ngIf="typeKYCsubmit && kycFormGroup.get('aadhar_back')?.errors" class="invalid-feedback">
-              <span *ngIf="kycFormGroup.get('aadhar_back')?.errors?.required">Aadhar back image is required.</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4" >
-          <img [src]="kycFormGroup.get('pan_image')?.value" style="max-width: 100px; max-height: 100px;">
-        </div>
-        <div class="col-lg-4" >
-          <img src="{{kycFormGroup.get('aadhar_front')?.value}}" style="max-width: 100px; max-height: 100px;">
-        </div>
-        <div class="col-lg-4" >
-          <img src="{{kycFormGroup.get('aadhar_back')?.value}}" style="max-width: 100px; max-height: 100px;">
-        </div>
-      </div>
-      <div>
-        <button type="submit" class="btn btn-primary w-md" (click)="kycSubmit()" >Submit</button>
-      </div>
-    </form>
-  </ng-template>
-
-  <!-- Profile -->
-  <ng-template #TabContent1>
-   <form [formGroup]="profileFormGroup">
-  <div class="row p-3 mb-0 mt-2">
-    <!-- User ID (readonly) -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label for="user-id">User Id</label>
-        <input type="text" id="user-id" class="form-control" formControlName="user_id" readonly
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('user_id')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('user_id')?.errors">
-          User ID is required.
-        </div>
-      </div>
-    </div>
-
-    <!-- Account Number (readonly) -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label for="account-number">Account Number</label>
-        <input type="text" id="account-number" class="form-control" formControlName="account_number" readonly
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('account_number')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('account_number')?.errors">
-          Invalid account number.
-        </div>
-      </div>
-    </div>
-
-    <!-- Name -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Name</label>
-        <input type="text" class="form-control" formControlName="name"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('name')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('name')?.errors">
-          Name is required (min 2 characters).
-        </div>
-      </div>
-    </div>
-
-    <!-- Mobile Number -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Mobile Number</label>
-        <input type="text" class="form-control" formControlName="mobile_number"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('mobile_number')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('mobile_number')?.errors">
-          Enter a valid mobile number.
-        </div>
-      </div>
-    </div>
-
-    <!-- Email ID -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Email ID</label>
-        <input type="email" class="form-control" formControlName="email_id"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('email_id')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('email_id')?.errors">
-          Enter a valid email.
-        </div>
-      </div>
-    </div>
-
-    <!-- Gender -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Gender</label>
-        <input type="text" class="form-control" formControlName="gender"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('gender')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('gender')?.errors">
-          Gender is required.
-        </div>
-      </div>
-    </div>
-
-    <!-- Date of Birth -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Date of Birth</label>
-        <input type="date" class="form-control" [max]="maxDOB" formControlName="date_of_birth"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('date_of_birth')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('date_of_birth')?.errors">
-          Date of birth is required.
-        </div>
-      </div>
-    </div>
-
-    <!-- Guardian Name -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Guardian Name</label>
-        <input type="text" class="form-control" formControlName="guardian_name"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('guardian_name')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('guardian_name')?.errors">
-          Guardian name is required (min 2 characters).
-        </div>
-      </div>
-    </div>
-
-    <!-- Guardian Relation -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Guardian Relation</label>
-        <select class="form-control" formControlName="guardian_relation"
-                [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('guardian_relation')?.invalid}">
-          <option value="">Select</option>
-          <option *ngFor="let relationship of relationshipOptions" [value]="relationship">{{relationship}}</option>
-        </select>
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('guardian_relation')?.errors">
-          Guardian relation is required.
-        </div>
-      </div>
-    </div>
-
-    <!-- Nominee Name -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Nominee Name</label>
-        <input type="text" class="form-control" formControlName="nominee_name"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_name')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_name')?.errors">
-          Nominee name is required (min 2 characters).
-        </div>
-      </div>
-    </div>
-
-    <!-- Nominee Relation -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Nominee Relation</label>
-        <select class="form-control" formControlName="nominee_relation"
-                [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_relation')?.invalid}">
-          <option value="">Select</option>
-          <option *ngFor="let relationship of relationshipOptions" [value]="relationship">{{relationship}}</option>
-        </select>
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_relation')?.errors">
-          Nominee relation is required.
-        </div>
-      </div>
-    </div>
-
-    <!-- Nominee Contact -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Nominee Contact</label>
-        <input type="text" class="form-control" formControlName="nominee_contact"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_contact')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_contact')?.errors">
-          Enter a valid contact number.
-        </div>
-      </div>
-    </div>
-
-    <!-- Nominee Email -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Nominee Email</label>
-        <input type="email" class="form-control" formControlName="nominee_email"
-               [ngClass]="{'is-invalid': typeProfilesubmit && profileFormGroup.get('nominee_email')?.invalid}">
-        <div class="invalid-feedback" *ngIf="typeProfilesubmit && profileFormGroup.get('nominee_email')?.errors">
-          Enter a valid email address.
-        </div>
-      </div>
-    </div>
-
-    <!-- Profile Image -->
-    <div class="col-md-4">
-      <div class="mb-3">
-        <label>Profile Image</label>
-        <input type="file" class="form-control" (change)="onFileSelected($event, 'profile')" />
-      </div>
-    </div>
-
-     <div class="col-lg-4" >
-          <img [src]="profileFormGroup.get('profile_image')?.value" style="max-width: 100px; max-height: 100px;">
-      </div>
-
-    <!-- Are you Divyang -->
-    <div class="mb-3">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="divyangCheck" formControlName="is_divyang" />
-        <label class="form-check-label" for="divyangCheck">
-          Are you Divyang?
-        </label>
-      </div>
-    </div>
-
-    <!-- Are you Senior Citizen -->
-   
-  </div>
-
-  <div>
-    <button type="submit" class="btn btn-primary w-md" (click)="onProfileSubmit()" >Update Profile</button>
-  </div>
-</form>
-
-  </ng-template>
-
-  <!-- Address -->
-  <ng-template #TabContent2>
-    <div class="row p-3 mb-0 mt-2">
-      <div class="row mb-2">
-        <div class="col-sm"></div>
-        <div class="col-sm-auto">
-          <div class="text-sm-end"><a (click)="openModal(addNewAddressModal)" class="btn btn-success btn-rounded"><i class="mdi mdi-plus me-1"></i> Add New Address</a></div>
-        </div>
-      </div>
-    </div>
-    <div class="row" >
-      <ng-container *ngFor="let address of userDetails.address">
-        <div class="col-lg-3 mb-3">
-          <div class="card task-box">
+    <div class="col-lg-12" *ngIf="user_details">
+        <div class="card a4-sheet">
             <div class="card-body">
-              <div ngbDropdown class="dropdown float-end">
-                <a href="javascript:void(0);" ngbDropdownToggle data-bs-toggle="dropdown" aria-expanded="false" dropdowntoggle="" class="dropdown-toggle arrow-none" aria-haspopup="true"><i
-                    class="mdi mdi-dots-vertical m-0 text-muted h5"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" style="left: auto; right: 0px;" ngbDropdownMenu>
-                  <a href="javascript:void(0);" id="taskedit" data-id="#uptask-2" class="dropdown-item edittask-details">Edit</a>
-                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="deleteAddress(address._id)" >Delete</a>
-                  <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="editAddress(address._id, {status: !address.status})" >{{address.status ? 'InActive': 'Active'}}</a>
-                </div>
-              </div>
-              <div class="float-end ms-2">
-                <span *ngIf="address.status" class="badge rounded-pill badge-soft-primary font-size-12">Active</span>
-                <span *ngIf="!address.status" class="badge rounded-pill badge-soft-danger font-size-12">InActive</span>
-              </div>
-              <div>
-                <h5 class="font-size-15"><a href="javascript: void(0);" class="text-dark">Permanent Address</a></h5>
-                <p class="text-muted mb-0">{{address.address_line}}, <br>  {{address.city}}, {{address.state}},  <br>  {{address.district}}, {{address.pincode}} </p>
-                <hr>
-                <h5 class="font-size-15 mb-2"><a href="javascript: void(0);" class="text-dark">Correspondence Address</a></h5>
-                <p class="text-muted mb-0">{{address.corr_address_line}}, <br>  {{address.corr_city}}, {{address.corr_state}},  <br>  {{address.corr_district}}, {{address.corr_pincode}} </p>
-              </div>
-            </div>
-          </div> 
+                <form [formGroup]="profileFormGroup" >
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <img src="assets/images/logo-dark.png" style="width: 100px;" alt="Logo" class="img-fluid mb-4">
+                            <p>VERTEX KALYAN COOPERTIVE URBAN THRIFT & CREDIT SOCIETY LTD. REGISTERED UNDER GOVERMENT OF INDIA, REGD. NO.-
+                                REGD.OFFICE- PLOT NO.-53, 3RD, FLOOR, MAIN ROAD, OPP. MOTHER DAIRY, PANDAV NAGAR, EAST DELHI- 110092, <a href="https://vertexsociety.com/">WWW.VERTEXSOCIETY.COM</a></p>
+                            <hr class="line">
+                        </div>
+                        <div class="col-lg-12 mb-4 d-flex justify-content-center align-items-center text-center">
+                            <div class="flex-fill"><strong>USER ID:</strong> {{user_details?.user_id}}</div>
+                            <div class="flex-fill oval">Membership Details</div>
+                            <div class="flex-fill"><strong>ACCOUNT NO:</strong> {{user_details?.account_number}}</div>
+                        </div>
+                        <div class="d-flex align-items-end mt-4">
+                        <div class="col-lg-6 mb-1">
+                            <p class="mb-2">To,</p>
+                            <p class="mb-0">The Secretary/President,</p>
+                            <p class="mb-0">VERTEX KALYAN COOPERTIVE URBAN THRIFT & CREDIT SOCIETY LTD.</p>
+                        </div>
+                        <div class="col-lg-6 d-flex justify-content-end">
+                            <div class="self-photo">
+                                <span *ngIf="!selected_photo">SELF PHOTO</span>
+                                <img *ngIf="selected_photo" src="{{selected_photo}}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                        <div class="col-lg-12" >
+                            <p class="mb-0">Dear Sir/Madam,</p>
+                            <p>&nbsp;&nbsp;&nbsp;&nbsp; I willingly apply for admission as a member of your society. I understand all the Rules & regulation of the Society and I follow
+                                all Rules & regulation of society. Do hereby declare that all documents and information given by me below is True to the best of
+                                my knowledge and belief. I understand that any false information or violation of the cooperative rules may result in cancellation
+                                of my membership.</p>
+                            <p class="mb-0">
+                                म" आपक& सोसायट, के सद/य के 0प म1 2वेश के 5लए /वे8छा से आवेदन करता हूँ। म" सोसायट, के सभी CनयमD और FवCनयमD को समझता हूँ
+                                और सोसायट, के सभी CनयमD और FवCनयमD का पालन करता हूँ। म" एतHHवारा घोषणा करता हूँ Lक मेरे Hवारा नीचे Nदए गए सभी द/तावेज़
+                                और जानकार, मेरे सवRSम Tान और FवUवास के अनुसार सXय ह"। म" समझता हूँ Lक Lकसी भी गलत जानकार, या सहकार, CनयमD के उZलंघन
+                                के प\रणाम/व0प मेर, सद/यता रHद हो सकती है।
+                            </p>
+                        </div>
+
+                        <div class="col-lg-12 mt-4">
+                            <div class="row mb-4">
+                                <label for="name" class="col-sm-3 col-form-label">Name of Applicant, Mr./Mrs./Miss </label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('name')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="guardian_name" class="col-sm-3 col-form-label">Guardian Name</label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('guardian_name')?.value }}</span>
+                                </div>
+                                <label for="guardian_relation" class="col-sm-2 col-form-label">Relationship</label>
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('guardian_relation')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="mother_name" class="col-sm-3 col-form-label">Mother Name </label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('mother_name')?.value }}</span>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <label for="date_of_birth" class="col-sm-3 col-form-label">Date of birth </label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('date_of_birth')?.value }}</span>
+                                </div>
+                                <label for="date_of_birth" class="col-sm-3 col-form-label">(Age: {{ userAge }} years)</label>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label class="col-sm-3 col-form-label">Gender</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('gender')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label class="col-sm-3 col-form-label">Marital Status</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('maritial_status')?.value }}</span>
+                                </div>
+                            </div>
+                            <div class="row mb-4" *ngIf="profileFormGroup.get('maritial_status')?.value === 'Married'">
+                                <label for="spouse_name" class="col-sm-3 col-form-label">Wife/Husband Name</label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('spouse_name')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="aadhar" class="col-sm-3 col-form-label">Aadhar Number</label>
+                                <div class="col-sm-6 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('aadhar')?.value }}</span>
+                                </div>
+                                <div class="col-sm-6 d-flex justify-content-end">
+                                    <div class="aadhar_box">
+                                        <img src="{{profileFormGroup.get('aadhar_front')?.value}}" style="max-width: 160px; max-height: 160px;" alt="">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 d-flex justify-content-end">
+                                    <div class="aadhar_box">
+                                        <img src="{{profileFormGroup.get('aadhar_back')?.value}}" style="max-width: 160px; max-height: 160px;" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <label for="pan" class="col-sm-3 col-form-label">PAN Number</label>
+                                <div class="col-sm-6 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('pan')?.value }}</span>
+                                </div>
+                                <div class="col-sm-6"></div>
+                                <div class="col-sm-6 d-flex justify-content-end">
+                                    <div class="aadhar_box">
+                                        <img src="{{profileFormGroup.get('pan_image')?.value}}" style="max-width: 160px; max-height: 160px;" alt="">
+                                    </div>
+                                </div>
+                                <!-- <label for="pan_image" *ngIf="profileFormGroup.get('pan_image')?.value" class="col-sm-1 col-form-label">PAN Image</label>
+                                <div class="col-sm-2" *ngIf="profileFormGroup.get('pan_image')?.value">
+                                    <button class="btn btn-sm btn-primary" (click)="viewImage(profileFormGroup.get('pan_image')?.value, viewImageModal)">
+                                        <i class="mdi mdi-eye"></i> PAN Image
+                                    </button>
+                                </div> -->
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="mobile_number" class="col-sm-3 col-form-label">Mobile Number</label>
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('mobile_number')?.value }}, {{ profileFormGroup.get('mobile_number_2')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="state" class="col-sm-3 col-form-label">Location Details</label>
+                                <div class="row col-sm-9">
+                                    <div class="col-sm-3 mb-1 d-flex flex-column">
+                                        <label for="">State</label>
+                                        <!-- <span>{{ getStateName(profileFormGroup.get('state')?.value) }}</span> -->
+                                    </div>
+                                    <div class="col-sm-4 mb-1 d-flex flex-column">
+                                        <label for="">District</label>
+                                        <!-- <span>{{ getDistrictName(profileFormGroup.get('district')?.value) }}</span> -->
+                                    </div>
+                                    <div class="col-sm-4 mb-1 d-flex flex-column">
+                                        <label for="">Area</label>
+                                        <!-- <span>{{ getAreaName(profileFormGroup.get('area')?.value) }}</span> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="present_addr" class="col-sm-3 col-form-label">Present/Correspondance Address</label>
+                                <div class="col-sm-8">
+                                    <div formArrayName="present_addresses">
+                                        <div *ngFor="let address of profileFormGroup.get('present_addresses')['controls']; let i = index" [formGroupName]="i" class="row mb-2">
+                                            <div class="col-sm-12 mb-2">
+                                                <span class="form-control-plaintext">{{ address.get('address')?.value }}, {{ address.get('state')?.value }}, {{ address.get('district')?.value }}, {{ address.get('pincode')?.value }}</span>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="permanent_addr" class="col-sm-3 col-form-label">Permanent Address</label>
+                                <div class="col-sm-8">
+                                    <div formArrayName="permanent_addresses">
+                                        <div *ngFor="let address of profileFormGroup.get('permanent_addresses')['controls']; let i = index" [formGroupName]="i" class="row mb-2">
+                                            <div class="col-sm-12 mb-2">
+                                                <span class="form-control-plaintext">{{ address.get('address')?.value }}, {{ address.get('state')?.value }}, {{ address.get('district')?.value }}, {{ address.get('pincode')?.value }}</span>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="email_id" class="col-sm-3 col-form-label">Email ID</label>
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('email_id')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label for="whatsapp_no" class="col-sm-3 col-form-label">WhatsApp No.</label>
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('whatsapp_no')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <p><u>Name & Address of the employed or business address</u></p>
+
+                            <div class="row mb-4">
+                                <label for="office_addr" class="col-sm-3 col-form-label">Office Address</label>
+                                <div class="col-sm-8">
+                                    <div formArrayName="office_addresses">
+                                        <div *ngFor="let address of profileFormGroup.get('office_addresses')['controls']; let i = index" [formGroupName]="i" class="row mb-2">
+                                            <div class="col-sm-12 mb-2">
+                                                <span class="form-control-plaintext">{{ address.get('address')?.value }}, {{ address.get('state')?.value }}, {{ address.get('district')?.value }}, {{ address.get('pincode')?.value }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label class="col-sm-3 col-form-label" for="bank_details">Bank Details</label>
+                                <div class="col-sm-8">
+                                    <div formArrayName="banks">
+                                        <div *ngFor="let bank of profileFormGroup.get('banks')['controls']; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
+                                            <div class="col-sm-12">
+                                                <span class="form-control-plaintext"><strong>Bank Name :</strong>  {{ bank.get('bank_name')?.value }}</span>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <span class="form-control-plaintext"><strong>Account Number :</strong> {{ bank.get('account_number')?.value }}</span>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <span class="form-control-plaintext"><strong>IFSC Code :</strong> {{ bank.get('ifsc_code')?.value }}</span>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <span class="form-control-plaintext"><strong>Branch Name :</strong> {{ bank.get('branch_name')?.value }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label class="col-sm-3 col-form-label">Passbook/Cheque</label>
+                                <div class="col-sm-5 d-flex align-items-center">
+                                <!-- <input type="file" id="passbook_cheque" placeholder="Passbook/Cheque" class="form-control" (change)="uploadFile($event, 'passbook_cheque')"> -->
+                                <div class="passbook_box" style="cursor:pointer;" (click)="selfPassbookInput.click()">
+                                        <span  *ngIf="!selected_cheque">UPLOAD Passbook/Cheque</span>
+                                        <img *ngIf="selected_cheque" src="{{selected_cheque}}" alt="">
+                                    </div>
+                                    <input type="file" #selfPassbookInput style="display:none" (change)="onSelfPassbookSelected($event)">
+                                </div>
+                            </div>
+
+                            <div class="row mb-4 align-items-center">
+                                <label class="col-sm-3 col-form-label">Name of the Nominee</label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('nominee_name')?.value }}</span>
+                                </div>
+                                <label class="col-sm-2 col-form-label">Relationship</label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('nominee_relation')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4 align-items-center">
+                                <label class="col-sm-3 col-form-label">Nominee DOB</label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('nominee_dob')?.value }}</span>
+                                </div>
+                                <label class="col-sm-2 col-form-label">Nominee Mobile</label>
+                                <div class="col-sm-2 d-flex align-items-center">
+                                    <span>{{ profileFormGroup.get('nominee_mobile')?.value }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label class="col-sm-3 col-form-label">Are you disability?</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="radio" formControlName="is_divyang" name="is_divyang" id="disabilityYes" [value]="true" disabled>
+                                        <label class="form-check-label" for="disabilityYes">
+                                            Yes
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" formControlName="is_divyang" name="is_divyang"  id="disabilityNo" [value]="false" disabled>
+                                        <label class="form-check-label" for="disabilityNo">
+                                            No
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-2" *ngIf="profileFormGroup.get('is_divyang')?.value">
+                                        <label for="disability_type">Disability Type</label>
+                                    </div>
+                                    <div class="col-sm-6" *ngIf="profileFormGroup.get('is_divyang')?.value">
+                                        <span class="form-control-plaintext">{{ profileFormGroup.get('disability_type')?.value }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <label class="col-sm-3 col-form-label">Occupation</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <span class="form-control-plaintext">{{ profileFormGroup.get('occupation')?.value }}</span>
+                                </div>
+                            </div>
+
+
+
+                            <p class="mb-0">
+                                NOTE :- I apply for admission as a member of your society. I understand the Rules & By-laws of the Society and hereby agree to
+                                abide by them and any subsequent modifications thereto. I also hereby declare that I am neither a member of any other Co-
+                                operative Thrift & Credit Society operating or working in the State of Delhi nor taken any kind of Loan which is outstanding as on
+                                date. I request that the Managing Committee may please allot me ____ Shares of Rs. 500/- each and I also agree to deposit Rs. 200/-
+                                per month on account of Compulsory Deposit as well as Admission Fee of Rs. 100/- and other sums towards Building Fund,
+                                Welfare Fund, Miscellaneous Receipts etc. as applicable on the date of my admission as Member. I hereby nominate the
+                                following person to whom all money due to me by the society or payable by me to the society, in the event of my death, maybe
+                                paid or recovered as the case may be.
+                            </p>
+
+                        </div>
+
+                        <div class="col-lg-12 mt-4 mb-5">
+                            <p class="mb-0">I request that the mamaging committee may please allot me one share of rs.-500/-, and i also other sums towards building fund,
+                            kalyan fund, misc. ect., as applicable on the date of my admission as member. i hereby nominate the following person to whom
+                            all money due to me by the society or payable by me to the society,in the event of my death, may be paid or recovered, as the
+                            case may be.</p>
+                        </div>
+
+                        <div class="row mb-4 mt-6">
+                            <p class="col-sm-6 col-form-label">
+                                <strong>Date of Joining : </strong> {{profileFormGroup.get('created_date')?.value}} <br>
+                                <strong>Place : </strong>   {{profileFormGroup.get('signed_at')?.value}}
+                            </p>
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                <div class="sign_box">
+                                    <img *ngIf="selected_signature" src="{{selected_signature}}" alt="">
+                                </div>
+                            </div>
+                        </div>
+
+
+                    <div *ngIf="profileFormGroup.invalid && profileFormGroup.touched" class="alert alert-danger">
+                        Please correct the errors above before submitting the form.
+                    </div>
+
+                    </div>
+                </form>
+
         </div>
-      </ng-container>
-    </div>
-    <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;" *ngIf="userDetails.address.length === 0"  >
-      <img src="assets/img/not-found.png" width="300px" alt="">
-      <p class="text-mutes mt-2">No address is added.</p>
-    </div>
-  </ng-template>
+        </div> <!-- card -->
 
-<!-- Bank -->
-  <ng-template #TabContent3>
-    <div class="row p-3 mb-0 mt-2">
-      <div class="row mb-2">
-        <div class="col-sm"></div>
-        <div class="col-sm-auto">
-          <div class="text-sm-end"><a  (click)="openModal(addNewBankModal)" class="btn btn-success btn-rounded"><i class="mdi mdi-plus me-1"></i> Add New Bank</a></div>
-        </div>
-      </div>
-      <div class="row">
-        <ng-container *ngFor="let bank of userDetails.bank">
-          <div class="col-lg-3" >
-            <div class="card">
-              <div class="card-body">
-                <div ngbDropdown class="dropdown float-end">
-                  <a href="javascript:void(0);" ngbDropdownToggle data-bs-toggle="dropdown" aria-expanded="false" dropdowntoggle="" class="dropdown-toggle arrow-none" aria-haspopup="true"><i
-                      class="mdi mdi-dots-vertical m-0 text-muted h5"></i>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end" style="left: auto; right: 0px;" ngbDropdownMenu>
-                    <a href="javascript:void(0);" id="taskedit" data-id="#uptask-2" class="dropdown-item edittask-details">Edit</a>
-                    <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="deleteBank(bank._id)" >Delete</a>
-                    <a href="javascript:void(0);" data-id="#uptask-2" class="dropdown-item deletetask" (click)="editBank(bank._id, {status: !bank.status})" >{{bank.status ? 'InActive': 'Active'}}</a>
-                  </div>
-                </div>
-                <div class="float-end ms-2">
-                  <div class="float-end ms-2">
-                  <span *ngIf="bank.status" class="badge rounded-pill badge-soft-primary font-size-12">Active</span>
-                  <span *ngIf="!bank.status" class="badge rounded-pill badge-soft-danger font-size-12">InActive</span>
-                  </div>
-                </div>
-                <div>
-                  <h5 class="font-size-15">
-                    <a href="javascript: void(0);" class="text-dark">{{bank.bank_name}}</a></h5>
-                  <p class="text-muted mb-0">Branch Name :  {{bank.branch_name}}</p>
-                  <p class="text-muted mb-0">Acc Holder Name : {{bank.account_holder}} </p>
-                  <p class="text-muted mb-0">IFSC Code : {{bank.ifsc_code}}</p>
-                  <p class="text-muted mb-0">Account Number : {{bank.account_number}}</p>
-                  <p class="text-muted mb-0">Account Type : {{bank.account_type}}</p>
-                  <p class="text-muted mb-0">MICR : {{bank.micr_code}}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-      </div>
-
-      <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 150px;"  *ngIf="userDetails.bank.length === 0">
-        <img src="assets/img/not-found.png" width="300px" alt="">
-        <p class="text-mutes mt-2">No Bank is added.</p>
-      </div>
-    </div>
-  </ng-template>
-
-
-
-  <ng-template #addNewBankModal role="document" let-modal>
-    <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Add Bank</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-  <form [formGroup]="bankFormGroup">
-  <div class="modal-body">
-    <div class="row">
-      <div class="row col-lg-12">
-        <div class="mb-3 col-lg-6">
-          <label class="col-form-label">Account Holder Name:</label>
-          <input type="text" class="form-control" formControlName="account_holder" placeholder="Enter Account Holder Name">
-          <div class="text-danger" *ngIf="bankFormGroup.get('account_holder')?.touched && bankFormGroup.get('account_holder')?.invalid">
-            Bank name is required.
-          </div>
-        </div>
-
-        <div class="mb-3 col-lg-6">
-          <label class="col-form-label">Branch Name:</label>
-          <input type="text" class="form-control" formControlName="branch_name" placeholder="Enter Branch Name">
-          <div class="text-danger" *ngIf="bankFormGroup.get('branch_name')?.touched && bankFormGroup.get('branch_name')?.invalid">
-            Branch name is required.
-          </div>
-        </div>
-
-        <div class="mb-3 col-lg-6">
-          <label class="col-form-label">Bank Name:</label>
-          <input type="text" class="form-control" formControlName="bank_name" placeholder="Enter Bank Name">
-          <div class="text-danger" *ngIf="bankFormGroup.get('bank_name')?.touched && bankFormGroup.get('bank_name')?.invalid">
-            Bank address is required.
-          </div>
-        </div>
-
-        <div class="mb-3 col-lg-6">
-          <label class="col-form-label">IFSC Number:</label>
-          <input type="text" class="form-control" formControlName="ifsc_code" placeholder="Enter IFSC Number">
-          <div class="text-danger" *ngIf="bankFormGroup.get('ifsc_code')?.touched && bankFormGroup.get('ifsc_code')?.invalid">
-            Invalid IFSC code (e.g., SBIN0001234).
-          </div>
-        </div>
-
-        <div class="mb-3 col-lg-6">
-          <label class="col-form-label">Account Number:</label>
-          <input type="text" class="form-control" formControlName="account_number" placeholder="Enter Account Number">
-          <div class="text-danger" *ngIf="bankFormGroup.get('account_number')?.touched && bankFormGroup.get('account_number')?.invalid">
-            Account number must be 9–18 digits.
-          </div>
-        </div>
-
-        <div class="mb-3 col-lg-6">
-          <label class="col-form-label">Account Type:</label>
-          <select class="form-control" formControlName="account_type">
-            <option value="">Select Account Type</option>
-            <option value="savings">Savings</option>
-            <option value="current">Current</option>
-            <option value="salary">Salary</option>
-          </select>
-          <div class="text-danger" *ngIf="bankFormGroup.get('account_type')?.touched && bankFormGroup.get('account_type')?.invalid">
-            Account type is required.
-          </div>
-        </div>
-
-        <div class="mb-3 col-lg-6">
-          <label class="col-form-label">MICR Code (Optional):</label>
-          <input type="text" class="form-control" formControlName="micr_code" placeholder="Enter MICR Code">
-          <div class="text-danger" *ngIf="bankFormGroup.get('micr_code')?.touched && bankFormGroup.get('micr_code')?.invalid">
-            MICR code must be 9 digits.
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
-    <button type="submit" class="btn btn-primary" [disabled]="bankFormGroup.invalid" (click)="bankSubmit()" >Submit</button>
-  </div>
-</form>
-
-  </ng-template>
-
-
-  <ng-template #addNewAddressModal role="document" let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title" id="myModalLabel">Add Address</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-        (click)="modal.dismiss('Cross click')"></button>
-    </div>
-
-    <form [formGroup]="addressFormGroup">
-      <div class="modal-body">
-        <div class="row">
-          <div class="row col-lg-12">
-            <div class="card-title">Permanent Address</div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="address_line" class="col-form-label">Address:</label>
-              <input type="text" class="form-control" id="address_line" formControlName="address_line"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('address_line')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('address_line')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('address_line')?.errors?.required">Address is required.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="city" class="col-form-label">City:</label>
-              <input type="text" class="form-control" id="city" formControlName="city"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('city')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('city')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('city')?.errors?.required">City is required.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="pincode" class="col-form-label">PinCode:</label>
-              <input type="text" class="form-control" id="pincode" formControlName="pincode" (blur)="validatePincode($event.target.value)"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('pincode')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('pincode')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('pincode')?.errors?.required">Pincode is required.</div>
-                <div *ngIf="addressFormGroup.get('pincode')?.errors?.pattern">Invalid pincode format.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="state" class="col-form-label">State:</label>
-              <input type="text" class="form-control" id="state" formControlName="state"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('state')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('state')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('state')?.errors?.required">State is required.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="district" class="col-form-label">District:</label>
-              <input type="text" class="form-control" id="district" formControlName="district"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('district')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('district')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('district')?.errors?.required">District is required.</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Checkbox -->
-          <div class="mb-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="sameAsPermanent" (change)="copyAddress($event)">
-              <label class="form-check-label" for="sameAsPermanent">Same as Permanent Address</label>
-            </div>
-          </div>
-
-          <div class="row col-lg-12">
-            <div class="card-title">Correspondence Address</div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="corr_address_line" class="col-form-label">Address:</label>
-              <input type="text" class="form-control" id="corr_address_line" formControlName="corr_address_line"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_address_line')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_address_line')?.errors"
-                class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('corr_address_line')?.errors?.required">Address is required.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="corr_city" class="col-form-label">City:</label>
-              <input type="text" class="form-control" id="corr_city" formControlName="corr_city"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_city')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_city')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('corr_city')?.errors?.required">City is required.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="corr_pincode" class="col-form-label">Pincode:</label>
-              <input type="text" class="form-control" id="corr_pincode" formControlName="corr_pincode" (blur)="validateCorrPincode($event.target.value)"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_pincode')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_pincode')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('corr_pincode')?.errors?.required">Pincode is required.</div>
-                <div *ngIf="addressFormGroup.get('corr_pincode')?.errors?.pattern">Invalid pincode format.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="corr_state" class="col-form-label">State:</label>
-              <input type="text" class="form-control" id="corr_state" formControlName="corr_state"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_state')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_state')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('corr_state')?.errors?.required">State is required.</div>
-              </div>
-            </div>
-
-            <div class="mb-3 col-lg-6">
-              <label for="corr_district" class="col-form-label">District:</label>
-              <input type="text" class="form-control" id="corr_district" formControlName="corr_district"
-                [ngClass]="{'is-invalid': typeAddressSubmit && addressFormGroup.get('corr_district')?.invalid}">
-              <div *ngIf="typeAddressSubmit && addressFormGroup.get('corr_district')?.errors" class="invalid-feedback">
-                <div *ngIf="addressFormGroup.get('corr_district')?.errors?.required">District is required.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
-        <button type="button" class="btn btn-primary" (click)="submitAddress()">Submit</button>
-      </div>
-    </form>
-
-  </ng-template>
+    </div> <!-- col-lg-12 -->
+</div> <!-- container-fluid -->

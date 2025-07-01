@@ -58,6 +58,7 @@ export class AdminLoanTransanctionComponent implements OnInit {
   }
 
   refresh() {
+    this.searchFormGroup.reset();
     this.page = 1;
     this.getTransanctionList();
   }

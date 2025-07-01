@@ -52,6 +52,7 @@ export class KycRequestComponent implements OnInit {
 
     this.userService.getKycRequests(this.page, this.pageSize, queryParams).subscribe({
       next: (response: any) => {
+        console.log('KYC Requests:', response);
         if (response && response.data) {
          this.kycList = response.data.kyc || [];
           this.total = response.data.total || 0;

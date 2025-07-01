@@ -45,6 +45,7 @@ const routes: Routes = [
   { path: 'careers', loadChildren: () => import('./careers/careers.module').then(m => m.CareersModule) },
   { path: 'awards', loadChildren: () => import('./awards/awards.module').then(m => m.AwardsModule) },
   { path: 'master-data', loadChildren: () => import('./masters/masters.module').then(m => m.MastersModule) },
+  { path: 'payments', loadChildren: () => import('./payments/payments.module').then(m => m.PaymentsModule) },
 ];
 
 @NgModule({

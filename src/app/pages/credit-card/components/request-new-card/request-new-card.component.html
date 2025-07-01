@@ -148,73 +148,88 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="interest_rate" class="form-label">Interest Rate (%)</label>
-                    <input
-                        type="number"
-                        id="interest_rate"
-                        class="form-control"
-                        formControlName="interest_rate"
-                        [class.is-invalid]="approveCCFormGroup.get('interest_rate')?.invalid && (approveCCFormGroup.get('interest_rate')?.touched || approveCCFormGroup.get('interest_rate')?.dirty)"
-                        min="0"
-                        max="100"
-                        required
-                    />
-                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('interest_rate')?.errors?.['required']">
-                        Interest rate is required.
+                <div class="row">
+                    <div class="mb-3 col-lg-6">
+                        <label for="interest_rate" class="form-label">Interest Rate (%)</label>
+                        <input
+                            type="number"
+                            id="interest_rate"
+                            class="form-control"
+                            formControlName="interest_rate"
+                            [class.is-invalid]="approveCCFormGroup.get('interest_rate')?.invalid && (approveCCFormGroup.get('interest_rate')?.touched || approveCCFormGroup.get('interest_rate')?.dirty)"
+                            min="0"
+                            max="100"
+                            required
+                        />
+                        <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('interest_rate')?.errors?.['required']">
+                            Interest rate is required.
+                        </div>
+                        <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('interest_rate')?.errors?.['min']">
+                            Interest rate cannot be negative.
+                        </div>
+                        <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('interest_rate')?.errors?.['max']">
+                            Interest rate cannot exceed 100%.
+                        </div>
                     </div>
-                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('interest_rate')?.errors?.['min']">
-                        Interest rate cannot be negative.
-                    </div>
-                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('interest_rate')?.errors?.['max']">
-                        Interest rate cannot exceed 100%.
+    
+                    <div class="mb-3 col-lg-6">
+                        <label for="penalty" class="form-label">Penalty (In Rupees)</label>
+                        <input
+                            type="number"
+                            id="penalty"
+                            class="form-control"
+                            formControlName="penalty"
+                            [class.is-invalid]="approveCCFormGroup.get('penalty')?.invalid && (approveCCFormGroup.get('penalty')?.touched || approveCCFormGroup.get('penalty')?.dirty)"
+                            min="0"
+                            max="100"
+                            required
+                        />
+                        <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['required']">
+                            Penalty is required.
+                        </div>
+                        <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['min']">
+                            Penalty cannot be negative.
+                        </div>
+                        <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['max']">
+                            Penalty cannot exceed 100%.
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="penalty" class="form-label">Penalty (In Rupees)</label>
-                    <input
-                        type="number"
-                        id="penalty"
-                        class="form-control"
-                        formControlName="penalty"
-                        [class.is-invalid]="approveCCFormGroup.get('penalty')?.invalid && (approveCCFormGroup.get('penalty')?.touched || approveCCFormGroup.get('penalty')?.dirty)"
-                        min="0"
-                        max="100"
-                        required
-                    />
-                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['required']">
-                        Penalty is required.
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input
+                            type="date"
+                            [min]="minDate"
+                            id="start_date"
+                            class="form-control"
+                            formControlName="start_date"
+                            [class.is-invalid]="approveCCFormGroup.get('start_date')?.invalid && (approveCCFormGroup.get('start_date')?.touched || approveCCFormGroup.get('start_date')?.dirty)"
+                            required
+                        />
+                        <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('start_date')?.errors?.['required']">
+                            Start date is required.
+                        </div>
                     </div>
-                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['min']">
-                        Penalty cannot be negative.
-                    </div>
-                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('penalty')?.errors?.['max']">
-                        Penalty cannot exceed 100%.
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="start_date" class="form-label">Start Date</label>
-                    <input
-                        type="date"
-                        [min]="minDate"
-                        [max]="maxDate"
-                        id="start_date"
-                        class="form-control"
-                        formControlName="start_date"
-                        [class.is-invalid]="approveCCFormGroup.get('start_date')?.invalid && (approveCCFormGroup.get('start_date')?.touched || approveCCFormGroup.get('start_date')?.dirty)"
-                        required
-                    />
-                    <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('start_date')?.errors?.['required']">
-                        Start date is required.
+                    <div class="col-md-6 mb-3">
+                        <label for="franchiseReferral" class="form-label">Franchise Referral Rupees</label>
+                        <input type="number" id="franchiseReferral" class="form-control" formControlName="franchise_refer_per"
+                            placeholder="Enter indirect referral">
+                        <div *ngIf="approveCCFormGroup.get('franchise_refer_per')?.touched && approveCCFormGroup.get('franchise_refer_per')?.invalid"
+                            class="text-danger">
+                            <small *ngIf="approveCCFormGroup.get('franchise_refer_per')?.errors?.['required']">Indirect
+                                referral amount is required.</small>
+                            <small *ngIf="approveCCFormGroup.get('franchise_refer_per')?.errors?.['min']">Must be at least
+                                0.</small>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="indirectReferral" class="form-label">Indirect Referral Rupees</label>
                         <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
-                            placeholder="Enter indirect referral %">
+                            placeholder="Enter indirect referral">
                         <div *ngIf="approveCCFormGroup.get('indirect_refer_per')?.touched && approveCCFormGroup.get('indirect_refer_per')?.invalid"
                             class="text-danger">
                             <small *ngIf="approveCCFormGroup.get('indirect_refer_per')?.errors?.['required']">Indirect
@@ -228,7 +243,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="directReferral" class="form-label">Direct Referral Amount</label>
                         <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
-                            placeholder="Enter direct referral %">
+                            placeholder="Enter direct referral">
                         <div *ngIf="approveCCFormGroup.get('direct_refer_per')?.touched && approveCCFormGroup.get('direct_refer_per')?.invalid"
                             class="text-danger">
                             <small *ngIf="approveCCFormGroup.get('direct_refer_per')?.errors?.['required']">Direct referral %

@@ -70,7 +70,7 @@
                                           <td>{{loan.loan_id}}</td>
                                           <td>{{loan.user.name}} ({{loan.user.user_id}})  </td>
                                           <td>₹{{loan.requested_loan_amount}}</td>
-                                          <td>{{loan.duration}} days</td>
+                                          <td>{{loan.duration}} month(s)</td>
                                           <td>{{loan.interval}}</td>
                                           <td>{{loan.loan_type}}</td>
                                           <td>{{loan.purpose}}</td>
@@ -138,82 +138,143 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group mb-3">
-                        <label for="status_">Status</label>
-                        <select class="form-control" id="status_" formControlName="status">
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
-                            <option value="Pending">Pending</option>
-                        </select>
+                        <label>Status</label>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="status_approved" value="Approved"
+                                    formControlName="status">
+                                <label class="form-check-label" for="status_approved">Approved</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="status_rejected" value="Rejected"
+                                    formControlName="status">
+                                <label class="form-check-label" for="status_rejected">Rejected</label>
+                            </div>
+                            <!-- <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="status_pending" value="Pending"
+                                    formControlName="status">
+                                <label class="form-check-label" for="status_pending">Pending</label>
+                            </div> -->
+                        </div>
                         <div class="text-danger"
                             *ngIf="statusFormGroup.get('status')?.touched && statusFormGroup.get('status')?.invalid">
-                            <small *ngIf="statusFormGroup.get('status')?.errors?.['required']">Status is
-                                required.</small>
+                            <small *ngIf="statusFormGroup.get('status')?.errors?.['required']">Status is required.</small>
                         </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="requested_loan_amount">Requested Loan Amount (₹)</label>
-                        <input type="number" class="form-control" id="requested_loan_amount"
-                            formControlName="requested_loan_amount" placeholder="Enter approved amount">
-                        <div class="text-danger"
-                            *ngIf="statusFormGroup.get('requested_loan_amount')?.touched && statusFormGroup.get('requested_loan_amount')?.invalid">
-                            <small *ngIf="statusFormGroup.get('requested_loan_amount')?.errors?.['required']">Approved
-                                Loan Amount is required.</small>
-                            <small *ngIf="statusFormGroup.get('requested_loan_amount')?.errors?.['pattern']">Enter a
-                                valid number.</small>
+                    <div class="row">
+
+                        <div class="form-group mb-3 col-lg-6">
+                            <label for="requested_loan_amount">Requested Loan Amount (₹)</label>
+                            <input type="number" class="form-control" id="requested_loan_amount"
+                                formControlName="requested_loan_amount" placeholder="Enter approved amount">
+                            <div class="text-danger"
+                                *ngIf="statusFormGroup.get('requested_loan_amount')?.touched && statusFormGroup.get('requested_loan_amount')?.invalid">
+                                <small *ngIf="statusFormGroup.get('requested_loan_amount')?.errors?.['required']">Approved
+                                    Loan Amount is required.</small>
+                                <small *ngIf="statusFormGroup.get('requested_loan_amount')?.errors?.['pattern']">Enter a
+                                    valid number.</small>
+                            </div>
                         </div>
+
+                        <div class="form-group mb-3 col-lg-6">
+                            <label for="approved_loan_amount">Approved Loan Amount (₹)</label>
+                            <input type="number" class="form-control" id="approved_loan_amount"
+                                formControlName="approved_loan_amount" placeholder="Enter approved amount">
+                            <div class="text-danger"
+                                *ngIf="statusFormGroup.get('approved_loan_amount')?.touched && statusFormGroup.get('approved_loan_amount')?.invalid">
+                                <small *ngIf="statusFormGroup.get('approved_loan_amount')?.errors?.['required']">Approved
+                                    Loan Amount is required.</small>
+                                <small *ngIf="statusFormGroup.get('approved_loan_amount')?.errors?.['pattern']">Enter a
+                                    valid number.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3 col-lg-6">
+                            <label for="interest_rate">Interest Rate (%)</label>
+                            <input type="number" class="form-control" id="interest_rate" formControlName="interest_rate"
+                                placeholder="Enter interest rate">
+                            <div class="text-danger"
+                                *ngIf="statusFormGroup.get('interest_rate')?.touched && statusFormGroup.get('interest_rate')?.invalid">
+                                <small *ngIf="statusFormGroup.get('interest_rate')?.errors?.['required']">Interest Rate is
+                                    required.</small>
+                                <small *ngIf="statusFormGroup.get('interest_rate')?.errors?.['pattern']">Enter a valid
+                                    number (e.g. 5, 7.25).</small>
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="form-group mb-3 col-lg-6">
+                            <label for="start_date">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" [min]="minDate" formControlName="start_date">
+                            <div class="text-danger"
+                                *ngIf="statusFormGroup.get('start_date')?.touched && statusFormGroup.get('start_date')?.invalid">
+                                <small *ngIf="statusFormGroup.get('start_date')?.errors?.['required']">Start Date is
+                                    required.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3 col-lg-6">
+                            <label for="penalty">Penalty (₹)</label>
+                            <input type="number" class="form-control" id="penalty" formControlName="penalty"
+                                placeholder="Enter penalty percentage">
+                            <div class="text-danger"
+                                *ngIf="statusFormGroup.get('penalty')?.touched && statusFormGroup.get('penalty')?.invalid">
+                                <small *ngIf="statusFormGroup.get('penalty')?.errors?.['required']">Penalty is
+                                    required.</small>
+                                <small *ngIf="statusFormGroup.get('penalty')?.errors?.['pattern']">Enter a valid number
+                                    (e.g. 2, 3.5).</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="franchiseReferral" class="form-label">Franchise Referral %</label>
+                            <input type="number" id="franchiseReferral" class="form-control" formControlName="franchise_refer_per"
+                                placeholder="Enter indirect referral">
+                            <div *ngIf="statusFormGroup.get('franchise_refer_per')?.touched && statusFormGroup.get('franchise_refer_per')?.invalid"
+                                class="text-danger">
+                                <small *ngIf="statusFormGroup.get('franchise_refer_per')?.errors?.['required']">Indirect
+                                    referral amount is required.</small>
+                                <small *ngIf="statusFormGroup.get('franchise_refer_per')?.errors?.['min']">Must be at least
+                                    0.</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="indirectReferral" class="form-label">Indirect Referral %</label>
+                            <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
+                                placeholder="Enter indirect referral">
+                            <div *ngIf="statusFormGroup.get('indirect_refer_per')?.touched && statusFormGroup.get('indirect_refer_per')?.invalid"
+                                class="text-danger">
+                                <small *ngIf="statusFormGroup.get('indirect_refer_per')?.errors?.['required']">Indirect
+                                    referral amount is required.</small>
+                                <small *ngIf="statusFormGroup.get('indirect_refer_per')?.errors?.['min']">Must be at least
+                                    0.</small>
+                            </div>
+                        </div>
+
+                        <!-- Direct Referral -->
+                        <div class="col-md-6 mb-3">
+                            <label for="directReferral" class="form-label">Direct Referral %</label>
+                            <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
+                                placeholder="Enter direct referral">
+                            <div *ngIf="statusFormGroup.get('direct_refer_per')?.touched && statusFormGroup.get('direct_refer_per')?.invalid"
+                                class="text-danger">
+                                <small *ngIf="statusFormGroup.get('direct_refer_per')?.errors?.['required']">Direct referral %
+                                    is required.</small>
+                                <small *ngIf="statusFormGroup.get('direct_refer_per')?.errors?.['min']">Must be at least
+                                    0.</small>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="interest_rate">Interest Rate (%)</label>
-                        <input type="number" class="form-control" id="interest_rate" formControlName="interest_rate"
-                            placeholder="Enter interest rate">
-                        <span class="text-muted">Enter the interest rate as a percentage</span>
-                        <div class="text-danger"
-                            *ngIf="statusFormGroup.get('interest_rate')?.touched && statusFormGroup.get('interest_rate')?.invalid">
-                            <small *ngIf="statusFormGroup.get('interest_rate')?.errors?.['required']">Interest Rate is
-                                required.</small>
-                            <small *ngIf="statusFormGroup.get('interest_rate')?.errors?.['pattern']">Enter a valid
-                                number (e.g. 5, 7.25).</small>
-                        </div>
-                    </div>
+                    
 
-                    <div class="form-group mb-3">
-                        <label for="approved_loan_amount">Approved Loan Amount (₹)</label>
-                        <input type="number" class="form-control" id="approved_loan_amount"
-                            formControlName="approved_loan_amount" placeholder="Enter approved amount">
-                        <div class="text-danger"
-                            *ngIf="statusFormGroup.get('approved_loan_amount')?.touched && statusFormGroup.get('approved_loan_amount')?.invalid">
-                            <small *ngIf="statusFormGroup.get('approved_loan_amount')?.errors?.['required']">Approved
-                                Loan Amount is required.</small>
-                            <small *ngIf="statusFormGroup.get('approved_loan_amount')?.errors?.['pattern']">Enter a
-                                valid number.</small>
-                        </div>
-                    </div>
 
-                    <div class="form-group mb-3">
-                        <label for="start_date">Start Date</label>
-                        <input type="date" class="form-control" id="start_date" formControlName="start_date">
-                        <div class="text-danger"
-                            *ngIf="statusFormGroup.get('start_date')?.touched && statusFormGroup.get('start_date')?.invalid">
-                            <small *ngIf="statusFormGroup.get('start_date')?.errors?.['required']">Start Date is
-                                required.</small>
-                        </div>
-                    </div>
 
-                    <div class="form-group mb-3">
-                        <label for="penalty">Penalty (₹)</label>
-                        <input type="number" class="form-control" id="penalty" formControlName="penalty"
-                            placeholder="Enter penalty percentage">
-                        <span class="text-muted">Enter the penalty amount for late payments</span>
-                        <div class="text-danger"
-                            *ngIf="statusFormGroup.get('penalty')?.touched && statusFormGroup.get('penalty')?.invalid">
-                            <small *ngIf="statusFormGroup.get('penalty')?.errors?.['required']">Penalty is
-                                required.</small>
-                            <small *ngIf="statusFormGroup.get('penalty')?.errors?.['pattern']">Enter a valid number
-                                (e.g. 2, 3.5).</small>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>

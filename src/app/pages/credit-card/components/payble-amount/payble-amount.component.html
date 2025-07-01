@@ -14,25 +14,24 @@
                                     <small *ngIf="payFormGroup.get('user_id')?.errors?.['required']">User ID is required.</small>
                                 </div>
                                 <div *ngIf="userDetails" class="mt-1">
-                                    <small><strong>Name:</strong> {{ userDetails.name }}</small>
+                                    <small><strong>Name:</strong> {{ userDetails.name }}</small> <br>
+                                    <small><strong>Outstanding Amount:</strong> ₹{{ totalPayableAmount | number }}</small>
                                 </div>
                             </div>
-                            <div class="mb-3 col-lg-12">
+                            <!-- <div class="mb-3 col-lg-12">
                                 <label for="cardId" class="form-label">Card ID</label>
                                 <ng-select (change)="getTotalPaybleAmount($event)" [items]="creditCardList" [bindValue]="'_id'" [bindLabel]="'label'" formControlName="card_id"></ng-select>
                                 <div *ngIf="payFormGroup.get('card_id')?.touched && payFormGroup.get('card_id')?.invalid" class="text-danger">
                                     <small *ngIf="payFormGroup.get('card_id')?.errors?.['required']">Card ID is required.</small>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="mb-3 col-lg-12">
                                 <label for="amount" class="form-label">Amount</label>
                                 <input type="number" class="form-control" id="amount" formControlName="amount" placeholder="Enter amount" min="1">
                                 <div *ngIf="payFormGroup.get('amount')?.touched && payFormGroup.get('amount')?.invalid" class="text-danger">
                                     <small *ngIf="payFormGroup.get('amount')?.errors?.['required']">Amount is required.</small>
-                                    <small *ngIf="payFormGroup.get('amount')?.errors?.['min']">Amount must be at least 1.</small>
-                                </div>
-                                <div *ngIf="userDetails" class="mt-1">
-                                    <small><strong>Total Bill Amount:</strong> ₹{{ totalPayableAmount }}</small>
+                                    <small *ngIf="payFormGroup.get('amount')?.errors?.['min']">Amount must be at least ₹1.</small>
+                                    <small *ngIf="payFormGroup.get('amount')?.errors?.['max']">Amount can be paid till ₹{{totalPayableAmount | number}}.</small>
                                 </div>
                             </div>
                             <div class="mb-3 col-lg-6">

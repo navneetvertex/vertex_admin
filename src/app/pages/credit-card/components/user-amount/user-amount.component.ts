@@ -24,7 +24,7 @@ export class UserAmountComponent implements OnInit {
 
     this.searchFormGroup = new FormGroup({
       search : new FormControl(''),
-      status: new FormControl(''),
+      status: new FormControl('Requested'),
     });
 
     this.getUserFundRequests();
@@ -77,9 +77,22 @@ export class UserAmountComponent implements OnInit {
       if (result.isConfirmed) {
         this.creditCardService.approveUserFundRequest(id).subscribe({
           next: (response: any) => {
-            this.getUserFundRequests();
+            Swal.fire({
+              title: 'Approved!',
+              text: 'Fund request has been approved successfully.',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              this.getUserFundRequests();
+            })
           },
           error: (error) => {
+            Swal.fire({
+              title: 'Error!',
+              text: 'There was an error approving the fund request.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
             console.error('Error approving fund request:', error);
           }
         });

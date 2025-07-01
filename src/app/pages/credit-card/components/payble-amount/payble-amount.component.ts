@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CreditCardService } from 'src/app/core/services/credit-card.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-payble-amount',
@@ -54,12 +55,16 @@ export class PaybleAmountComponent implements OnInit {
       next: (res: any) => {
         if (res.status) {
           this.creditCardList = res.data.cc;
-          this.creditCardList = this.creditCardList.map((card: any) => {
-            return {
-              _id: card._id,
-              label: `${card.card_number} (Approved Card Limit: ₹${card.approved_credit_limit})`
-            };
-          });
+          if (this.creditCardList.length > 0) {
+            this.payFormGroup.get('card_id')?.setValue(this.creditCardList[0]._id);
+            this.getTotalPaybleAmount(this.creditCardList[0]);
+          }
+          // this.creditCardList = this.creditCardList.map((card: any) => {
+          //   return {
+          //     _id: card._id,
+          //     label: `${card.card_number} (Approved Card Limit: ₹${card.approved_credit_limit})`
+          //   };
+          // });
         }
       }, error: (err) => {
         console.error('Error fetching active cards:', err);
@@ -68,10 +73,16 @@ export class PaybleAmountComponent implements OnInit {
   }
 
   getTotalPaybleAmount(card_id: any) {
+    if (!card_id || !card_id._id) {
+      this.totalPayableAmount = 0;
+      return;
+    }
     this.creditCardService.getTotalPaybleAmount(card_id._id).subscribe({
       next: (res: any) => {
         if (res.status) {
           this.totalPayableAmount = res.data.outstanding;
+          this.payFormGroup.get('amount')?.setValidators([Validators.required, Validators.min(1), Validators.max(this.totalPayableAmount)]);
+          this.payFormGroup.updateValueAndValidity();
         }
       }, error: (err) => {
         console.error('Error fetching total payable amount:', err);
@@ -101,6 +112,12 @@ export class PaybleAmountComponent implements OnInit {
       next: (res: any) => {
         if (res.status) {
           this.toast.success('Payment successful!');
+          Swal.fire({
+            title: 'Payment Successful',
+            text: `Your payment of ₹${this.payFormGroup.value.amount} has been successfully processed.`,
+            icon: 'success',
+            confirmButtonText: 'OK'
+          });
           this.payFormGroup.reset();
           this.totalPayableAmount = 0;
         } else {
@@ -109,6 +126,12 @@ export class PaybleAmountComponent implements OnInit {
       }, error: (err) => {
         console.error('Error processing payment:', err);
         this.toast.error('An error occurred while processing the payment.');
+        Swal.fire({
+          title: 'Payment Failed',
+          text: 'There was an error processing your payment. Please try again later.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
       }
     });
   }

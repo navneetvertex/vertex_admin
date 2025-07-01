@@ -3,6 +3,7 @@ import { LoanService } from 'src/app/core/services/loan.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { interval } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-loan-requested',
@@ -23,11 +24,16 @@ export class LoanRequestedComponent implements OnInit {
   pageSize: number = 10;
   selectedLoan: any;
   searchFormGroup: FormGroup;
+  minDate: string;
   status = ['Pending', 'Approved', 'Rejected', 'Completed', 'Defaulted']
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Loans' }, { label: 'Requested Loan', active: true }];
     
+    const now = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+    this.minDate = tomorrow.toISOString().split('T')[0];
 
     this.statusFormGroup = new FormGroup({
       _id: new FormControl(null, Validators.required),
@@ -36,7 +42,10 @@ export class LoanRequestedComponent implements OnInit {
       requested_loan_amount: new FormControl({value: '', disabled: true}),
       approved_loan_amount: new FormControl(null, [Validators.required, Validators.min(0)]),
       start_date: new FormControl(null, Validators.required),
-      penalty: new FormControl(null, [Validators.min(0), Validators.max(100)])
+      penalty: new FormControl(null, [Validators.min(0), Validators.max(100)]),
+      franchise_refer_per: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100)]),
+      direct_refer_per: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100)]),
+      indirect_refer_per: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100)]),
     });
 
     this.searchFormGroup = new FormGroup({
@@ -62,7 +71,7 @@ export class LoanRequestedComponent implements OnInit {
     this.statusFormGroup.reset();
     this.statusFormGroup.patchValue({
       _id: loan._id,
-      status: loan.status,
+      // status: loan.status,
       requested_loan_amount: loan.requested_loan_amount,
     });
   }
@@ -79,6 +88,14 @@ export class LoanRequestedComponent implements OnInit {
     this.loanService.updateLoanStatus(loanData._id, loanData).subscribe({
       next: (res) => {
         console.log('Loan status updated successfully:', res);
+        Swal.fire({
+          title: 'Success',
+          text: `Loan status updated to ${loanData.status}`,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        this.statusFormGroup.reset();
+        this.selectedLoan = null;
         this.modalService.dismissAll();
         this.getLoanList();
       },

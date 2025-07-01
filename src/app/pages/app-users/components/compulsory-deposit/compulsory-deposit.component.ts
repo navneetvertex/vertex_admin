@@ -75,7 +75,7 @@ export class CompulsoryDepositComponent implements OnInit {
     this.breadCrumbItems = [{ label: 'Member' }, { label: 'Compulsory Deposit', active: true }];
     this.saveDepositSettings = new FormGroup({
       annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      interval: new FormControl('', [Validators.required]),
+      interval: new FormControl('Monthly', [Validators.required]),
       penalty_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       amount: new FormControl('300', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$'), Validators.min(300)]),
     });
@@ -92,7 +92,6 @@ export class CompulsoryDepositComponent implements OnInit {
       payment_interval: new FormControl({value:'', disabled: true}, [Validators.required]),
       paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl('', [Validators.required]),
-      transanction_id: new FormControl('', [Validators.required]),
       notes: new FormControl(''),
     });
 
@@ -137,7 +136,7 @@ export class CompulsoryDepositComponent implements OnInit {
   }
 
   openModal(content: any) {
-    this.modalService.open(content, { size: 'lg', centered: true });
+    this.modalService.open(content);
   }
 
   addDeposit() {

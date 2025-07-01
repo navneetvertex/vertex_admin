@@ -207,6 +207,12 @@ export const MENU: MenuItem[] = [
                 link: '/master-data/areas'
             }
         ]
+    },
+    {
+        id: 12,
+        label: 'Payment Management',
+        icon: 'bx-credit-card',
+        link: '/payments'
     }
 
 

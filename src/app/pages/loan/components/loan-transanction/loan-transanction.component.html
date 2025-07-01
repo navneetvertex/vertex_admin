@@ -80,7 +80,8 @@
                                               [ngClass]="{
                                                 'badge-soft-primary': loan.transaction_type === 'credit' , 
                                                 'badge-soft-info': loan.transaction_type === 'interest' , 
-                                                'badge-soft-warning': loan.transaction_type === 'debit'
+                                                'badge-soft-warning': loan.transaction_type === 'debit' ,
+                                                'badge-soft-dark': loan.transaction_type === 'ccredit' 
                                               }">
                                               {{ loan.transaction_type | titlecase }}
                                             </a>
@@ -97,6 +98,7 @@
                                           </td>
                                           <td>
                                             <span *ngIf="loan.transaction_type === 'debit'  ">₹{{loan.amount}}</span>
+                                            <span *ngIf="loan.transaction_type === 'ccredit'  ">₹{{loan.amount}}</span>
                                           </td>
                                           <td>{{loan.payment_method}}</td>
                                           <td>{{loan.transaction_date | date: 'medium'}}</td>

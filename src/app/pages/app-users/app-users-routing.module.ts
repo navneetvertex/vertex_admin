@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'kyc', component: KycRequestComponent },
   { path: 'profile/:user', component: ViewProfileComponent },
   { path: 'profile/form/:user', component: EditFormComponent },
-  { path: 'edit/:user', component: EditProfileComponent },
+  { path: 'view/:user', component: EditProfileComponent },
   { path: 'compulsory-deposit/:user', component: CompulsoryDepositComponent },
   { path: 'recurring-deposits/:user', component: RecurringDepositComponent },
   { path: 'fixed-deposits/:user', component: FixedDepositComponent },

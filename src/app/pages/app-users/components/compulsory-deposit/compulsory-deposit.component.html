@@ -270,10 +270,9 @@
     <form [formGroup]="saveDepositSettings">
         <div class="modal-body">
             <div class="row">
-                <div class="col-md-12">
 
                     <!-- Annual Rate -->
-                    <div class="mb-3">
+                    <div class="mb-3 col-lg-12">
                         <label class="col-form-label">Annual Rate (%)</label>
                         <input type="number" class="form-control" placeholder="Settings" formControlName="annual_rate">
                         <span class="text-muted">Enter the yearly interest rate as a percentage</span>
@@ -288,7 +287,7 @@
                     </div>
 
                     <!-- Payment Interval -->
-                    <div class="mb-3">
+                    <div class="mb-3 col-lg-6">
                         <label class="col-form-label">Payment Interval</label>
                         <select class="form-control select2" formControlName="interval">
                             <option value="" disabled>Select Interval</option>
@@ -300,7 +299,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3 col-lg-6">
                         <label class="col-form-label">Penalty Amount (In Rupees)</label>
                         <input type="number" class="form-control" placeholder="Penalty Amount" formControlName="penalty_amount">
                         <div class="text-danger"
@@ -310,7 +309,7 @@
                     </div>
 
                     <!-- Amount -->
-                    <div class="mb-3">
+                    <div class="mb-3 col-lg-12">
                         <label class="col-form-label">Amount</label>
                         <input type="number" class="form-control" placeholder="Amount" formControlName="amount">
                         <div class="text-danger"
@@ -325,7 +324,6 @@
                     </div>
 
                 </div>
-            </div>
         </div>
 
         <div class="modal-footer">
@@ -449,14 +447,14 @@
                     </div>
                 </div>
 
-                <div class="mb-3 col-lg-6">
+                <div class="mb-3 col-lg-12">
                     <label for="payment-method" class="col-form-label">Payment Method</label>
                     <select class="form-control" id="payment-method" formControlName="payment_method">
                         <option value="" disabled>Select Method</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
+                        <!-- <option value="Bank Transfer">Bank Transfer</option> -->
                         <option value="Cash">Cash</option>
-                        <option value="UPI">UPI</option>
-                        <option value="Cheque">Cheque</option>
+                        <!-- <option value="UPI">UPI</option>
+                        <option value="Cheque">Cheque</option> -->
                     </select>
                     <div *ngIf="depositFormGroup.get('payment_method')?.touched && depositFormGroup.get('payment_method')?.invalid"
                         class="text-danger">
@@ -464,7 +462,7 @@
                     </div>
                 </div>
 
-                <div class="mb-3 col-lg-6">
+                <!-- <div class="mb-3 col-lg-6">
                     <label for="transaction-id" class="col-form-label">Transaction ID</label>
                     <input type="text" class="form-control" id="transaction-id" formControlName="transanction_id"
                         placeholder="Transaction Id">
@@ -472,7 +470,7 @@
                         class="text-danger">
                         <small>Required</small>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="mb-3 col-lg-12">
                     <label for="notes" class="col-form-label">Notes</label>

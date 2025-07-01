@@ -39,6 +39,7 @@ export class JwtInterceptor implements HttpInterceptor {
         }
         if (error instanceof HttpErrorResponse && error.status === 403) {
           this.toast.error('You do not have permission to access this resource.', 'Access Denied');
+          this.authService.logout();
         } else if (error instanceof HttpErrorResponse && error.status === 404) {
           this.toast.error('The requested resource was not found.', 'Not Found');
         } else if (error instanceof HttpErrorResponse && error.status >= 500) {
@@ -74,7 +75,7 @@ export class JwtInterceptor implements HttpInterceptor {
           this.isRefreshing = false;
 
           const newToken = tokenData?.accessToken;
-          this.authService.updateAccessToken(newToken);
+          this.authService.updateAccessToken(newToken, tokenData?.user);
 
           this.refreshTokenSubject.next(newToken);
           return next.handle(this.addToken(request, newToken));

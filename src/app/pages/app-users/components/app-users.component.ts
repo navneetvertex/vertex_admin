@@ -87,6 +87,15 @@ export class AppUsersComponent implements OnInit {
     });
   }
 
+  advisorModalFn(user: any, content: any) {
+    if(user.advisor_status !== 'Requested') {
+      return;
+    }
+    this.currUserId = user._id;
+    this.currStatus = user.advisor_status;
+    this.openModal(content);
+  }
+
   isTimePassed(date: any) {
     if(!date) return false
     return (new Date().getTime() - new Date(date).getTime()) > 1 * 60 * 60 * 1000 ? true : false;
@@ -192,6 +201,36 @@ export class AppUsersComponent implements OnInit {
           console.error('Error changing user status:', err);
           this.modalService.dismissAll();
           this.toast.error(`Failed to ${this.currStatus} account`);
+        });
+      }
+    });
+  }
+
+  changeAdvisorStatus() {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You want to ${this.currStatus} this advisor?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${this.currStatus} it!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.updateProfile({_id: this.currUserId, advisor_status: this.currStatus, advisor_approved_date: new Date()}).subscribe((res: any) => {
+          this.modalService.dismissAll();
+          Swal.fire({
+            title: 'Success',
+            text: `Advisor status changed to ${this.currStatus} successfully!`,
+            icon: 'success',
+            confirmButtonText: 'OK'
+          });
+          this.toast.success(`Advisor status changed to ${this.currStatus} Successfully`);
+          this.getAllUsers();
+        }, (err: any) => {
+          console.error('Error changing advisor status:', err);
+          this.modalService.dismissAll();
+          this.toast.error(`Failed to change advisor status`);
         });
       }
     });

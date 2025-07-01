@@ -8,11 +8,11 @@
                     <div class="card-body border-bottom">
                       <form [formGroup]="searchFormGroup">
                         <div class="row">
-                            <div class="col-lg-4">
+                            <div class="col-lg-5">
                                 <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User ID/Name...">
                             </div>
 
-                            <div class="col-lg-3">
+                            <div class="col-lg-4">
                                 <select class="form-select" formControlName="status" id="statusSelect">
                                     <option value="">All Statuses</option>
                                     <option *ngFor="let status of kycStatusList" [value]="status">{{ status }}</option>
@@ -30,7 +30,12 @@
                       </form>
                   </div>
                     <div class="row">
-                        <div class="table-responsive">
+                      <div class="d-flex flex-column justify-content-center align-items-center"
+                            style="min-height: 150px;" *ngIf="!kycList || kycList.length === 0">
+                            <img src="assets/img/not-found.png" width="300px" alt="">
+                            <p class="text-mutes mt-2">No Request found in current filter.</p>
+                        </div>
+                        <div class="table-responsive" *ngIf="kycList.length != 0">
                             <table id="basic-datatable"
                               class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
                               <thead>
@@ -53,7 +58,14 @@
 
                                   </td>
                                   <td>{{ user?.user_details?.user_id }}</td>
-                                  <td>TODO: PARENT_ID</td>
+                                  <td>
+                                    <span *ngIf="user?.parent_details && user?.parent_details.length > 0">
+                                     {{ user?.parent_details[0]?.name }} <br>
+                                     {{ user?.parent_details[0]?.user_id }}
+
+                                    </span>
+                                    
+                                  </td>
                                   <td>
                                     {{user.aadhar}}
                                     <ul class="list-inline font-size-20 contact-links mb-0">
@@ -70,7 +82,10 @@
                                    </td>
 
                                   <td>
-                                    <a href="javascript: void(0);" class="badge font-size-11 m-1 badge-soft-warning">
+                                    <a *ngIf="user.status === 'Requested'" href="javascript: void(0);" class="badge font-size-11 m-1 badge-soft-warning">
+                                      {{ user.status }}
+                                    </a>
+                                    <a  *ngIf="user.status === 'Completed'" href="javascript: void(0);" class="badge font-size-11 m-1 badge-soft-primary">
                                       {{ user.status }}
                                     </a>
                                   </td>

@@ -50,9 +50,9 @@
                                             <tr>
                                               <td>{{ (page - 1) * pageSize + i + 1 }}</td>
                                                 <td>
-                                                  {{ transanction.transaction_date | date: 'medium' }} <br>
+                                                  {{ transanction.createdAt | date: 'medium' }} <br>
                                                 </td>
-                                                <td>{{ transanction?.user_details?.name }} ({{ transanction?.user_details?.name }})</td>
+                                                <td>{{ transanction?.user_details?.name }} <br> ({{ transanction?.user_details?.user_id }})</td>
                                                 <td>{{ transanction.card_number }}</td>
 
                                                 <td>

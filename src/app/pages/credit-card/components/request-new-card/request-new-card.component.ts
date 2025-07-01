@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { CreditCardService } from 'src/app/core/services/credit-card.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-request-new-card',
@@ -52,6 +53,7 @@ export class RequestNewCardComponent implements OnInit {
       start_date: new FormControl(null, { nonNullable: true, validators: [Validators.required] }),
       indirect_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       direct_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
+      franchise_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
     });
 
     this.rejectCCFormGroup = new FormGroup({
@@ -91,19 +93,37 @@ export class RequestNewCardComponent implements OnInit {
     this.creditCardService.approveCreditCard(data._id, data).subscribe({
       next: (response: any) => {
         this.toast.success('Credit card approved successfully.');
+        Swal.fire({
+          title: 'Credit Card Approved',
+          text: `Credit card has been approved with a limit of ₹${data.approved_credit_limit}.`,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        this.approveCCFormGroup.reset();
         this.modalService.dismissAll();
         this.getRequestedCreditCard();
       },
       error: (error) => {
         console.error('Error approving credit card:', error);
         this.toast.error('Failed to approve credit card. Please try again.');
+        Swal.fire({
+          title: 'Approval Failed',
+          text: 'There was an error approving the credit card. Please try again later.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
       }
     });
   }
 
   approveCreditCard(content: any, cc: any) {
     this.cc_selected = cc;
+    console.log('Selected credit card for approval:', this.cc_selected);
     this.approveCCFormGroup.reset();
+    this.approveCCFormGroup.patchValue({
+      card_number: cc.card_number,
+      approved_credit_limit: 1200,
+    });
     this.modalService.open(content, { backdrop: 'static' });
   }
 

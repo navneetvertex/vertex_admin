@@ -79,7 +79,7 @@
                                         Approved : {{ user.approved_date | date}}
                                       </td>
                                       <td>
-                                        <a href="javascript: void(0);" class="badge font-size-11 m-1"
+                                        <a href="javascript: void(0);" class="badge font-size-11 m-1" (click)="changeStatusAccount(user, changeStatusModal)"
                                           [ngClass]="{
                                             'badge-soft-primary': user.status === 'Active',
                                             'badge-soft-warning': user.status === 'Pending',
@@ -131,7 +131,7 @@
                                             </a>
                                           </ng-container>
                                         </div>
-                                        <a *ngIf="user.advisor_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                        <a *ngIf="user.advisor_status" (click)="advisorModalFn(user, changeAdvisorStatusModal)" href="javascript: void(0);" class="badge font-size-11 m-1"
                                           [ngClass]="{
                                             'badge-soft-primary': user.advisor_status === 'Approved',
                                             'badge-soft-warning': user.advisor_status === 'Requested',
@@ -148,7 +148,7 @@
                                             </a>
                                           </li>
                                           <li class="list-inline-item px-2" >
-                                            <a [routerLink]="['profile', user._id]" tooltip="Profile">
+                                            <a routerLink="/members/view/{{user._id}}" tooltip="Profile">
                                               <i class="bx bx-user-circle"></i>
                                             </a>
                                           </li>
@@ -168,6 +168,11 @@
                                                     <i class="mdi mdi-account-check font-size-16 text-success me-1"></i> Approve KYC
                                                   </a>
                                                 </li>
+                                                <li *ngIf="user.advisor_status === 'Requested'">
+                                                  <a href="javascript:void(0);"  (click)="advisorModalFn(user, changeAdvisorStatusModal)" class="dropdown-item remove-list">
+                                                    <i class="mdi mdi-account-check font-size-16 text-success me-1"></i> Advisor Status
+                                                  </a>
+                                                </li>
                                                 <li>
                                                   <a href="javascript:void(0);"  (click)="changeStatusAccount(user, changeStatusModal)" class="dropdown-item remove-list">
                                                     <i class="mdi mdi-trash-can font-size-16 text-danger me-1"></i> Change Account Status
@@ -179,17 +184,17 @@
                                                   </a>
                                                 </li>
                                                 <li>
-                                                  <a [routerLink]="['compulsory-deposit', user._id]" class="dropdown-item remove-list">
+                                                  <a [routerLink]="['/members/compulsory-deposit', user._id]" class="dropdown-item remove-list">
                                                     <i class="mdi mdi-cash-100 font-size-16 text-warning me-1"></i> Compulsory Deposit
                                                   </a>
                                                 </li>
                                                 <li>
-                                                  <a [routerLink]="['recurring-deposits', user._id]" class="dropdown-item remove-list">
+                                                  <a [routerLink]="['/members/compulsory-deposit', user._id]" class="dropdown-item remove-list">
                                                     <i class="mdi mdi-account-cash font-size-16 text-info me-1"></i> Recurring Deposit
                                                   </a>
                                                 </li>
                                                 <li>
-                                                  <a [routerLink]="['fixed-deposits', user._id]" class="dropdown-item remove-list">
+                                                  <a [routerLink]="['/members/compulsory-deposit', user._id]" class="dropdown-item remove-list">
                                                     <i class="mdi mdi-cash-register font-size-16 text-primary me-1"></i> Fixed Deposit
                                                   </a>
                                                 </li>
@@ -289,6 +294,30 @@
         <button type="button" class="btn btn-primary waves-effect waves-light">Send Message</button>
       </div>
     </form>
+</ng-template>
+
+<ng-template #changeAdvisorStatusModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Status</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Change Status:</label>
+              <select type="number" class="form-control" [(ngModel)]="currStatus"  >
+                <option *ngFor="let status of kycStatusList" [ngValue]="status" >{{status}}</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeAdvisorStatus()" >Submit</button>
+      </div>
 </ng-template>
 
 <ng-template #changeStatusModal role="document" let-modal>
