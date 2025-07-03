@@ -23,6 +23,9 @@ export class AddPinsComponent implements OnInit {
   assignFormGroup: FormGroup;
   searchTerm: string = '';
 
+  userIDText: string = '';
+  userDetails: any = null;
+
   pinList: any[] = []
   total: number = 0;
   page: number = 1;
@@ -42,6 +45,26 @@ export class AddPinsComponent implements OnInit {
       assign_to: new FormControl('' , Validators.required),
     });
     this.getPins('unassigned');
+  }
+
+  getUserDetails() {
+    console.log('User ID:', this.userIDText);
+    if (!this.userIDText) {
+      this.userDetails = null;
+      return;
+    }
+    this.userService.getBasicUserProfile(this.userIDText).subscribe({
+      next: (res: any) => {
+        if (res.status) {
+          this.userDetails = res?.data?.user;
+          if(!this.userDetails) {
+            this.assignFormGroup.get('assign_to')?.setErrors({ 'userNotFound': true });
+          }
+        } 
+      }, error: (err) => {
+        console.error('Error fetching user details:', err);
+      }
+    });
   }
 
   getAllUsers() {
@@ -122,7 +145,7 @@ export class AddPinsComponent implements OnInit {
       return;
     }
     const payload = {
-      assign_to: this.assignFormGroup.value.assign_to,
+      assign_to: this.userDetails?._id,
       pins: this.pinSelected
     };
     this.pinService.assignPins(payload).subscribe({

@@ -158,15 +158,20 @@
         <div class="modal-body">
             <div class="mb-3">
                 <label for="assignedTo" class="form-label">Assigned To</label>
-                <select class="form-select" id="assignedTo" formControlName="assign_to">
-                    <option value="" disabled selected>Choose...</option>
-                    <option *ngFor="let user of userList" [attr.value]="user._id" >{{user.name}} ({{user.user_id}}) </option>
-                </select>
+                <input type="text" class="form-control" id="messageTitle"  (blur)="getUserDetails()" formControlName="assign_to" placeholder="Enter User ID" [(ngModel)]="userIDText" required>
+                <div *ngIf="userDetails" class="mt-1">
+                    <small><strong>Name:</strong> {{ userDetails.name }}</small> <br>
+                </div>
+
 
                 <!-- Error Message -->
-                <div *ngIf="assignFormGroup.get('assign_to')?.touched && assignFormGroup.get('assign_to')?.invalid"
+                <div *ngIf="assignFormGroup.get('assign_to')?.touched && assignFormGroup.get('assign_to')?.errors?.['required']"
                     class="text-danger mt-1">
                     Assigned To is required.
+                </div>
+                <div *ngIf="assignFormGroup.get('assign_to')?.touched && assignFormGroup.get('assign_to')?.errors?.['userNotFound']"
+                    class="text-danger mt-1">
+                    User not found. Please enter a valid User ID.
                 </div>
             </div>
         </div>

@@ -24,8 +24,10 @@ export class TopbarComponent implements OnInit {
   element;
   cookieValue;
   flagvalue;
+  listNotifications = [];
   countryName;
   valueset;
+  unreadCount: number = 0;
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
 
@@ -62,6 +64,10 @@ export class TopbarComponent implements OnInit {
     } else {
       this.flagvalue = val.map(element => element.flag);
     }
+  }
+
+  readAllNotifications() {
+    this.listNotifications = [];
   }
 
   setLanguage(text: string, lang: string, flag: string) {

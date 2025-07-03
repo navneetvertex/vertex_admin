@@ -14,6 +14,10 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users?page=${page}&limit=${limit}&${queryParams}`);
     }
 
+    getAllAdvisors(page: number = 0, limit: number = 10, queryParams: string) {
+        return this.http.get(`${environment.api_url}users/advisors?page=${page}&limit=${limit}&${queryParams}`);
+    }
+
     changeUserStatus(userId: string, status: string) {
         return this.http.put(`${environment.api_url}users/changeStatus/${userId}`, { status });
     }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DepositService } from 'src/app/core/services/deposit.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
 import { ToastService } from 'src/app/shared/ui/toast/toast-service';
 import Swal from 'sweetalert2';
@@ -14,9 +15,11 @@ export class KycRequestComponent implements OnInit {
 
   constructor(private userService: UserProfileService,
     private toast: ToastService,
+    private depositService: DepositService,
     private modalService: NgbModal) { }
 
   breadCrumbItems: Array<{}>;
+  saveDepositSettings : FormGroup
 
   kycList: any[] = []
   total: number = 0;
@@ -35,6 +38,12 @@ export class KycRequestComponent implements OnInit {
       user_id: new FormControl(''),
       status: new FormControl('Completed'),
     });
+    this.saveDepositSettings = new FormGroup({
+      annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      interval: new FormControl('Monthly', [Validators.required]),
+      penalty_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      amount: new FormControl('300', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$'), Validators.min(300)]),
+    });
     this.getKycRequests();
   }
 
@@ -52,7 +61,6 @@ export class KycRequestComponent implements OnInit {
 
     this.userService.getKycRequests(this.page, this.pageSize, queryParams).subscribe({
       next: (response: any) => {
-        console.log('KYC Requests:', response);
         if (response && response.data) {
          this.kycList = response.data.kyc || [];
           this.total = response.data.total || 0;
@@ -123,6 +131,40 @@ export class KycRequestComponent implements OnInit {
           });
         }
       });
+  }
+
+  openCDSettingFn(settingModal: any, user: any) {
+    this.modalService.open(settingModal, { size: 'lg', centered: true });
+    this.currUserId = user._id;
+  }
+
+  setting() {
+    if (this.saveDepositSettings.valid) {
+      const payload = this.saveDepositSettings.value;
+      payload.user = this.currUserId;
+      this.depositService.compulsorySettings(payload).subscribe((res: any) => {
+        if (res && res.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Deposit settings saved successfully.',
+            confirmButtonText: 'OK'
+          });
+          this.saveDepositSettings.reset();
+          this.modalService.dismissAll();
+        }
+      }, (err: any) => {
+        console.error('Error saving deposit settings:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to save deposit settings. Please try again later.',
+          confirmButtonText: 'OK'
+        });
+      });
+    } else {
+      this.saveDepositSettings.markAllAsTouched();
     }
+  }
 
 }

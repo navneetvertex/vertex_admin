@@ -30,7 +30,7 @@
                       </form>
                   </div>
                     <div class="row">
-                      <div class="d-flex flex-column justify-content-center align-items-center"
+                        <div class="d-flex flex-column justify-content-center align-items-center"
                             style="min-height: 150px;" *ngIf="!kycList || kycList.length === 0">
                             <img src="assets/img/not-found.png" width="300px" alt="">
                             <p class="text-mutes mt-2">No Request found in current filter.</p>
@@ -99,6 +99,11 @@
                                           <i class="bx bx-user-circle"></i>
                                         </a>
                                       </li>
+                                      <li class="list-inline-item px-2" >
+                                        <a class="cursor-pointer" (click)="openCDSettingFn(settingModal, user)" tooltip="Profile">
+                                          <i class="bx bx-cog bx-spin"></i>
+                                        </a>
+                                      </li>
                                     </ul>
                                   </td>
                                 </tr>
@@ -129,26 +134,104 @@
 
   </div>
 
-  <ng-template #changeKYCStatusModal role="document" let-modal>
-  <div class="modal-header">
-      <h5 class="modal-title" id="myModalLabel">KYC Status</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-  </div>
-  <div class="modal-body">
-      <div class="row" >
-        <div class="col-md-12">
-            <div class="mb-3">
-              <label for="recipient-name" class="col-form-label">Change Status:</label>
-              <select type="number" class="form-control" [(ngModel)]="currKYCStatus"  >
-                <option *ngFor="let status of kycStatusList" [ngValue]="status" >{{status}}</option>
-              </select>
-            </div>
+  <ng-template #settingModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Settings</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="saveDepositSettings">
+        <div class="modal-body">
+            <div class="row">
 
+                    <!-- Annual Rate -->
+                    <div class="mb-3 col-lg-12">
+                        <label class="col-form-label">Annual Rate (%)</label>
+                        <input type="number" class="form-control" placeholder="Settings" formControlName="annual_rate">
+                        <span class="text-muted">Enter the yearly interest rate as a percentage</span>
+                        <div class="text-danger"
+                            *ngIf="saveDepositSettings.get('annual_rate')?.touched && saveDepositSettings.get('annual_rate')?.invalid">
+                            <small *ngIf="saveDepositSettings.get('annual_rate')?.errors?.['required']">Annual Rate is
+                                required.</small>
+                            <small *ngIf="saveDepositSettings.get('annual_rate')?.errors?.['pattern']">Enter a valid
+                                number
+                                (e.g. 5, 7.25).</small>
+                        </div>
+                    </div>
+
+                    <!-- Payment Interval -->
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Payment Interval</label>
+                        <select class="form-control select2" formControlName="interval">
+                            <option value="" disabled>Select Interval</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
+                        <div class="text-danger"
+                            *ngIf="saveDepositSettings.get('interval')?.touched && saveDepositSettings.get('interval')?.invalid">
+                            <small>Payment interval is required.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Penalty Amount (In Rupees)</label>
+                        <input type="number" class="form-control" placeholder="Penalty Amount" formControlName="penalty_amount">
+                        <div class="text-danger"
+                            *ngIf="saveDepositSettings.get('penalty_amount')?.touched && saveDepositSettings.get('penalty_amount')?.invalid">
+                            <small *ngIf="saveDepositSettings.get('penalty_amount')?.errors?.['pattern']">Enter a valid number (e.g. 100, 2500.50).</small>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="mb-3 col-lg-12">
+                        <label class="col-form-label">Amount</label>
+                        <input type="number" class="form-control" placeholder="Amount" formControlName="amount">
+                        <div class="text-danger"
+                            *ngIf="saveDepositSettings.get('amount')?.touched && saveDepositSettings.get('amount')?.invalid">
+                            <small *ngIf="saveDepositSettings.get('amount')?.errors?.['required']">Amount is
+                                required.</small>
+                            <small *ngIf="saveDepositSettings.get('amount')?.errors?.['pattern']">Enter a valid number
+                                (e.g.
+                                100, 2500.50).</small>
+                            <small *ngIf="saveDepositSettings.get('amount')?.errors?.['min']">Amount must be at least ₹300.</small>
+                        </div>
+                    </div>
+
+                </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Close</button>
+            <button type="button" class="btn btn-primary waves-effect waves-light"
+                [disabled]="saveDepositSettings.invalid" (click)="setting()" >Submit</button>
+        </div>
+    </form>
+
+</ng-template>
+
+  <ng-template #changeKYCStatusModal role="document" let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">KYC Status</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+        (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Change Status:</label>
+            <select type="number" class="form-control" [(ngModel)]="currKYCStatus">
+              <option *ngFor="let status of kycStatusList" [ngValue]="status">{{status}}</option>
+            </select>
           </div>
+  
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
-        <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeKYCStatusAccount()" >Submit</button>
-      </div>
-</ng-template>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+        (click)="modal.close('Close click')">Close</button>
+      <button type="button" class="btn btn-primary waves-effect waves-light"
+        (click)="changeKYCStatusAccount()">Submit</button>
+    </div>
+  </ng-template>

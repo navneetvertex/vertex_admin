@@ -1,0 +1,60 @@
+<div class="container-fluid">
+    <app-page-title title="Manage Advisors" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <form [formGroup]="addFranchiseFormGroup"  class="col-12">
+                            <div class="mb-3 col-lg-12">
+                                <label for="messageTitle" class="form-label">User ID</label>
+                                <input type="text" class="form-control" id="messageTitle"  (blur)="getUserDetails()" formControlName="user_id" placeholder="Enter title">
+                                <div *ngIf="userDetails" class="mt-1">
+                                    <small><strong>Name:</strong> {{ userDetails.name }}</small> <br>
+                                </div>
+                                <div *ngIf="addFranchiseFormGroup.get('user_id')?.touched && addFranchiseFormGroup.get('user_id')?.errors?.['required']"
+                                    class="text-danger">
+                                    User ID is required.
+                                </div>
+                                <div *ngIf="addFranchiseFormGroup.get('user_id')?.touched && addFranchiseFormGroup.get('user_id')?.errors?.['userNotFound']"
+                                    class="text-danger mt-1">
+                                    User not found. Please enter a valid User ID.
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3 col-lg-6">
+                                    <label for="messageBody" class="form-label">State</label>
+                                    <ng-select [items]="allStates" formControlName="state" placeholder="Search for a state..." bindLabel="name" bindValue="_id" (change)="getDistricts($event)"></ng-select>
+                                    <div *ngIf="addFranchiseFormGroup.get('name')?.touched && addFranchiseFormGroup.get('name')?.invalid"
+                                        class="text-danger">
+                                        Name is required.
+                                    </div>
+                                </div>
+                                <div class="mb-3 col-lg-6">
+                                    <label for="messageBody" class="form-label">District</label>
+                                    <ng-select [items]="allDistricts" formControlName="district" placeholder="Search for a district..." bindLabel="name" bindValue="_id" (change)="getAreas($event)"></ng-select>
+                                    <div *ngIf="addFranchiseFormGroup.get('district')?.touched && addFranchiseFormGroup.get('district')?.invalid"
+                                        class="text-danger">
+                                        District is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 col-lg-12">
+                                <label for="messageBody" class="form-label">Area</label>
+                                <ng-select [items]="allAreas" [multiple]="true"  formControlName="area" placeholder="Search for areas..." bindLabel="name" bindValue="_id" class="custom-ng-select"></ng-select>
+                                <div *ngIf="addFranchiseFormGroup.get('area')?.touched && addFranchiseFormGroup.get('area')?.invalid"
+                                    class="text-danger">
+                                    Areas is required.
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary"
+                                [disabled]="addFranchiseFormGroup.invalid" (click)="onSubmit()" >Submit</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

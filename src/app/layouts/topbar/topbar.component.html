@@ -352,6 +352,52 @@
       </div> -->
 
       <div class="dropdown d-inline-block" ngbDropdown>
+        <button type="button" class="btn header-item noti-icon" id="page-header-notifications-dropdown" ngbDropdownToggle>
+          <i class="bx bx-bell bx-tada"></i>
+          <span class="badge bg-danger rounded-pill">{{unreadCount}}</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown" ngbDropdownMenu >
+          <div class="p-3">
+            <div class="row align-items-center">
+              <div class="col">
+                <h6 class="m-0">Notifications </h6>
+              </div>
+              <div class="col-auto">
+                <a href="javascript: void(0);" (click)="readAllNotifications()" class="small">Read All Notification</a>
+              </div>
+            </div>
+          </div>
+          <ngx-simplebar style="position: relative; height: 230px;">
+
+            <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!listNotifications || listNotifications.length === 0">
+                  <img src="assets/img/not-found.png" width="150px" alt="">
+                  <p class="text-mutes mt-2">No New Notification Found.</p>
+            </div>
+            
+            <!-- <a href="javascript: void(0);" class="text-reset notification-item">
+                <div class="d-flex">
+                  <img src="1234" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1 mb-0 d-inline">Title</h6>
+                    <div class="font-size-12 text-muted">
+                      <p class="mb-1">Body</p>
+                      <p class="mb-0"><i class="mdi mdi-clock-outline"></i>15 min ago</p>
+                    </div>
+                  </div>
+                </div>
+              </a> -->
+           
+            
+          </ngx-simplebar>
+          <div class="p-2 border-top d-grid" routerLink="/functions/notifications">
+            <a class="btn btn-sm btn-link font-size-14 text-center" href="javascript:void(0)">
+              <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more" *ngIf="listNotifications.length !== 0">Load More</span>   <span key="t-view-more" *ngIf="listNotifications.length == 0">All Notifications</span> 
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropdown d-inline-block" ngbDropdown>
         <button type="button" class="btn header-item" ngbDropdownToggle id="page-header-user-dropdown">
           <img class="rounded-circle header-profile-user" src="assets/images/users/user_placeholder.png" alt="Header Avatar">
           <span class="d-none d-xl-inline-block ms-1">Admin</span>

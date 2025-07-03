@@ -303,8 +303,8 @@
                         <label class="col-form-label">Penalty Amount (In Rupees)</label>
                         <input type="number" class="form-control" placeholder="Penalty Amount" formControlName="penalty_amount">
                         <div class="text-danger"
-                            *ngIf="editDepositSettings.get('penalty_amount')?.touched && editDepositSettings.get('penalty_amount')?.invalid">
-                            <small *ngIf="editDepositSettings.get('penalty_amount')?.errors?.['pattern']">Enter a valid number (e.g. 100, 2500.50).</small>
+                            *ngIf="saveDepositSettings.get('penalty_amount')?.touched && saveDepositSettings.get('penalty_amount')?.invalid">
+                            <small *ngIf="saveDepositSettings.get('penalty_amount')?.errors?.['pattern']">Enter a valid number (e.g. 100, 2500.50).</small>
                         </div>
                     </div>
 

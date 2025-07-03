@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { UserProfileService } from 'src/app/core/services/user.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-app-users',
-  templateUrl: './app-users.component.html',
-  styleUrls: ['./app-users.component.scss']
+  selector: 'app-agents',
+  templateUrl: './agents.component.html',
+  styleUrls: ['./agents.component.scss']
 })
-export class AppUsersComponent implements OnInit {
+export class AgentsComponent implements OnInit {
 
   constructor(private userService: UserProfileService,
-    private modalService: NgbModal,
-    private toast: ToastrService
-  ) { }
+      private modalService: NgbModal,
+      private toast: ToastrService
+    ) { }
   breadCrumbItems: Array<{}>;
   notificationFormGroup: FormGroup
   currStatus: string = 'Pending';
@@ -31,7 +31,7 @@ export class AppUsersComponent implements OnInit {
   searchFormGroup: FormGroup ;
 
   ngOnInit(): void {
-    this.breadCrumbItems = [{ label: 'User List' }, { label: 'User', active: true }];
+    this.breadCrumbItems = [{ label: 'Advisor List' }, { label: 'User', active: true }];
     this.notificationFormGroup = new FormGroup({
       title: new FormControl('', Validators.required),
       message: new FormControl('', Validators.required)
@@ -73,7 +73,7 @@ export class AppUsersComponent implements OnInit {
 
     const queryParams = queryParamArray.join('&');
 
-    this.userService.getAllUsers(this.page, this.pageSize, queryParams).subscribe((res: any) => {
+    this.userService.getAllAdvisors(this.page, this.pageSize, queryParams).subscribe((res: any) => {
       if (res && res.data) {
         this.userList = res?.data?.users?.data || [];
         this.total = res?.data?.users?.metadata[0]?.total || 0;
@@ -87,9 +87,6 @@ export class AppUsersComponent implements OnInit {
   }
 
   advisorModalFn(user: any, content: any) {
-    if(user.advisor_status !== 'Requested') {
-      return;
-    }
     this.currUserId = user._id;
     this.currStatus = user.advisor_status;
     this.openModal(content);

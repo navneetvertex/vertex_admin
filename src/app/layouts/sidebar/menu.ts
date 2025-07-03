@@ -28,6 +28,50 @@ export const MENU: MenuItem[] = [
         ]
     },
     {
+        id: 13,
+        label: 'Advisors',
+        icon: 'bx-user-check',
+        link: '/agents'
+    },
+    {
+        id: 14,
+        label: 'Franchises',
+        icon: 'bx-building-house',
+        subItems: [
+            {
+                id: 27,
+                parentId: 14,
+                label: 'Add Franchise',
+                link: '/franchises/add'
+            },
+            {
+                id: 26,
+                parentId: 14,
+                label: 'Franchise List',
+                link: '/franchises/list'
+            },
+        ]
+    },
+    // {
+    //     id: 18,
+    //     label: 'Deposit Management',
+    //     icon: 'bx-wallet',
+    //     subItems: [
+    //         {
+    //             id: 24,
+    //             parentId: 18,
+    //             label: 'Deposit Settings',
+    //             link: '/deposit-management/settings'
+    //         },
+    //         {
+    //             id: 25,
+    //             parentId: 18,
+    //             label: 'Deposits',
+    //             link: '/deposit-management/deposits'
+    //         }
+    //     ]
+    // },
+    {
         id: 3,
         label: 'Pin Management',
         icon: 'bx-purchase-tag',
