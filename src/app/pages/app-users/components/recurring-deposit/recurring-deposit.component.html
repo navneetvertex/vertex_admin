@@ -670,9 +670,7 @@
                     <label for="payment-interval" class="col-form-label">Payment Interval</label>
                     <select class="form-control" id="payment-interval" formControlName="payment_interval">
                         <option value="" disabled>Select Interval</option>
-                        <option value="Daily">Daily</option>
                         <option value="Monthly">Monthly</option>
-                        <option value="Yearly">Yearly</option>
                     </select>
                     <div *ngIf="editDepositFormGroup.get('payment_interval')?.touched && editDepositFormGroup.get('payment_interval')?.invalid"
                         class="text-danger">
