@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <app-page-title title="Recurring Deposit" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
-    <div role="alert" *ngIf="profile.requested_for_recurring_deposit && depositSettingsList.length > 0" class="alert alert-warning ng-star-inserted">User have requested for open an Recurring Deposit. Please add RD Settings. </div>
+    <div role="alert" *ngIf="!canCreateSettings" class="alert alert-warning ng-star-inserted">User has requested to open an RD Account. Please click on edit Setting, and fill required fields. </div>
 
     <div  class="row" *ngIf="profile">
         <div  class="col-lg-12">
@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div  class="col-lg-4 d-none d-lg-block" *ngIf="profile.requested_for_recurring_deposit">
+                        <div  class="col-lg-4 d-none d-lg-block" *ngIf="canCreateSettings">
                             <div class="clearfix mt-4 mt-lg-0">
                                 <div class="dropdown float-end ms-2" (click)="openModal(settlementModal)" *ngIf="depositList.length > 0">
                                     <button type="button" data-toggle="dropdown"
@@ -70,7 +70,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 
@@ -93,7 +92,7 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Principal</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.paid}}</h5>
+                                    <h5 class="mb-0">₹{{depositSummary?.paid || 0}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -111,7 +110,7 @@
                             <div class="d-flex flex-wrap">
                                 <div class="me-3">
                                     <p class="text-muted mb-2">Total Interest</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.interest}}</h5>
+                                    <h5 class="mb-0">₹{{depositSummary?.interest || 0}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -128,7 +127,7 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Penalty</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.penalty}}</h5>
+                                    <h5 class="mb-0">₹{{depositSummary?.penalty || 0}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -145,7 +144,7 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Net</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.total}}</h5>
+                                    <h5 class="mb-0">₹{{depositSummary?.total || 0}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -268,6 +267,7 @@
                                             
                                         </tbody>
                                     </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -443,9 +443,6 @@
                         <select class="form-control select2" formControlName="interval">
                             <option value="" disabled>Select Interval</option>
                             <option value="Monthly">Monthly</option>
-                            <option value="Quaterly">Quaterly</option>
-                            <option value="Half Yearly">Half Yearly</option>
-                            <option value="Yearly">Yearly</option>
                         </select>
                         <div class="text-danger"
                             *ngIf="editDepositSettings.get('interval')?.touched && editDepositSettings.get('interval')?.invalid">

@@ -1,0 +1,68 @@
+<div class="container-fluid">
+
+    <app-page-title title="All Notifications" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                            <div class="table-responsive">
+                                <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                  <thead>
+                                    <tr>
+                                      <th>Title</th>
+                                      <th>Message</th>
+                                      <th>User</th>
+                                      <th>Read</th>
+                                      <th>Date</th>
+                                      <th>Go To</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let user of notificationList; let i = index">
+                                        <td>{{ user.title }}</td>
+                                        <td>{{ user.message }}</td>
+                                        <td>{{ user.user ? user.user.name : 'N/A' }} <br> {{user.user.user_id}} </td>
+                                        <td>
+                                            <span class="badge badge-soft-{{ user.is_read ? 'success' : 'danger' }}">
+                                                {{ user.is_read ? 'Read' : 'Unread' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.createdAt | date: 'short' }}</td>
+                                        <td>
+                                             <ul class="list-inline font-size-20 contact-links mb-0" *ngIf="user.status !== 'Deleted'">
+                                                <li class="list-inline-item px-2">
+                                                    <a routerLink="{{user.action_url}}" tooltip="Message">
+                                                    <i class="bx bx-link-external"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                <div class="row justify-content-md-between align-items-md-center mt-2">
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                      <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                      {{ findPageShowing() }} of {{ total }}
+                                      entries
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="text-md-right float-md-end pagination-rounded">
+                                      <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                      </ngb-pagination>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

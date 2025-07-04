@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -31,6 +31,9 @@ export class RecurringDepositComponent implements OnInit {
   depositFormGroup: FormGroup
   editDepositFormGroup: FormGroup
   rdSettlementFormGroup: FormGroup;
+  canCreateSettings: boolean = true;
+
+  @ViewChild('editSettingModal') editSettingModal: TemplateRef<any>;
 
   searchFormGroup: FormGroup ;
   user_id: string = ''; 
@@ -55,7 +58,6 @@ export class RecurringDepositComponent implements OnInit {
         if (outstandingDeposits !== 0) {
           this.depositFormGroup.patchValue({paid_amount: this.outstandingAmount.outstanding });
           this.rdSettlementFormGroup.patchValue({total_principal: this.depositSummary.paid, total_penalty: this.depositSummary.penalty, total_interest: this.depositSummary.interest, total_net: this.depositSummary.total });
-          this.toast.info(`Outstanding compulsory deposits found: ₹${outstandingDeposits.outstanding}`);
         } else {
           this.toast.success('No outstanding compulsory deposits found.');
         }
@@ -119,7 +121,7 @@ export class RecurringDepositComponent implements OnInit {
       settlement_date: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
-    this.outstanding(this.user_id)
+    // if(this.canCreateSettings) this.outstanding(this.user_id)
   }
 
   getProfile(user_id: string) {
@@ -136,7 +138,7 @@ export class RecurringDepositComponent implements OnInit {
   }
 
   openModal(content: any) {
-    this.modalService.open(content, { size: 'lg', centered: true });
+    this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
   }
 
   createSettings() {
@@ -163,7 +165,16 @@ export class RecurringDepositComponent implements OnInit {
     this.depositService.getRDepositSettings(this.user_id).subscribe((res: any) => {
       if (res && res.status === 'success') {
         this.depositSettingsList = res.data.settings;
-        if(this.depositSettingsList.length > 0) {
+        this.canCreateSettings = this.depositSettingsList.some(setting => setting.status !== 'Requested');
+
+        if(!this.canCreateSettings) {
+          this.toast.warning('User has requested to open an RD Account. Please click on edit Setting, and fill required fields.', 'Warning');
+          this.editDepositSettings.patchValue({ _id: this.depositSettingsList[0]._id, annual_rate: this.depositSettingsList[0].annual_rate, interval: this.depositSettingsList[0].interval, duration: this.depositSettingsList[0].duration, amount: this.depositSettingsList[0].amount, penality_rate: this.depositSettingsList[0].penality_rate });
+           this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
+        }
+
+        if(this.depositSettingsList.length > 0 && this.canCreateSettings) {
+          this.outstanding(this.user_id);
           this.getDeposits(this.depositSettingsList[0]._id);
           this.selectedSetting = this.depositSettingsList[0]
           this.editDepositSettings.patchValue(this.depositSettingsList[0])
@@ -216,6 +227,7 @@ export class RecurringDepositComponent implements OnInit {
     this.selectedSetting = selectedSetting
     if (selectedSetting) {
       this.editDepositSettings.patchValue(selectedSetting)
+      this.outstanding(this.user_id);
       this.depositFormGroup.patchValue({
         required_amount: selectedSetting.amount,
         payment_interval: selectedSetting.interval,
@@ -291,6 +303,7 @@ export class RecurringDepositComponent implements OnInit {
   editSettings() {
     if (this.editDepositSettings.valid) {
       const payload = this.editDepositSettings.value;
+      payload.status = 'Confirmed';
       this.depositService.editRDepositSettings(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.toast.success('Deposit settings updated successfully');

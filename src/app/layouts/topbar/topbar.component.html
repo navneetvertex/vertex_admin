@@ -374,24 +374,27 @@
                   <p class="text-mutes mt-2">No New Notification Found.</p>
             </div>
             
-            <!-- <a href="javascript: void(0);" class="text-reset notification-item">
-                <div class="d-flex">
-                  <img src="1234" class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                  <div class="flex-grow-1">
-                    <h6 class="mb-1 mb-0 d-inline">Title</h6>
-                    <div class="font-size-12 text-muted">
-                      <p class="mb-1">Body</p>
-                      <p class="mb-0"><i class="mdi mdi-clock-outline"></i>15 min ago</p>
+            <ng-container *ngFor="let notification of listNotifications">
+              <a href="javascript: void(0);" (click)="clickSingleNotification(notification)" class="text-reset notification-item">
+                  <div class="d-flex">
+                    <img src="{{notification.user_id.profile_image || 'assets/images/users/user_placeholder.png'}}"
+                      class="me-3 rounded-circle avatar-xs"
+                      alt="user-pic"
+                      style="width:32px; height:32px; object-fit:cover;">
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1 mb-0 d-inline">{{notification.title}}</h6>
+                      <div class="font-size-12 text-muted">
+                        <p class="mb-1">{{notification.message}}</p>
+                        <p class="mb-0"><i class="mdi mdi-clock-outline"></i>{{hoursminutesSeconds(notification.createdAt)}}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a> -->
-           
-            
+                </a>
+            </ng-container>
           </ngx-simplebar>
-          <div class="p-2 border-top d-grid" routerLink="/functions/notifications">
-            <a class="btn btn-sm btn-link font-size-14 text-center" href="javascript:void(0)">
-              <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more" *ngIf="listNotifications.length !== 0">Load More</span>   <span key="t-view-more" *ngIf="listNotifications.length == 0">All Notifications</span> 
+          <div class="p-2 border-top d-grid" routerLink="/members/notification-list">
+            <a class="btn btn-sm btn-link font-size-14 text-center" >
+              <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more" *ngIf="listNotifications.length >= 10">Load More</span>   <span key="t-view-more" *ngIf="listNotifications.length < 10">All Notifications</span> 
             </a>
           </div>
         </div>

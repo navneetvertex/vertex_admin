@@ -88,18 +88,21 @@
                                     <a  *ngIf="user.status === 'Completed'" href="javascript: void(0);" class="badge font-size-11 m-1 badge-soft-primary">
                                       {{ user.status }}
                                     </a>
+                                    <a  *ngIf="user.status === 'Approved'" href="javascript: void(0);" class="badge font-size-11 m-1 badge-soft-success">
+                                      {{ user.status }}
+                                    </a>
                                   </td>
                                   <td>
                                     {{ user.created_date | date: 'medium' }}
                                   </td>
                                   <td>
                                     <ul class="list-inline font-size-20 contact-links mb-0">
-                                      <li class="list-inline-item px-2" >
+                                      <li class="list-inline-item px-2" *ngIf="user.status !== 'Approved'" >
                                         <a routerLink="/members/profile/form/{{user.user_details._id}}" tooltip="Profile">
                                           <i class="bx bx-user-circle"></i>
                                         </a>
                                       </li>
-                                      <li class="list-inline-item px-2" >
+                                      <li class="list-inline-item px-2"  *ngIf="user.status === 'Completed' || user.status === 'Approved'">
                                         <a class="cursor-pointer" (click)="openCDSettingFn(settingModal, user)" tooltip="Profile">
                                           <i class="bx bx-cog bx-spin"></i>
                                         </a>

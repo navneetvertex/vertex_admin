@@ -20,6 +20,7 @@ import { ImageCropperComponent } from './components/edit-profile/image-cropper/i
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { KycRequestComponent } from './components/kyc-request/kyc-request.component';
 import { EditFormComponent } from './components/edit-form/edit-form.component';
+import { NotificationsListsComponent } from './components/notifications-lists/notifications-lists.component';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { EditFormComponent } from './components/edit-form/edit-form.component';
     FixedDepositComponent,
     ImageCropperComponent,
     KycRequestComponent,
-    EditFormComponent
+    EditFormComponent,
+    NotificationsListsComponent
   ],
   imports: [
     CommonModule,

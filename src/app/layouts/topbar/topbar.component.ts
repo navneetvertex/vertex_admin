@@ -9,6 +9,7 @@ import { LanguageService } from '../../core/services/language.service';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from 'src/app/core/models/auth.models';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
 
 @Component({
   selector: 'app-topbar',
@@ -34,19 +35,12 @@ export class TopbarComponent implements OnInit {
   constructor(@Inject(DOCUMENT) private document: any, private router: Router,
               public languageService: LanguageService,
               public translate: TranslateService,
+              private notificationService: NotificationsService ,
               public _cookiesService: CookieService) {
 
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
   }
-
-  listLang = [
-    { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
-    { text: 'Spanish', flag: 'assets/images/flags/spain.jpg', lang: 'es' },
-    { text: 'German', flag: 'assets/images/flags/germany.jpg', lang: 'de' },
-    { text: 'Italian', flag: 'assets/images/flags/italy.jpg', lang: 'it' },
-    { text: 'Russian', flag: 'assets/images/flags/russia.jpg', lang: 'ru' },
-  ];
 
   openMobileMenu: boolean;
 
@@ -56,18 +50,78 @@ export class TopbarComponent implements OnInit {
   ngOnInit() {
     this.openMobileMenu = false;
     this.element = document.documentElement;
-    this.cookieValue = this._cookiesService.get('lang');
-    const val = this.listLang.filter(x => x.lang === this.cookieValue);
-    this.countryName = val.map(element => element.text);
-    if (val.length === 0) {
-      if (this.flagvalue === undefined) { this.valueset = 'assets/images/flags/us.jpg'; }
+
+    this.getNotification();
+    
+  }
+
+  getNotification() {
+    this.notificationService.getAdminQuickNotifications().subscribe((data: any) => {
+      this.listNotifications = data.data.notifications || [];
+      this.unreadCount = data.data.unreadCount || [];
+    }, error => {
+      console.error('Error fetching notifications:', error);
+    });
+  }
+
+  hoursminutesSeconds(time: string): string {
+    const now = new Date();
+    const past = new Date(time);
+    const diffMs = now.getTime() - past.getTime();
+
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const years = Math.floor(days / 365);
+
+    if (seconds < 60) {
+      return 'just now';
+    } else if (minutes < 60) {
+      return `${minutes} min ago`;
+    } else if (hours < 24) {
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (days < 365) {
+      return `${days} day${days > 1 ? 's' : ''} ago`;
     } else {
-      this.flagvalue = val.map(element => element.flag);
+      return `${years} year${years > 1 ? 's' : ''} ago`;
     }
   }
 
   readAllNotifications() {
-    this.listNotifications = [];
+    this.notificationService.markAllAdminNotificationsAsRead().subscribe((data: any) => {
+      console.log('All notifications marked as read');
+      this.unreadCount = 0;
+      this.getNotification();
+    }, error => {
+      console.error('Error marking all notifications as read:', error);
+    });
+  }
+
+  clickSingleNotification(notification: any) {
+    // Close the ngbDropdownMenu if open
+    const dropdownMenu = document.querySelector('.dropdown-menu.show');
+    if (dropdownMenu) {
+      (dropdownMenu as HTMLElement).classList.remove('show');
+    }
+    if (!notification.is_read) {
+      this.notificationService.markAdminNotificationAsRead(notification._id).subscribe((data: any) => {
+        console.log('Notification marked as read:', data);
+        notification.is_read = true;
+        this.unreadCount--;
+        if(notification.action === 'view') {
+          this.router.navigate([notification.action_url]);
+        }
+      }, error => {
+        console.error('Error marking notification as read:', error);
+      });
+    }
+    // Navigate to the specific page based on the notification type
+    if (notification.type === 'user') {
+      this.router.navigate(['/app-users/user-profile', notification.user_id]);
+    } else if (notification.type === 'transaction') {
+      this.router.navigate(['/app-transactions/transaction-details', notification.transaction_id]);
+    }
   }
 
   setLanguage(text: string, lang: string, flag: string) {

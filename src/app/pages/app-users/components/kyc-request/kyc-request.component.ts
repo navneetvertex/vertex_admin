@@ -61,6 +61,7 @@ export class KycRequestComponent implements OnInit {
 
     this.userService.getKycRequests(this.page, this.pageSize, queryParams).subscribe({
       next: (response: any) => {
+        console.log('KYC Requests Response:', response);
         if (response && response.data) {
          this.kycList = response.data.kyc || [];
           this.total = response.data.total || 0;
@@ -135,7 +136,7 @@ export class KycRequestComponent implements OnInit {
 
   openCDSettingFn(settingModal: any, user: any) {
     this.modalService.open(settingModal, { size: 'lg', centered: true });
-    this.currUserId = user._id;
+    this.currUserId = user.user;
   }
 
   setting() {
@@ -150,6 +151,7 @@ export class KycRequestComponent implements OnInit {
             text: 'Deposit settings saved successfully.',
             confirmButtonText: 'OK'
           });
+          this.getKycRequests();
           this.saveDepositSettings.reset();
           this.modalService.dismissAll();
         }

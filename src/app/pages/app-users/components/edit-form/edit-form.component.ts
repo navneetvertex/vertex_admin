@@ -208,7 +208,7 @@ export class EditFormComponent implements OnInit {
             next: (response: any) => {
               if (response.status === 'success') {
                 Swal.fire('Approved!', 'KYC has been approved.', 'success').then(() => {
-                  this.route.navigate(['/members/all']);
+                  this.route.navigate(['/members/kyc']);
                 });
               } else {
                 this.toast.error('Failed to approve KYC. Please try again.');
