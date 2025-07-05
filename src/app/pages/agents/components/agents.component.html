@@ -105,7 +105,7 @@
                                           }">
                                           Franchise {{ user.franchise_status }}
                                         </a>
-                                        <a *ngIf="user.advisor_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                        <a *ngIf="user.advisor_status" href="javascript: void(0);" class="badge font-size-11 m-1" (click)="advisorModalFn(user, changeAdvisorStatusModal)"
                                           [ngClass]="{
                                             'badge-soft-primary': user.advisor_status === 'Approved',
                                             'badge-soft-warning': user.advisor_status === 'Requested',
@@ -155,7 +155,29 @@
     </div>
 </div>
 
+<ng-template #changeAdvisorStatusModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Status</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Change Status:</label>
+              <select type="number" class="form-control" [(ngModel)]="currStatus"  >
+                <option *ngFor="let status of kycStatusList" [ngValue]="status" >{{status}}</option>
+              </select>
+            </div>
 
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeAdvisorStatus()" >Submit</button>
+      </div>
+</ng-template>
 
 
 <ng-template #messageModal role="document" let-modal>
