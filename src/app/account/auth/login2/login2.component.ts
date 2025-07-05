@@ -37,6 +37,14 @@ export class Login2Component implements OnInit {
     });
   }
 
+  showHidePassword(passwordField) {
+    if (passwordField.type === 'password') {
+      passwordField.type = 'text';
+    } else {
+      passwordField.type = 'password';
+    }
+  }
+
 
 
   get f() { return this.loginForm.controls; }
