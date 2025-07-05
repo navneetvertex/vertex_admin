@@ -1,26 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { UserProfileService } from 'src/app/core/services/user.service';
-import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-agents',
-  templateUrl: './agents.component.html',
-  styleUrls: ['./agents.component.scss']
+  selector: 'app-diref-refernce-list',
+  templateUrl: './diref-refernce-list.component.html',
+  styleUrls: ['./diref-refernce-list.component.scss']
 })
-export class AgentsComponent implements OnInit {
+export class DirefRefernceListComponent implements OnInit {
 
-  constructor(private userService: UserProfileService,
-      private modalService: NgbModal,
-      private toast: ToastrService
-    ) { }
+  constructor(private toast: ToastrService,
+    private userService: UserProfileService,  
+    private modalService: NgbModal,
+    private route: ActivatedRoute
+  ) {
+    
+   }
+
   breadCrumbItems: Array<{}>;
   notificationFormGroup: FormGroup
   currStatus: string = 'Pending';
   currUserId: string = '';
   currKYCStatus: string = ''
+  currentUserId: string = '';
   statusList: any[] = ['Pending', 'Active', 'Inactive', 'Blocked'];
   kycStatusList: any[] = ['Requested', 'Approved', 'Rejected']
 
@@ -31,7 +36,7 @@ export class AgentsComponent implements OnInit {
   searchFormGroup: FormGroup ;
 
   ngOnInit(): void {
-    this.breadCrumbItems = [{ label: 'Advisor List' }, { label: 'User', active: true }];
+    this.breadCrumbItems = [{ label: 'Advisor List' }, { label: 'User', url: '/agents'}, {label: 'Direct Reference', active: true }];
     this.notificationFormGroup = new FormGroup({
       title: new FormControl('', Validators.required),
       message: new FormControl('', Validators.required)
@@ -42,26 +47,31 @@ export class AgentsComponent implements OnInit {
       account_number: new FormControl(''),
       status: new FormControl(''),
     });
-    this.getAllUsers();
+    
+    this.route.params.subscribe(params => {
+      this.currentUserId = params['id'];
+      console.log('Current User ID:', this.currentUserId);
+      this.getDiretRefUsers(this.currentUserId);
+    });
   }
 
   search() {
     this.page = 1;
-    this.getAllUsers();
+    this.getDiretRefUsers();
   }
 
   reset() {
     this.page = 1
     this.searchFormGroup.reset()
-    this.getAllUsers()
+    this.getDiretRefUsers()
   }
 
   pageChange(page: number) {
     this.page = page;
-    this.getAllUsers();
+    this.getDiretRefUsers();
   }
 
-  getAllUsers() {
+  getDiretRefUsers(userId: string = this.currentUserId) {
     const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
 
@@ -73,7 +83,9 @@ export class AgentsComponent implements OnInit {
 
     const queryParams = queryParamArray.join('&');
 
-    this.userService.getAllAdvisors(this.page, this.pageSize, queryParams).subscribe((res: any) => {
+    console.log('Query Params:', this.currUserId);
+
+    this.userService.getDirectRefUsers(this.page, this.pageSize, queryParams, userId).subscribe((res: any) => {
       if (res && res.data) {
         this.userList = res?.data?.users?.data || [];
         console.log('User List:', this.userList);

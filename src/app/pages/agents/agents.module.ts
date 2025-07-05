@@ -6,11 +6,15 @@ import { AgentsComponent } from './components/agents.component';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { DirefRefernceListComponent } from './components/diref-refernce-list/diref-refernce-list.component';
+import { IndirefRefernceListComponent } from './components/indiref-refernce-list/indiref-refernce-list.component';
 
 
 @NgModule({
   declarations: [
-    AgentsComponent
+    AgentsComponent,
+    DirefRefernceListComponent,
+    IndirefRefernceListComponent
   ],
   imports: [
     CommonModule,

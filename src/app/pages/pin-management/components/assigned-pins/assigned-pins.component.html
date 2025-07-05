@@ -45,7 +45,7 @@
                                                         <span *ngIf="!pin.used_by_user[0]?.name">-</span>
                                                         
                                                     </td>
-                                                    <td>{{ pin.used_on ? (pin.usedOn | date) : '-' }}</td>
+                                                    <td>{{ pin.used_on ? (pin.used_on | date) : '-' }}</td>
                                                     <td><span class="badge" [ngClass]="{'bg-success': pin.status === 'Assigned', 'bg-danger': pin.status === 'Inactive', 'bg-info': pin.status === 'Active'}">{{ pin.status }}</span></td>
                                                 </tr>
                                             </ng-container>

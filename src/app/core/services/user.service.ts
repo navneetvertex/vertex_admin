@@ -18,6 +18,16 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users/advisors?page=${page}&limit=${limit}&${queryParams}`);
     }
 
+    getDirectRefUsers(page: number = 0, limit: number = 10, queryParams: string, userId: string) {
+        return this.http.get(`${environment.api_url}users/direct-ref-users/${userId}?page=${page}&limit=${limit}&${queryParams}`);
+    }
+
+    getInDirectRefUsers(page: number = 0, limit: number = 10, queryParams: string, userId: string) {
+        return this.http.get(`${environment.api_url}users/indirect-ref-users/${userId}?page=${page}&limit=${limit}&${queryParams}`);
+    }
+
+
+
     changeUserStatus(userId: string, status: string) {
         return this.http.put(`${environment.api_url}users/changeStatus/${userId}`, { status });
     }

@@ -1,6 +1,7 @@
 <div class="container-fluid">
 
-    <app-page-title title="Advisors" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <app-page-title title="InDirect Reference Users" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
 
     <div class="row">
         <div class="col-xl-12">
@@ -36,7 +37,11 @@
                       </form>
                   </div>
                     <div class="row">
-                            <div class="table-responsive">
+                        <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!userList || userList.length === 0">
+                            <img src="assets/img/not-found.png" width="300px" alt="">
+                            <p class="text-mutes mt-2">No Users Found in current filter.</p>
+                        </div>
+                            <div class="table-responsive" *ngIf="userList && userList.length > 0">
                                 <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
                                   <thead>
                                     <tr>
@@ -44,10 +49,9 @@
                                       <th>Name</th>
                                       <th>UserId</th>
                                       <th>Refer Id</th>
-                                      <th>Direct Ref</th>
-                                      <th>InDirect Ref</th>
+                                      <!-- <th>Direct Ref</th>
+                                      <th>InDirect Ref</th> -->
                                       <th>Account Number</th>
-                                      <th>Aadhar Number</th>
                                       <th>Gender</th>
                                       <th>Age</th>
                                       <th>Date</th>
@@ -57,6 +61,7 @@
                                   </thead>
                                   <tbody>
                                     <tr *ngFor="let user of userList; let i = index">
+                                      <!-- <td>{{user | json}}</td> -->
                                       <td>{{ (page - 1) * pageSize + i + 1 }}</td>
                                       <td>
                                         {{ user.name }} <br>
@@ -65,14 +70,13 @@
                                       </td>
                                       <td>{{ user.user_id }}</td>
                                       <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
-                                      <td>
+                                      <!-- <td>
                                         <span routerLink="/agents/direct-ref/{{user._id}}" *ngIf="user.direct_ref_count && user.direct_ref_count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.direct_ref_count}}</span>
                                       </td>
                                       <td>
                                         <span routerLink="/agents/indirect-ref/{{user._id}}" *ngIf="user.indirect_ref_count && user.indirect_ref_count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.indirect_ref_count}}</span>
-                                      </td>
+                                      </td> -->
                                       <td>{{ user.account_number || '-' }}</td>
-                                      <td>{{ user?.kyc[0]?.aadhar || '-' }}</td>
                                       <td>{{ user.gender || '-' }}</td>
                                       <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>
                                       <td>
@@ -153,9 +157,8 @@
             </div>
         </div>
     </div>
+
 </div>
-
-
 
 
 <ng-template #messageModal role="document" let-modal>
@@ -195,5 +198,3 @@
 </form>
 
 </ng-template>
-
-
