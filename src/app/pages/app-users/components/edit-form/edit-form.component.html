@@ -28,7 +28,7 @@
                             <span *ngIf="!selected_photo" class="w-100 text-center">SELF PHOTO (Upload your Photo)</span>
                             <img *ngIf="selected_photo" src="{{selected_photo}}" alt="">
                         </div>
-                        <input type="file" #selfPhotoInput style="display:none" (change)="onSelfPhotoSelected($event)">
+                        <input type="file" #selfPhotoInput style="display:none" (change)="onFileSelected($event, 'profile_image')" accept="image/*" />
                     </div>
                 </div>
                 <div class="col-lg-12" >
@@ -156,7 +156,7 @@
                         </div>
                         <label for="pan_image" *ngIf="!profileFormGroup.get('aadhar_front')?.value" class="col-sm-1 col-form-label">Aadhar Front</label>
                         <div class="col-sm-2" *ngIf="!profileFormGroup.get('aadhar_front')?.value">
-                            <input type="file"  id="aadhar_front" placeholder="Aadhar Front" class="form-control" (change)="uploadFile($event, 'aadhar_front')">
+                            <input type="file"  id="aadhar_front" placeholder="Aadhar Front" class="form-control" (change)="onFileSelected($event, 'aadhar_front')" accept="image/*" >
                         </div>
                         <button class="btn btn-sm btn-primary col-sm-1 me-2" *ngIf="profileFormGroup.get('aadhar_front')?.value" (click)="viewImage(profileFormGroup.get('aadhar_front')?.value, viewImageModal)" >
                             <i class="mdi mdi-eye"></i> Aadhar Front
@@ -166,7 +166,7 @@
                         </button>
                         <label for="pan_image" *ngIf="!profileFormGroup.get('aadhar_back')?.value" class="col-sm-1 col-form-label">Aadhar Back</label>
                         <div class="col-sm-2" *ngIf="!profileFormGroup.get('aadhar_back')?.value">
-                            <input type="file" id="aadhar_back" placeholder="Aadhar Back" class="form-control" (change)="uploadFile($event, 'aadhar_back')">
+                            <input type="file" id="aadhar_back" placeholder="Aadhar Back" class="form-control" (change)="onFileSelected($event, 'aadhar_back')" accept="image/*" >
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -179,7 +179,7 @@
                         </div>
                         <label for="pan_image" *ngIf="!profileFormGroup.get('pan_image')?.value" class="col-sm-1 col-form-label">PAN Image</label>
                         <div class="col-sm-2" *ngIf="!profileFormGroup.get('pan_image')?.value">
-                            <input type="file" id="pan_image" placeholder="PAN Image" class="form-control" (change)="uploadFile($event, 'pan_image')">
+                            <input type="file" id="pan_image" placeholder="PAN Image" class="form-control"  (change)="onFileSelected($event, 'pan_image')" accept="image/*" >
                         </div>
                         <button class="btn btn-sm btn-primary col-sm-1 me-2"  (click)="viewImage(profileFormGroup.get('pan_image')?.value, viewImageModal)" *ngIf="profileFormGroup.get('pan_image')?.value">
                             <i class="mdi mdi-eye"></i> PAN Image
@@ -437,7 +437,7 @@
                                 <span  *ngIf="!selected_cheque">UPLOAD Passbook/Cheque</span>
                                 <img *ngIf="selected_cheque" src="{{selected_cheque}}" alt="">
                             </div>
-                            <input type="file" #selfPassbookInput style="display:none" (change)="onSelfPassbookSelected($event)">
+                            <input type="file" #selfPassbookInput style="display:none"  (change)="onFileSelected($event, 'passbook_cheque')" accept="image/*" >
                         </div>
                     </div>
 
@@ -490,7 +490,7 @@
                               <label for="disability_type">Disability Type</label>
                             </div>
                             <div class="col-sm-6" *ngIf="profileFormGroup.get('is_divyang')?.value">
-                              <input type="file" id="disability_image" placeholder="Disability Image" class="form-control" (change)="uploadFile($event, 'disability_image')">
+                              <input type="file" id="disability_image" placeholder="Disability Image" class="form-control"  (change)="uploadFile($event, 'disability_image')">
                             </div>
                         </div>
                     </div>
@@ -547,7 +547,7 @@
                                 <span  *ngIf="!selected_signature">UPLOAD SIGN</span>
                                 <img *ngIf="selected_signature" src="{{selected_signature}}" alt="">
                             </div>
-                            <input type="file" #selfSignInput style="display:none" (change)="onSelfSignatureSelected($event)">
+                            <input type="file" #selfSignInput style="display:none"  (change)="onFileSelected($event, 'signature')" accept="image/*">
                         </div>
                     </div>
                 </div>
@@ -564,7 +564,8 @@
             </div>
 
             <div class="d-flex justify-content-center">
-                <button class="btn btn-danger ms-2" (click)="approveKYC()">Approve KYC</button>
+                <button class="btn btn-danger ms-2" *ngIf="!isAccountApproved" (click)="approveKYC()">Approve KYC</button>
+                <button class="btn btn-primary ms-2" *ngIf="isAccountApproved" (click)="formSubmit()">Form Edit</button>
             </div>
             </div>
         </form>

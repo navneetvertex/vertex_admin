@@ -8,6 +8,7 @@ import { AuthenticationService } from 'src/app/core/services/auth.service';
 import { MastersService } from 'src/app/core/services/masters.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
 import Swal from 'sweetalert2';
+import { ImageCropperComponent } from '../edit-profile/image-cropper/image-cropper.component';
 
 @Component({
   selector: 'app-edit-form',
@@ -38,7 +39,7 @@ export class EditFormComponent implements OnInit {
     allDistricts: any[] = [];
     allAreas: any[] = [];
     selected_cheque: string = null;
-
+    isAccountApproved: boolean = false;
     kycFormGroup: FormGroup;
     profileFormGroup: FormGroup;
 
@@ -317,6 +318,8 @@ export class EditFormComponent implements OnInit {
             this.selected_cheque = profile?.passbook_cheque || null;
             this.profileFormGroup.patchValue(response?.data.user?.kyc);
 
+            this.isAccountApproved = profile?.kyc?.status === 'Approved' ? true : false;
+
             if(profile.state) {
               this.getDistricts({_id: profile.state });
               this.getAreas({_id: profile.district });
@@ -583,6 +586,81 @@ export class EditFormComponent implements OnInit {
     } else {
       this.toast.error('No image available to view.');
     }
+  }
+
+  onFileSelected(event: Event, from: string): void {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) {
+      this.toast.error('No file selected.');
+      return;
+    }
+    const file = input.files[0];
+    if (!file.type.startsWith('image/')) {
+      Swal.fire({
+        title: 'Invalid File Type',
+        text: 'Please select a valid image file.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      input.value = '';
+      return;
+    }
+
+    if (input.files && input.files.length > 0) {
+      this.openImageCropper({ file : event, from: from });
+    }
+  }
+
+  openImageCropper(data: any) {
+    const modalRef = this.modalService.open(ImageCropperComponent, { centered: true, size: 'xl' });
+    modalRef.componentInstance.data = data;
+    modalRef.result.then((result) => {
+      console.log('Modal closed with:', result);
+      if(result) {
+        if (result.image) {
+          const base64 = result.image;
+          this.cropAndSetPhoto(base64, result.from);
+        }
+      }
+    }).catch((reason) => {
+      console.log('Modal dismissed:', reason);
+    });
+  }
+
+   cropAndSetPhoto(base64: string, type: string = 'profile_image') {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width * 0.4;
+      canvas.height = img.height * 0.4;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressedBase64 = canvas.toDataURL('image/jpeg', 0.3);
+
+      if (type === 'profile_image') {
+        this.selected_photo = compressedBase64;
+        this.profileFormGroup.patchValue({ profile_image: compressedBase64 });
+      } else if (type === 'signature') {
+        this.selected_signature = compressedBase64;
+        this.profileFormGroup.patchValue({ signature: compressedBase64 });
+      } else if (type === 'passbook_cheque') {
+        this.selected_cheque = compressedBase64;
+        this.profileFormGroup.patchValue({ passbook_cheque: compressedBase64 });
+      } else if(type === 'disability_image') {
+        this.profileFormGroup.patchValue({ disability_image: compressedBase64 });
+      } else if(type === 'aadhar_front') {
+        this.profileFormGroup.patchValue({ aadhar_front: compressedBase64 });
+      }
+      else if(type === 'aadhar_back') {
+        this.profileFormGroup.patchValue({ aadhar_back: compressedBase64 });
+      }
+      else if(type === 'pan_image') {
+        this.profileFormGroup.patchValue({ pan_image: compressedBase64 });
+      }
+      console.log(`Selected ${type}:`);
+    };
+    img.src = base64;
   }
 
 }
