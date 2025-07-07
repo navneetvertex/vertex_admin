@@ -21,5 +21,9 @@ getFranchiseByUserId(id: string) {
   return this.http.get(`${environment.api_url}franchise/${id}`);
 }
 
+getAllAreasWithFranchise() {
+  return this.http.get(`${environment.api_url}franchise/getAllAreasWithFranchise`);
+}
+
 
 }

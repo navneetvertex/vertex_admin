@@ -65,7 +65,11 @@
 
                                       </td>
                                       <td>{{ user.user_id }}</td>
-                                      <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
+                                      <td> 
+                                       
+                                        <span *ngIf="user.user_type !== 'admin'">{{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}</span>
+                                        <span *ngIf="user.user_type === 'admin'">Parent</span>
+                                      </td>
                                       <td>
                                         <span routerLink="/agents/direct-ref/{{user._id}}" *ngIf="user.direct_ref_count && user.direct_ref_count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.direct_ref_count}}</span>
                                       </td>
@@ -73,14 +77,16 @@
                                         <span routerLink="/agents/indirect-ref/{{user._id}}" *ngIf="user.indirect_ref_count && user.indirect_ref_count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.indirect_ref_count}}</span>
                                       </td>
                                       <td>{{ user.account_number || '-' }}</td>
-                                      <td>{{ user?.kyc[0]?.aadhar || '-' }}</td>
+                                      <td>
+                                        <span *ngIf="user.user_type !== 'admin'">{{ user?.kyc[0]?.aadhar || '-' }}</span>
+                                      </td>
                                       <td>{{ user.gender || '-' }}</td>
                                       <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>
                                       <td>
                                         Joining : {{ user.created_date | date}} <br>
                                         Approved : {{ user.approved_date | date}}
                                       </td>
-                                      <td>
+                                      <td *ngIf="user.user_type !== 'admin'">
                                         <a href="javascript: void(0);" class="badge font-size-11 m-1" (click)="changeStatusAccount(user, changeStatusModal)"
                                           [ngClass]="{
                                             'badge-soft-primary': user.status === 'Active',
@@ -142,7 +148,7 @@
                                           Advisor {{ user.advisor_status }}
                                         </a>
                                       </td>
-                                      <td>
+                                      <td *ngIf="user.user_type !== 'admin'">
                                         <ul class="list-inline font-size-20 contact-links mb-0" *ngIf="user.status !== 'Deleted'">
                                           <li data-bs-toggle="modal" data-bs-target="#myModal" (click)="sendNotification(messageModal, user)" class="list-inline-item px-2">
                                             <a href="javascript:void(0);" tooltip="Message">
@@ -205,6 +211,8 @@
                                           </li>
                                         </ul>
                                       </td>
+                                      <td *ngIf="user.user_type === 'admin'"></td>
+                                      <td *ngIf="user.user_type === 'admin'"></td>
                                     </tr>
                                   </tbody>
                                 </table>

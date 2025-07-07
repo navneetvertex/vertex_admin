@@ -1,0 +1,203 @@
+<div class="container-fluid">
+
+    <app-page-title title="All Users" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-body border-bottom">
+                      <form [formGroup]="searchFormGroup">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
+                            </div>
+                            <div class="col-lg-2">
+                                <select class="form-control select2" formControlName="status" >
+                                    <option value="">Select Status</option>
+                                    <option value="All">All</option>
+                                    <option *ngFor="let status of statusList" [value]="status" >{{status}}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-1">
+                                <button type="button" (click)="getRecrruingDeposits()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                            </div>
+                            <div class="col-lg-1" >
+                                    <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                </div>
+                        </div>
+                      </form>
+                  </div>
+                    <div class="row">
+                            <div class="table-responsive">
+                                <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                  <thead>
+                                    <tr>
+                                      <th>Sr No</th>
+                                      <th>Name</th>
+                                      <th>Contact</th>
+                                      <th>Amount</th>
+                                      <th>Int Rate</th>
+                                      <th>Notes</th>
+                                      <th>Date</th>
+                                      <th>Status</th>
+                                      <th>Action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <ng-container *ngFor="let user of userList; let i = index">
+                                        <tr>
+                                            <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                            <td>{{ user?.user?.name }} ({{user?.user?.user_id}}) </td>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <span class="text-muted">{{ user?.user?.email_id }}</span>
+                                                    <span class="text-muted">{{ user.user?.mobile_number }}</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ user.amount | number: '1.2-2' }}</td>
+                                            <td>
+                                                <span *ngIf="user.annual_rate">{{ user.annual_rate }} %</span>
+                                            </td>
+                                            <td>{{ user.notes }}</td>
+                                            <td>{{ user.created_date | date}}</td>
+                                            <td>
+                                                <span class="badge font-size-11 m-1 rounded-pill badge-soft-{{ user.status === 'Requested' ? 'warning' : user.status === 'Confirmed' ? 'success' : 'danger' }} text-{{ user.status === 'Requested' ? 'warning' : user.status === 'Confirmed' ? 'success' : 'danger' }}">
+                                                    {{ user.status }}
+                                                </span>
+                                            </td>
+                                            <ul class="list-inline font-size-20 contact-links mb-0">
+                                                <li class="list-inline-item px-2" >
+                                                    <a [routerLink]="['/members/recurring-deposits/', user?.user?._id]" tooltip="Profile">
+                                                    <i class="bx bx-wallet"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item px-2" *ngIf="user.status === 'Requested'">
+                                                    <a class="cursor-pointer" (click)="openRDSettingFn(editSettingModal, user)" tooltip="Profile">
+                                                    <i class="bx bx-cog bx-spin"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </tr>
+                                    </ng-container>
+                                  </tbody>
+                                </table>
+                                <div class="row justify-content-md-between align-items-md-center mt-2">
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                      <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                      {{ findPageShowing() }} of {{ total }}
+                                      entries
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="text-md-right float-md-end pagination-rounded">
+                                      <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                      </ngb-pagination>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #editSettingModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Settings</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="editDepositSettings">
+        <div class="modal-body">
+            <div class="row">
+
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Amount</label>
+                        <input type="number" class="form-control" placeholder="Amount" formControlName="amount">
+                        <div class="text-danger"
+                            *ngIf="editDepositSettings.get('amount')?.touched && editDepositSettings.get('amount')?.invalid">
+                            <small *ngIf="editDepositSettings.get('amount')?.errors?.['required']">Amount is
+                                required.</small>
+                            <small *ngIf="editDepositSettings.get('amount')?.errors?.['pattern']">Enter a valid number
+                                (e.g.
+                                100, 2500.50).</small>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Annual Rate (%)</label>
+                        <input type="number" class="form-control" placeholder="Settings" formControlName="annual_rate">
+                        <div class="text-danger"
+                            *ngIf="editDepositSettings.get('annual_rate')?.touched && editDepositSettings.get('annual_rate')?.invalid">
+                            <small *ngIf="editDepositSettings.get('annual_rate')?.errors?.['required']">Annual Rate is
+                                required.</small>
+                            <small *ngIf="editDepositSettings.get('annual_rate')?.errors?.['pattern']">Enter a valid
+                                number(e.g. 5, 7.25).</small>
+                        </div>
+                    </div>
+
+                    
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Penality Rate(per day)</label>
+                        <input type="number" class="form-control" placeholder="Penality Rate" formControlName="penality_rate">
+                        <div class="text-danger"
+                            *ngIf="editDepositSettings.get('penality_rate')?.touched && editDepositSettings.get('penality_rate')?.invalid">
+                            <small *ngIf="editDepositSettings.get('penality_rate')?.errors?.['required']">Amount is
+                                required.</small>
+                            <small *ngIf="editDepositSettings.get('penality_rate')?.errors?.['pattern']">Enter a valid number
+                                (e.g.100, 2500.50).</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Duration</label>
+                        <select class="form-control select2" formControlName="duration">
+                            <option value="" disabled>Select Duration</option>
+                            <option value="0.5">Half Year</option>
+                            <option value="1">1 Year</option>
+                            <option value="2">2 Year</option>
+                            <option value="3">3 Year</option>
+                            <option value="4">4 Year</option>
+                            <option value="5">5 Year</option>
+                        </select>
+                        <div class="text-danger"
+                            *ngIf="editDepositSettings.get('interval')?.touched && editDepositSettings.get('interval')?.invalid">
+                            <small>Duration is required.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Payment Interval</label>
+                        <select class="form-control select2" formControlName="interval">
+                            <option value="" disabled>Select Interval</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
+                        <div class="text-danger"
+                            *ngIf="editDepositSettings.get('interval')?.touched && editDepositSettings.get('interval')?.invalid">
+                            <small>Payment interval is required.</small>
+                        </div>
+                    </div>
+
+
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Close</button>
+            <button type="button" class="btn btn-primary waves-effect waves-light"
+                [disabled]="editDepositSettings.invalid" (click)="editSettings()" >Submit</button>
+        </div>
+    </form>
+
+</ng-template>

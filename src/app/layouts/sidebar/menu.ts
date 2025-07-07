@@ -41,36 +41,37 @@ export const MENU: MenuItem[] = [
             {
                 id: 27,
                 parentId: 14,
-                label: 'Add Franchise',
+                label: 'Manage',
                 link: '/franchises/add'
             },
             {
                 id: 26,
                 parentId: 14,
-                label: 'Franchise List',
+                label: 'List',
                 link: '/franchises/list'
             },
         ]
     },
-    // {
-    //     id: 18,
-    //     label: 'Deposit Management',
-    //     icon: 'bx-wallet',
-    //     subItems: [
-    //         {
-    //             id: 24,
-    //             parentId: 18,
-    //             label: 'Deposit Settings',
-    //             link: '/deposit-management/settings'
-    //         },
-    //         {
-    //             id: 25,
-    //             parentId: 18,
-    //             label: 'Deposits',
-    //             link: '/deposit-management/deposits'
-    //         }
-    //     ]
-    // },
+    {
+        id: 18,
+        label: 'Deposit Management',
+        icon: 'bx-wallet',
+        subItems: [
+            {
+                id: 25,
+                parentId: 18,
+                label: 'Recurring Deposit',
+                link: '/deposits/recurring-deposit'
+            },
+            {
+                id: 24,
+                parentId: 18,
+                label: 'Fixed Deposit',
+                link: '/deposits/fixed-deposit'
+            },
+            
+        ]
+    },
     {
         id: 3,
         label: 'Pin Management',

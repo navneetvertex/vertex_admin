@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <app-page-title title="Manage Advisors" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    <app-page-title title="Manage Franchise" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
     <div class="row">
         <div class="col-lg-12">
@@ -42,10 +42,14 @@
                             </div>
                             <div class="mb-3 col-lg-12">
                                 <label for="messageBody" class="form-label">Area</label>
-                                <ng-select [items]="allAreas" [multiple]="true"  formControlName="area" placeholder="Search for areas..." bindLabel="name" bindValue="_id" class="custom-ng-select"></ng-select>
+                                <ng-select [items]="allAreas" (change)="areaSelected($event)" [multiple]="true"  formControlName="area" placeholder="Search for areas..." bindLabel="name" bindValue="_id" class="custom-ng-select"></ng-select>
                                 <div *ngIf="addFranchiseFormGroup.get('area')?.touched && addFranchiseFormGroup.get('area')?.invalid"
-                                    class="text-danger">
+                                    class="text-danger"> 
                                     Areas is required.
+                                </div>
+                                <div *ngIf="areaAlreadyExistsmessage"
+                                    class="text-danger">
+                                    {{areaAlreadyExistsmessage}}
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary"

@@ -75,9 +75,9 @@ export class AppUsersComponent implements OnInit {
 
     this.userService.getAllUsers(this.page, this.pageSize, queryParams).subscribe((res: any) => {
       if (res && res.data) {
-        this.userList = res?.data?.users?.data || [];
+        this.userList = res?.data?.users || [];
         console.log('User List:', this.userList);
-        this.total = res?.data?.users?.metadata[0]?.total || 0;
+        this.total = res?.data?.total || 0;
       } else {
         this.userList = [];
       }

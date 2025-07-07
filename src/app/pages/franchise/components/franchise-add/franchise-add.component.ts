@@ -26,10 +26,13 @@ export class FranchiseAddComponent implements OnInit {
   allDistricts: any[] = [];
   allAreas: any[] = [];
   allStates: any[] = [];
+  allAreasWithFranchiseUser: any[] = [];
+  areaAlreadyExistsmessage: string = '';
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Franchise' }, { label: 'Manage', active: true }];
     this.getStates();
+    this.getAllAreasWithFranchise();
     this.addFranchiseFormGroup = new FormGroup({
       user_id: new FormControl('', Validators.required),
       state: new FormControl({value: '', disabled: true}, Validators.required),
@@ -180,6 +183,44 @@ export class FranchiseAddComponent implements OnInit {
           icon: 'error',
           confirmButtonText: 'OK'
         });
+      }
+    });
+  }
+
+  areaSelected(event: any) {
+    const last_selectedArea = event[event.length - 1];
+    if (last_selectedArea && last_selectedArea._id) {
+        const isAreaAlreadySelected : any = this.allAreasWithFranchiseUser.find((area: any) => area._id === last_selectedArea._id);
+        if (isAreaAlreadySelected) {
+          this.toast.error(`This area is already associated with a franchise ${isAreaAlreadySelected?.user[0]?.name} (${isAreaAlreadySelected?.user[0]?.user_id})`);
+          this.addFranchiseFormGroup.get('area')?.setErrors({ 'areaAlreadyExists': true });
+          setTimeout(() => {
+            this.addFranchiseFormGroup.get('area')?.setErrors(null);
+            this.areaAlreadyExistsmessage = '';
+          }, 5000);
+          this.areaAlreadyExistsmessage = `${isAreaAlreadySelected.name} area is already associated with a franchise ${isAreaAlreadySelected?.user[0]?.name} (${isAreaAlreadySelected?.user[0]?.user_id})`;
+          this.addFranchiseFormGroup.markAllAsTouched();
+          this.addFranchiseFormGroup.patchValue({
+            area: event
+              .filter((area: any) => area._id !== last_selectedArea._id)
+              .map((area: any) => area._id)
+          });
+        }
+    }
+  }
+
+  getAllAreasWithFranchise() {
+    this.franchiseService.getAllAreasWithFranchise().subscribe({
+      next: (response: any) => {
+        this.allAreasWithFranchiseUser = response?.data?.areas || [];
+        console.log('Areas with franchise:', this.allAreasWithFranchiseUser);
+        // if (response && response.data) {
+        //   this.allAreas = response.data || [];
+        // }
+      },
+      error: (error) => {
+        console.error('Error loading areas with franchise:', error);
+        this.toast.error('An error occurred while loading areas with franchise');
       }
     });
   }

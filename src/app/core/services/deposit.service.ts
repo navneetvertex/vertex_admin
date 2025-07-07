@@ -13,6 +13,10 @@ compulsorySettings(payload: any) {
     return this.http.post(`${environment.api_url}deposit/c_setting`, payload);
 }
 
+getAllRecurringDeposits(page: number = 0, limit: number = 10, queryParams: string = '') {
+  return this.http.get(`${environment.api_url}deposit/all_recurring_deposits?page=${page}&limit=${limit}&${queryParams}`);
+}
+
 createCDeposit(payload: any) {
   return this.http.post(`${environment.api_url}deposit/c_deposit`, payload);
 }

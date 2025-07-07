@@ -185,7 +185,7 @@
                     </div>
 
                     <!-- Amount -->
-                    <div class="mb-3 col-lg-12">
+                    <div class="mb-3 col-lg-6">
                         <label class="col-form-label">Amount</label>
                         <input type="number" class="form-control" placeholder="Amount" formControlName="amount">
                         <div class="text-danger"
@@ -196,6 +196,45 @@
                                 (e.g.
                                 100, 2500.50).</small>
                             <small *ngIf="saveDepositSettings.get('amount')?.errors?.['min']">Amount must be at least ₹300.</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="franchiseReferral" class="form-label">Franchise Referral Rupees</label>
+                        <input type="number" id="franchiseReferral" class="form-control" formControlName="franchise_refer_per"
+                            placeholder="Enter indirect referral">
+                        <div *ngIf="saveDepositSettings.get('franchise_refer_per')?.touched && saveDepositSettings.get('franchise_refer_per')?.invalid"
+                            class="text-danger">
+                            <small *ngIf="saveDepositSettings.get('franchise_refer_per')?.errors?.['required']">Indirect
+                                referral amount is required.</small>
+                            <small *ngIf="saveDepositSettings.get('franchise_refer_per')?.errors?.['min']">Must be at least
+                                0.</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="indirectReferral" class="form-label">Indirect Referral Rupees</label>
+                        <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
+                            placeholder="Enter indirect referral">
+                        <div *ngIf="saveDepositSettings.get('indirect_refer_per')?.touched && saveDepositSettings.get('indirect_refer_per')?.invalid"
+                            class="text-danger">
+                            <small *ngIf="saveDepositSettings.get('indirect_refer_per')?.errors?.['required']">Indirect
+                                referral amount is required.</small>
+                            <small *ngIf="saveDepositSettings.get('indirect_refer_per')?.errors?.['min']">Must be at least
+                                0.</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="directReferral" class="form-label">Direct Referral Amount</label>
+                        <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
+                            placeholder="Enter direct referral">
+                        <div *ngIf="saveDepositSettings.get('direct_refer_per')?.touched && saveDepositSettings.get('direct_refer_per')?.invalid"
+                            class="text-danger">
+                            <small *ngIf="saveDepositSettings.get('direct_refer_per')?.errors?.['required']">Direct referral %
+                                is required.</small>
+                            <small *ngIf="saveDepositSettings.get('direct_refer_per')?.errors?.['min']">Must be at least
+                                0.</small>
                         </div>
                     </div>
 
