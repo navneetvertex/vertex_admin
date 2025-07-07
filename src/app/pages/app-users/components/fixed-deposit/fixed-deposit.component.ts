@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -26,6 +26,7 @@ export class FixedDepositComponent implements OnInit {
    }
   breadCrumbItems: Array<{}>;
   settingFormGroup: FormGroup;
+  @ViewChild('editSettingModal') editSettingModal: TemplateRef<any>;
   editSettingFormGroup: FormGroup;
   addDepositFormGroup: FormGroup;
   profile: any = {};
@@ -33,6 +34,7 @@ export class FixedDepositComponent implements OnInit {
   user_id: string;
   depositSettings: any[] = [];
   selectedSetting: any = null;
+  isUserRequested: boolean = false;
   depositList: any[] = [];
 
   ngOnInit(): void {
@@ -42,8 +44,8 @@ export class FixedDepositComponent implements OnInit {
       duration: new FormControl('', [Validators.required]),
       maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
-      indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
-      direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
+      // indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
+      // direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
     });
 
     this.editSettingFormGroup = new FormGroup({
@@ -52,8 +54,8 @@ export class FixedDepositComponent implements OnInit {
       duration: new FormControl('', [Validators.required]),
       maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
-      indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
-      direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
+      // indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
+      // direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
     });
 
 
@@ -78,16 +80,18 @@ export class FixedDepositComponent implements OnInit {
   }
 
   calculateMaturityAmount() {
-    const amount = this.settingFormGroup.get('amount')?.value;
-    const duration = this.settingFormGroup.get('duration')?.value;
-    const annualRate = this.settingFormGroup.get('annual_rate')?.value;
+    const amount = this.editSettingFormGroup.get('amount')?.value;
+    const duration = this.editSettingFormGroup.get('duration')?.value;
+    const annualRate = this.editSettingFormGroup.get('annual_rate')?.value;
+
+    console.log('Calculating maturity amount with:', { amount, duration, annualRate });
 
     if (amount && duration && annualRate) {
       const simpleInterest = (amount * annualRate * duration) / 100;
       const maturityAmount = amount + simpleInterest;
-      this.settingFormGroup.patchValue({ maturity_amount: maturityAmount.toFixed(2) });
+      this.editSettingFormGroup.patchValue({ maturity_amount: maturityAmount.toFixed(2) });
     } else {
-      this.settingFormGroup.patchValue({ maturity_amount: '' });
+      this.editSettingFormGroup.patchValue({ maturity_amount: '' });
     }
   }
 
@@ -114,7 +118,10 @@ export class FixedDepositComponent implements OnInit {
         this.depositSettings = res.data.settings || [];
         if (this.depositSettings.length > 0) {
           this.selectedSetting = this.depositSettings[0];
-          console.log('Selected setting:', this.selectedSetting);
+          this.isUserRequested = this.selectedSetting.status === 'Requested';
+          if(this.isUserRequested) {
+              this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
+          }
           this.editSettingFormGroup.patchValue(this.selectedSetting);
             this.addDepositFormGroup.patchValue({
               tot_paid_amt: this.selectedSetting.amount,
@@ -160,6 +167,10 @@ export class FixedDepositComponent implements OnInit {
 
   editSetting() {
     if (this.editSettingFormGroup.valid) {
+      const payload = this.editSettingFormGroup.value;
+      payload.maturity_amount  = (payload.amount + ((payload.amount * payload.annual_rate * payload.duration) / 100)).toFixed(2);
+      payload.status = 'Completed';
+      console.log('Payload for editing deposit setting:', payload);
       this.depositService.editFDepositSettings(this.editSettingFormGroup.value).subscribe({
         next: (res) => {
           this.toast.success('Deposit setting updated successfully');

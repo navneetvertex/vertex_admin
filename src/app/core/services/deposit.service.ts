@@ -91,4 +91,10 @@ findOutstandingDepositsOfRecurring(user_id: string) {
   return this.http.get(`${environment.api_url}deposit/findOutstandingDepositsOfRecurring?user_id=${user_id}`);
 }
 
+getAllFixedDeposits(page: number = 0, limit: number = 10, queryParams: string = '') {
+  return this.http.get(`${environment.api_url}deposit/all_fixed_deposits?page=${page}&limit=${limit}&${queryParams}`);
+}
+
+
+
 }

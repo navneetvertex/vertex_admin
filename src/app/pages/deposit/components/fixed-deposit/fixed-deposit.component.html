@@ -1,1 +1,229 @@
-<p>fixed-deposit works!</p>
+<div class="container-fluid">
+
+    <app-page-title title="All Users" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-body border-bottom">
+                      <form [formGroup]="searchFormGroup">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
+                            </div>
+                            <div class="col-lg-2">
+                                <select class="form-control select2" formControlName="status" >
+                                    <option value="">Select Status</option>
+                                    <option value="All">All</option>
+                                    <option *ngFor="let status of statusList" [value]="status" >{{status}}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-1">
+                                <button type="button" (click)="getRecrruingDeposits()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                            </div>
+                            <div class="col-lg-1" >
+                                    <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                </div>
+                        </div>
+                      </form>
+                  </div>
+                    <div class="row">
+                            <div class="table-responsive">
+                                <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                  <thead>
+                                    <tr>
+                                      <th>Sr No</th>
+                                      <th>Name</th>
+                                      <th>Contact</th>
+                                      <th>Amount</th>
+                                      <th>Int Rate</th>
+                                      <th>Notes</th>
+                                      <th>Date</th>
+                                      <th>Status</th>
+                                      <th>Action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <ng-container *ngFor="let user of userList; let i = index">
+                                        <tr>
+                                            <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                            <td>{{ user?.user?.name }} ({{user?.user?.user_id}}) </td>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <span class="text-muted">{{ user?.user?.email_id }}</span>
+                                                    <span class="text-muted">{{ user.user?.mobile_number }}</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ user.amount | number: '1.2-2' }}</td>
+                                            <td>
+                                                <span *ngIf="user.annual_rate">{{ user.annual_rate }} %</span>
+                                            </td>
+                                            <td>{{ user.notes }}</td>
+                                            <td>{{ user.created_date | date}}</td>
+                                            <td>
+                                                <span class="badge font-size-11 m-1 rounded-pill badge-soft-{{ user.status === 'Requested' ? 'warning' : user.status === 'Completed' ? 'success' : 'danger' }} text-{{ user.status === 'Requested' ? 'warning' : user.status === 'Completed' ? 'success' : 'danger' }}">
+                                                    {{ user.status == 'Completed'? 'Open' : user.status }}
+                                                </span>
+                                            </td>
+                                            <ul class="list-inline font-size-20 contact-links mb-0">
+                                                <li class="list-inline-item px-2" >
+                                                    <a [routerLink]="['/members/fixed-deposits/', user?.user?._id]" tooltip="Profile">
+                                                    <i class="bx bx-wallet"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item px-2" *ngIf="user.status === 'Requested'">
+                                                    <a class="cursor-pointer" (click)="openRDSettingFn(editSettingModal, user)" tooltip="Profile">
+                                                    <i class="bx bx-cog bx-spin"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </tr>
+                                    </ng-container>
+                                  </tbody>
+                                </table>
+                                <div class="row justify-content-md-between align-items-md-center mt-2">
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                      <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                      {{ findPageShowing() }} of {{ total }}
+                                      entries
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="text-md-right float-md-end pagination-rounded">
+                                      <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                      </ngb-pagination>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #editSettingModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Update Settings</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="editSettingFormGroup">
+        <div class="modal-body">
+            <div class="row">
+                <!-- Amount -->
+                <div class="col-md-6 mb-3">
+                    <label for="amount" class="form-label">Amount</label>
+                    <input type="number" id="amount" class="form-control" formControlName="amount" (blur)="calculateMaturityAmount()"
+                        placeholder="Enter amount">
+                    <div *ngIf="editSettingFormGroup.get('amount')?.touched && editSettingFormGroup.get('amount')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="editSettingFormGroup.get('amount')?.errors?.['required']">Amount is required.</small>
+                        <small *ngIf="editSettingFormGroup.get('amount')?.errors?.['pattern']">Enter a valid number (up to 2
+                            decimal places).</small>
+                    </div>
+                </div>
+
+                <!-- Duration -->
+                <div class="col-md-6 mb-3">
+                    <label for="duration" class="form-label">Duration</label>
+                    <select type="text" id="duration" class="form-control" formControlName="duration" (blur)="calculateMaturityAmount()"> >
+                        <option value="" disabled selected>Select duration</option>
+                        <option value="1">1 Years</option>
+                        <option value="2">2 Years</option>
+                        <option value="3">3 Years</option>
+                        <option value="4">4 Years</option>
+                        <option value="5">5 Years</option>
+                        <option value="6">6 Years</option>
+                        <option value="7">7 Years</option>
+                        <option value="8">8 Years</option>
+                        <option value="9">9 Years</option>
+                        <option value="10">10 Years</option>
+                    </select>
+                    <div *ngIf="editSettingFormGroup.get('duration')?.touched && editSettingFormGroup.get('duration')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="editSettingFormGroup.get('duration')?.errors?.['required']">Duration is
+                            required.</small>
+                    </div>
+                </div>
+
+
+                <!-- Annual Rate -->
+                <div class="col-md-6 mb-3">
+                    <label for="annualRate" class="form-label">Annual Rate (%)</label>
+                    <input type="number" id="annualRate" class="form-control" formControlName="annual_rate"  (keyup)="calculateMaturityAmount()"
+                        placeholder="Enter annual rate">
+                    <div *ngIf="editSettingFormGroup.get('annual_rate')?.touched && editSettingFormGroup.get('annual_rate')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="editSettingFormGroup.get('annual_rate')?.errors?.['required']">Annual rate is
+                            required.</small>
+                        <small *ngIf="editSettingFormGroup.get('annual_rate')?.errors?.['min']">Rate cannot be
+                            negative.</small>
+                        <small *ngIf="editSettingFormGroup.get('annual_rate')?.errors?.['max']">Rate cannot exceed
+                            100%.</small>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="maturityAmount" class="form-label">Maturity Amount</label>
+                    <input type="number" id="maturityAmount" class="form-control" formControlName="maturity_amount" 
+                        placeholder="Enter maturity amount">
+                    <div *ngIf="editSettingFormGroup.get('maturity_amount')?.touched && editSettingFormGroup.get('maturity_amount')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="editSettingFormGroup.get('maturity_amount')?.errors?.['required']">Maturity amount is
+                            required.</small>
+                        <small *ngIf="editSettingFormGroup.get('maturity_amount')?.errors?.['pattern']">Enter a valid number
+                            (up to 2 decimal places).</small>
+                    </div>
+                </div>
+
+                <!-- Indirect Referral -->
+                <!-- <div class="col-md-6 mb-3">
+                    <label for="indirectReferral" class="form-label">Indirect Referral Percentage</label>
+                    <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
+                        placeholder="Enter indirect referral %">
+                    <div *ngIf="editSettingFormGroup.get('indirect_refer_per')?.touched && editSettingFormGroup.get('indirect_refer_per')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="editSettingFormGroup.get('indirect_refer_per')?.errors?.['required']">Indirect
+                            referral % is required.</small>
+                        <small *ngIf="editSettingFormGroup.get('indirect_refer_per')?.errors?.['min']">Must be at least
+                            0%.</small>
+                        <small *ngIf="editSettingFormGroup.get('indirect_refer_per')?.errors?.['max']">Must be 100% or
+                            less.</small>
+                    </div>
+                </div> -->
+
+                <!-- Direct Referral -->
+                <!-- <div class="col-md-6 mb-3">
+                    <label for="directReferral" class="form-label">Direct Referral Percentage</label>
+                    <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
+                        placeholder="Enter direct referral %">
+                    <div *ngIf="editSettingFormGroup.get('direct_refer_per')?.touched && editSettingFormGroup.get('direct_refer_per')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="editSettingFormGroup.get('direct_refer_per')?.errors?.['required']">Direct referral %
+                            is required.</small>
+                        <small *ngIf="editSettingFormGroup.get('direct_refer_per')?.errors?.['min']">Must be at least
+                            0%.</small>
+                        <small *ngIf="editSettingFormGroup.get('direct_refer_per')?.errors?.['max']">Must be 100% or
+                            less.</small>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Close</button>
+            <button type="submit" class="btn btn-primary waves-effect waves-light"
+                [disabled]="editSettingFormGroup.invalid" (click)="editSetting()" >Submit</button>
+        </div>
+    </form>
+</ng-template>
