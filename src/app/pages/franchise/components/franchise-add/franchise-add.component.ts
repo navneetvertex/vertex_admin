@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ImageCropperComponent } from 'ngx-image-cropper';
 import { ToastrService } from 'ngx-toastr';
@@ -17,6 +18,7 @@ export class FranchiseAddComponent implements OnInit {
 
   constructor(private userService: UserProfileService,
       private toast: ToastrService,
+      private router: Router,
       private masterService: MastersService,
       private franchiseService: FranchiseService,
     ) { }
@@ -43,13 +45,15 @@ export class FranchiseAddComponent implements OnInit {
 
   getUserDetails() {
     if(!this.addFranchiseFormGroup.value.user_id) return;
-    this.userService.getBasicUserProfile(this.addFranchiseFormGroup.value.user_id).subscribe({
+
+    this.franchiseService.getAdvisorStatus(this.addFranchiseFormGroup.value.user_id).subscribe({
       next: (res: any) => {
-        if (res.status) {
-          this.userDetails = res?.data?.user;
-          if(!this.userDetails) {
-            this.addFranchiseFormGroup.get('user_id')?.setErrors({ 'userNotFound': true });
-          } else {
+        if(res && res.status === 'success') {
+          if(res.data.isAdvisor) {
+            this.addFranchiseFormGroup.get('user_id')?.setErrors(null);
+            this.addFranchiseFormGroup.get('user_id')?.markAsPristine();
+            this.addFranchiseFormGroup.get('user_id')?.markAsUntouched();
+            this.userDetails = res.data.user;
             this.getFranchiseByUserId(this.userDetails._id);
             this.getDistricts({_id :this.userDetails.state});
             this.getAreas({_id: this.userDetails.district});
@@ -59,12 +63,45 @@ export class FranchiseAddComponent implements OnInit {
               area: this.userDetails.area
             });
             this.addFranchiseFormGroup.get('state')?.disable();
+          } else {
+            if(res.data.user) {
+              this.userDetails = res.data.user;
+               this.addFranchiseFormGroup.get('user_id')?.setErrors({ 'notAdvisor': true });
+            } else {
+              this.userDetails = null;
+               this.addFranchiseFormGroup.get('user_id')?.setErrors({ 'userNotFound': true });
+            }
+           
           }
-        } 
+        }
       }, error: (err) => {
-        console.error('Error fetching user details:', err);
+        console.error('Error checking advisor status:', err);
+        this.toast.error('An error occurred while checking advisor status');
       }
     });
+
+    // this.userService.getBasicUserProfile(this.addFranchiseFormGroup.value.user_id).subscribe({
+    //   next: (res: any) => {
+    //     if (res.status) {
+    //       this.userDetails = res?.data?.user;
+    //       if(!this.userDetails) {
+    //         this.addFranchiseFormGroup.get('user_id')?.setErrors({ 'userNotFound': true });
+    //       } else {
+    //         this.getFranchiseByUserId(this.userDetails._id);
+    //         this.getDistricts({_id :this.userDetails.state});
+    //         this.getAreas({_id: this.userDetails.district});
+    //         this.addFranchiseFormGroup.patchValue({
+    //           state: this.userDetails.state,
+    //           district: this.userDetails.district,
+    //           area: this.userDetails.area
+    //         });
+    //         this.addFranchiseFormGroup.get('state')?.disable();
+    //       }
+    //     } 
+    //   }, error: (err) => {
+    //     console.error('Error fetching user details:', err);
+    //   }
+    // });
   }
 
   getFranchiseByUserId(_id: string) {
@@ -164,6 +201,8 @@ export class FranchiseAddComponent implements OnInit {
             text: 'Franchise added successfully',
             icon: 'success',
             confirmButtonText: 'OK'
+          }).then(() => {
+            this.router.navigate(['/franchises/list']);
           });
           this.toast.success('Franchise added successfully');
           this.addFranchiseFormGroup.reset();

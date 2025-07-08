@@ -103,6 +103,12 @@ export const MENU: MenuItem[] = [
         icon: 'bx-credit-card',
         subItems: [
             {
+                id: 1,
+                parentId: 5,
+                label: 'Card List',
+                link: '/credit-management/list'
+            },
+            {
                 id: 6,
                 parentId: 5,
                 label: 'Request for new Card',

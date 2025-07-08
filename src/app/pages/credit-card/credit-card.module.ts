@@ -11,6 +11,7 @@ import { UIModule } from 'src/app/shared/ui/ui.module';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { CardListComponent } from './components/card-list/card-list.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     AssignedCardListComponent,
     UserAmountComponent,
     PaybleAmountComponent,
-    AllTransanctionComponent
+    AllTransanctionComponent,
+    CardListComponent
   ],
   imports: [
     CommonModule,

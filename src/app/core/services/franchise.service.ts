@@ -33,6 +33,10 @@ getFranchiseMembers(id: string, page: number = 1, pageSize: number = 10, queryPa
   return this.http.get(`${environment.api_url}franchise/getFranchiseMembers/${id}?page=${page}&pageSize=${pageSize}&${queryParams}`);
 }
 
+getAdvisorStatus(user_id: string) {
+  return this.http.get(`${environment.api_url}franchise/getAdvisorStatus/${user_id}`);
+}
+
 
 
 }

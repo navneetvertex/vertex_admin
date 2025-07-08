@@ -61,4 +61,16 @@ payCreditCardFees(payload: any) {
   return this.http.post(`${environment.api_url}credit-cards/payCreditCardFees`, payload);
 }
 
+generateCreditCardNumber(no_of_cardlist: number) {
+  return this.http.get(`${environment.api_url}credit-cards/generateCreditCardNumber/${no_of_cardlist}`);
+}
+
+getCreditCardNumberList(page: number = 0, limit: number = 10, searchText: string = '') {
+  return this.http.get(`${environment.api_url}credit-cards/getCreditCardNumberList?page=${page}&limit=${limit}`);
+}
+
+getLatest5CreditCardNumbers() {
+  return this.http.get(`${environment.api_url}credit-cards/getLatest5CreditCardNumbers`);
+}
+
 }

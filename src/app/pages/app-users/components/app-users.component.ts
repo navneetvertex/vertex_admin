@@ -240,4 +240,21 @@ export class AppUsersComponent implements OnInit {
     return Math.min(this.page * this.pageSize, this.total)
   }
 
+  exportUsers(){
+    this.userService.exportUsers().subscribe((res: any) => {
+      const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download =  `users_${new Date().toISOString()}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, (err: any) => {
+      console.error('Error exporting users:', err);
+      this.toast.error('Failed to export users');
+    });
+  }
+
 }

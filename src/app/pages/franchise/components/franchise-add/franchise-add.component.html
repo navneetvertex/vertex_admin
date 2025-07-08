@@ -21,6 +21,10 @@
                                     class="text-danger mt-1">
                                     User not found. Please enter a valid User ID.
                                 </div>
+                                <div *ngIf="addFranchiseFormGroup.get('user_id')?.touched && addFranchiseFormGroup.get('user_id')?.errors?.['notAdvisor']"
+                                    class="text-danger mt-1">
+                                    User is not an advisor or doesnt have 3 active users. Please select an advisor.
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="mb-3 col-lg-6">

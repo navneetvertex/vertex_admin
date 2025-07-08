@@ -88,5 +88,9 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}masters/all-transfer-requests?page=${page}&limit=${limit}&${queryParams}`);
     }
 
+    exportUsers() {
+        return this.http.get(`${environment.api_url}users/export/user/admin`, { responseType: 'blob' });
+    }
+
 
 }

@@ -5,8 +5,10 @@ import { AssignedCardListComponent } from './components/assigned-card-list/assig
 import { UserAmountComponent } from './components/user-amount/user-amount.component';
 import { PaybleAmountComponent } from './components/payble-amount/payble-amount.component';
 import { AllTransanctionComponent } from './components/all-transanction/all-transanction.component';
+import { CardListComponent } from './components/card-list/card-list.component';
 
 const routes: Routes = [
+  { path: 'list', component: CardListComponent },
   { path: 'request', component: RequestNewCardComponent },
   { path: 'assigned-card-list', component: AssignedCardListComponent },
   { path: 'request-amount', component: UserAmountComponent },

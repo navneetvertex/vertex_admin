@@ -6,34 +6,43 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="card-body border-bottom">
+                  <div class="card-body border-bottom">
                       <form [formGroup]="searchFormGroup">
-                        <div class="row">
-                            <div class="col-lg-3">
-                                <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
-                            </div>
-                            <div class="col-lg-3">
-                                <input type="search" class="form-control" id="searchInput" formControlName="account_number" placeholder="Search for Account Number...">
-                            </div>
-                            <div class="col-lg-2">
-                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
-                            </div>
-                            <div class="col-lg-2">
-                                <select class="form-control select2" formControlName="status" >
-                                    <option value="">Select Status</option>
-                                    <option value="All">All</option>
-                                    <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
-                                </select>
-                            </div>
-
-                            <div class="col-lg-1">
-                                <button type="button" (click)="search()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
-                            </div>
-                            <div class="col-lg-1" >
-                                    <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
-                                </div>
+                        <div class="row align-items-end g-2">
+                          <div class="col-lg-3">
+                            <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
+                          </div>
+                          <div class="col-lg-2">
+                            <input type="search" class="form-control" id="searchInput" formControlName="account_number" placeholder="Search for Account Number...">
+                          </div>
+                          <div class="col-lg-2">
+                            <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
+                          </div>
+                          <div class="col-lg-2">
+                            <select class="form-control select2" formControlName="status">
+                              <option value="">Select Status</option>
+                              <option value="All">All</option>
+                              <option *ngFor="let status of statusList" [ngValue]="status">{{status}}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-1 d-grid">
+                            <button type="button" (click)="search()" class="btn btn-soft-secondary">
+                              <i class="mdi mdi-filter-outline align-middle"></i> Filter
+                            </button>
+                          </div>
+                          <div class="col-lg-1 d-grid">
+                            <button (click)="reset()" type="button" class="btn btn-soft-secondary">
+                              <i class="mdi mdi-refresh"></i>
+                            </button>
+                          </div>
+                          
                         </div>
                       </form>
+                      <div class="col-lg-1 d-grid">
+                            <button class="btn btn-success" (click)="exportUsers()">
+                              <i class="mdi mdi-download"></i> Export
+                            </button>
+                          </div>
                   </div>
                     <div class="row">
                             <div class="table-responsive">
@@ -57,7 +66,6 @@
                                   </thead>
                                   <tbody>
                                     <tr *ngFor="let user of userList; let i = index">
-                                      <!-- <td>{{user | json}}</td> -->
                                       <td>{{ (page - 1) * pageSize + i + 1 }}</td>
                                       <td>
                                         {{ user.name }} <br>

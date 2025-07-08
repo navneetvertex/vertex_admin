@@ -38,7 +38,6 @@
                                                 <th>S.No.</th>
                                                 <th>User Id</th>
                                                 <th>Parent Id</th>
-                                                <th>Indirect Id</th>
                                                 <th>Reqested At</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
@@ -50,7 +49,6 @@
                                                     <td>{{ (page - 1) * pageSize + i + 1 }}</td>
                                                     <td>{{ cc?.user?.name }} <br> ({{cc?.user?.user_id}}) </td>
                                                     <td> <span *ngIf="cc?.direct_user">{{ cc?.direct_user?.name }} <br> ({{cc?.direct_user?.user_id}})</span>  </td>
-                                                    <td> <span *ngIf="cc?.indirect_user">{{ cc?.indirect_user?.name }} <br> ({{cc?.indirect_user?.user_id}})</span>  </td>
                                                     <td>{{cc.created_date | date}}</td>
                                                     <td>
                                                         <span class="badge bg-{{cc.status === 'Active' ? 'success' : cc.status === 'Requested' ? 'warning' : 'danger'}}">
@@ -111,16 +109,17 @@
 
           <div class="mb-3">
             <label for="card_number" class="form-label">Card Number</label>
-            <input
-              type="number"
+            <select
               id="card_number"
               class="form-control"
               formControlName="card_number"
               [class.is-invalid]="approveCCFormGroup.get('card_number')?.invalid && (approveCCFormGroup.get('card_number')?.touched || approveCCFormGroup.get('card_number')?.dirty)"
-
               required
               placeholder="Enter card number"
-            />
+            >
+                <option value="" disabled selected>Select Card Number</option>
+                <option *ngFor="let card of cardList" [value]="card">{{ card }}</option>
+            </select>
             <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('card_number')?.errors?.['required']">
               Card number is required.
             </div>
