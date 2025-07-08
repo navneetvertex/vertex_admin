@@ -25,5 +25,14 @@ getAllAreasWithFranchise() {
   return this.http.get(`${environment.api_url}franchise/getAllAreasWithFranchise`);
 }
 
+changeFranchiseStatus(id: string, statusData: any) {
+  return this.http.patch(`${environment.api_url}franchise/changeFranchiseStatus/${id}`, statusData);
+}
+
+getFranchiseMembers(id: string, page: number = 1, pageSize: number = 10, queryParams: string = '') {
+  return this.http.get(`${environment.api_url}franchise/getFranchiseMembers/${id}?page=${page}&pageSize=${pageSize}&${queryParams}`);
+}
+
+
 
 }

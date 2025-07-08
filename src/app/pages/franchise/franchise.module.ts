@@ -8,12 +8,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { ListMembersComponent } from './components/franchise-list/list-members/list-members.component';
 
 
 @NgModule({
   declarations: [
     FranchiseListComponent,
-    FranchiseAddComponent
+    FranchiseAddComponent,
+    ListMembersComponent
   ],
   imports: [
     CommonModule,

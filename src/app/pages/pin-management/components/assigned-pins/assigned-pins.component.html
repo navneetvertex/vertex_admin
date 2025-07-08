@@ -31,6 +31,7 @@
                                                 <th>Used By</th>
                                                 <th>Used On</th>
                                                 <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -46,7 +47,22 @@
                                                         
                                                     </td>
                                                     <td>{{ pin.used_on ? (pin.used_on | date) : '-' }}</td>
-                                                    <td><span class="badge" [ngClass]="{'bg-success': pin.status === 'Assigned', 'bg-danger': pin.status === 'Inactive', 'bg-info': pin.status === 'Active'}">{{ pin.status }}</span></td>
+                                                    <td><span class="badge" [ngClass]="{'bg-success': pin.status === 'Assigned', 'bg-danger': pin.status === 'Inactive' || pin.status === 'Hold', 'bg-info': pin.status === 'Active'}">{{ pin.status }}</span></td>
+                                                    <td>
+                                                        <ul class="list-inline font-size-20 contact-links mb-0" >
+                                                            <li data-bs-toggle="modal" *ngIf="pin.status !== 'Used' && pin.status !== 'Hold'" data-bs-target="#myModal" (click)="holdPin( pin)" class="list-inline-item px-2">
+                                                                <a href="javascript:void(0);" tooltip="Message">
+                                                                <i class="bx bx-lock"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li *ngIf="pin.status === 'Hold'" (click)="unlockPin( pin)" class="list-inline-item px-2">
+                                                                <a href="javascript:void(0);" tooltip="Message">
+                                                                <i class="bx bx-lock-open"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+
                                                 </tr>
                                             </ng-container>
                                             

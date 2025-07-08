@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FranchiseService } from 'src/app/core/services/franchise.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-franchise-list',
@@ -65,12 +66,43 @@ export class FranchiseListComponent implements OnInit {
     this.getFranchises();
   }
 
- findPageShowing(): number {
+  findPageShowing(): number {
     return Math.min(this.page * this.pageSize, this.total)
   }
+
   pageChange(page: number) {
     this.page = page;
     this.getFranchises();
+  }
+
+  changeStatus(fund: any) {
+    console.log('Changing status for:', fund);
+    Swal.fire({
+      title: 'Change Status',
+      text: `Are you sure you want to change the status of ${fund?.user?.name}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, change it!',
+      cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const statusData = { status: fund.status === 'Active' ? 'Inactive' : 'Active' };
+        this.franchiseService.changeFranchiseStatus(fund._id, {status: !fund.status}).subscribe({
+          next: (res: any) => {
+            if (res && res.status === 'success') {
+              Swal.fire('Success', `Franchise status has been changed to ${statusData.status}.`, 'success');
+              this.getFranchises();
+            } else {
+              Swal.fire('Error', 'Failed to change the franchise status. Please try again.', 'error');
+            }
+          },
+          error: (err: any) => {
+            console.error('Error changing franchise status:', err);
+            Swal.fire('Error', 'Failed to change the franchise status. Please try again.', 'error');
+          }
+        });
+      }
+    });
   }
 
 }

@@ -229,14 +229,16 @@
                                 <div *ngFor="let address of profileFormGroup.get('present_addresses')['controls']; let i = index" [formGroupName]="i" class="row mb-2">
                                     <div class="col-sm-12 mb-2">
                                         <label for="">Address</label>
-                                        <input type="text" id="present_addr_{{i}}" formControlName="address" placeholder="Enter Present Address" class="form-control">
+                                        <input type="text" id="present_addr_{{i}}" formControlName="address" placeholder="Enter Present Address" class="form-control"
+                                            (input)="address.get('address')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('address')?.invalid && address.get('address')?.touched" class="text-danger small">
                                             Enter valid Present Address.
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="">State</label>
-                                        <input type="text" id="present_state_{{i}}" formControlName="state" placeholder="State" class="form-control">
+                                        <input type="text" id="present_state_{{i}}" formControlName="state" placeholder="State" class="form-control"
+                                            (input)="address.get('state')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('state')?.invalid && address.get('state')?.touched" class="text-danger small">
                                             Enter valid State.
                                         </div>
@@ -250,7 +252,8 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <label for="">Pincode</label>
-                                        <input type="text" id="present_pincode_{{i}}" formControlName="pincode" placeholder="Pincode" class="form-control">
+                                        <input type="text" id="present_pincode_{{i}}" formControlName="pincode" placeholder="Pincode" class="form-control"
+                                            (input)="address.get('pincode')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('pincode')?.invalid && address.get('pincode')?.touched" class="text-danger small">
                                             Enter valid Pincode.
                                         </div>
@@ -277,28 +280,32 @@
                                 <div *ngFor="let address of profileFormGroup.get('permanent_addresses')['controls']; let i = index" [formGroupName]="i" class="row mb-2">
                                     <div class="col-sm-12 mb-2">
                                         <label for="">Address</label>
-                                        <input type="text" id="permanent_addr_{{i}}" formControlName="address" placeholder="Enter Permanent Address" class="form-control">
+                                        <input type="text" id="permanent_addr_{{i}}" formControlName="address" placeholder="Enter Permanent Address" class="form-control"
+                                            (input)="address.get('address')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('address')?.invalid && address.get('address')?.touched" class="text-danger small">
                                             Enter valid Permanent Address.
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="">State</label>
-                                        <input type="text" id="permanent_state_{{i}}" formControlName="state" placeholder="State" class="form-control">
+                                        <input type="text" id="permanent_state_{{i}}" formControlName="state" placeholder="State" class="form-control"
+                                            (input)="address.get('state')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('state')?.invalid && address.get('state')?.touched" class="text-danger small">
                                             Enter valid State.
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="">District</label>
-                                        <input type="text" id="permanent_district_{{i}}" formControlName="district" placeholder="District" class="form-control">
+                                        <input type="text" id="permanent_district_{{i}}" formControlName="district" placeholder="District" class="form-control"
+                                            (input)="address.get('district')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('district')?.invalid && address.get('district')?.touched" class="text-danger small">
                                             Enter valid District.
                                         </div>
                                     </div>
                                     <div class="col-sm-3">
                                         <label for="">Pincode</label>
-                                        <input type="text" id="permanent_pincode_{{i}}" formControlName="pincode" placeholder="Pincode" class="form-control">
+                                        <input type="text" id="permanent_pincode_{{i}}" formControlName="pincode" placeholder="Pincode" class="form-control"
+                                            (input)="address.get('pincode')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('pincode')?.invalid && address.get('pincode')?.touched" class="text-danger small">
                                             Enter valid Pincode.
                                         </div>
@@ -345,28 +352,32 @@
                                 <div *ngFor="let address of profileFormGroup.get('office_addresses')['controls']; let i = index" [formGroupName]="i" class="row mb-2">
                                     <div class="col-sm-12 mb-2">
                                         <label for="">Address</label>
-                                        <input type="text" id="office_addr_{{i}}" formControlName="address" placeholder="Enter Office Address" class="form-control">
+                                        <input type="text" id="office_addr_{{i}}" formControlName="address" placeholder="Enter Office Address" class="form-control"
+                                            (input)="address.get('address')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('address')?.invalid && address.get('address')?.touched" class="text-danger small">
                                             Enter valid Office Address.
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="">State</label>
-                                        <input type="text" id="office_state_{{i}}" formControlName="state" placeholder="State" class="form-control">
+                                        <input type="text" id="office_state_{{i}}" formControlName="state" placeholder="State" class="form-control"
+                                            (input)="address.get('state')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('state')?.invalid && address.get('state')?.touched" class="text-danger small">
                                             Enter valid State.
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="">District</label>
-                                        <input type="text" id="office_district_{{i}}" formControlName="district" placeholder="District" class="form-control">
+                                        <input type="text" id="office_district_{{i}}" formControlName="district" placeholder="District" class="form-control"
+                                            (input)="address.get('district')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('district')?.invalid && address.get('district')?.touched" class="text-danger small">
                                             Enter valid District.
                                         </div>
                                     </div>
                                     <div class="col-sm-3">
                                         <label for="">Pincode</label>
-                                        <input type="text" id="office_pincode_{{i}}" formControlName="pincode" placeholder="Pincode" class="form-control">
+                                        <input type="text" id="office_pincode_{{i}}" formControlName="pincode" placeholder="Pincode" class="form-control"
+                                            (input)="address.get('pincode')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="address.get('pincode')?.invalid && address.get('pincode')?.touched" class="text-danger small">
                                             Enter valid Pincode.
                                         </div>
@@ -393,11 +404,13 @@
                                 <div *ngFor="let bank of profileFormGroup.get('banks')['controls']; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
                                     <div class="col-sm-3 mb-2">
                                         <label for="">Bank Name</label>
-                                        <input type="text" formControlName="bank_name" placeholder="Bank Name" class="form-control">
+                                        <input type="text" formControlName="bank_name" placeholder="Bank Name" class="form-control"
+                                            (input)="bank.get('bank_name')?.setValue($event.target.value.toUpperCase())">
                                     </div>
                                     <div class="col-sm-3 mb-2">
                                         <label for="">Account Number</label>
-                                        <input type="text" formControlName="account_number" placeholder="Account Number" class="form-control">
+                                        <input type="text" formControlName="account_number" placeholder="Account Number" class="form-control"
+                                            (input)="bank.get('account_number')?.setValue($event.target.value.toUpperCase())">
                                         <div *ngIf="bank.get('account_number')?.invalid && bank.get('account_number')?.touched" class="text-danger small">
                                             Enter valid account number.
                                         </div>
@@ -412,7 +425,8 @@
                                     </div>
                                     <div class="col-sm-3 mb-2">
                                         <label for="">Branch Name</label>
-                                        <input type="text" formControlName="branch_name" placeholder="Branch Name" class="form-control">
+                                        <input type="text" formControlName="branch_name" placeholder="Branch Name" class="form-control"
+                                            (input)="bank.get('branch_name')?.setValue($event.target.value.toUpperCase())">
                                     </div>
                                     <div class="col-sm-1 mb-3 d-flex align-items-center">
                                         <button type="button" class="btn btn-danger btn-sm" (click)="removeBank(i)" *ngIf="profileFormGroup.get('banks')['controls'].length > 1">
@@ -565,7 +579,7 @@
 
             <div class="d-flex justify-content-center">
                 <button class="btn btn-danger ms-2" *ngIf="!isAccountApproved" (click)="approveKYC()">Approve KYC</button>
-                <button class="btn btn-primary ms-2" *ngIf="isAccountApproved" (click)="formSubmit()">Form Edit</button>
+                <button class="btn btn-primary ms-2" (click)="formSubmit()">{{isAccountApproved? 'Edit Profile': 'Save Draft'}}</button>
             </div>
             </div>
         </form>

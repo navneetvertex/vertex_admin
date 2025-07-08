@@ -43,8 +43,10 @@
                                                 <th>State</th>
                                                 <th>District</th>
                                                 <th>Area</th>
+                                                <th>User List</th>
                                                 <th>Status</th>
                                                 <th>CreatedAt</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -59,9 +61,23 @@
                                                     <td>
                                                         <ng-container *ngFor="let area of fund.area">{{area.name}} <br> </ng-container>
                                                     </td>
+                                                    <td>
+                                                         <a routerLink="/franchises/member-list/{{fund._id}}" data-bs-toggle="modal" class="btn btn-sm btn-soft-primary"><i class="mdi mdi-account-multiple"></i></a>
+                                                    </td>
                                                     <td><span class="badge bg-{{ fund.status ? 'success' : 'danger' }}">{{ fund.status ? 'Active' : 'InActive' }}</span></td>
                                                     <td>{{ fund.createdAt | date }} <br> <span class="text-muted">Modified At : {{fund.updatedAt | date}}</span> </td>
-                                                    
+                                                    <td>
+                                                        <ul class="list-inline font-size-20 contact-links mb-0">
+                                                            <li *ngIf="fund.status" (click)="changeStatus(fund)" class="list-inline-item px-2">
+                                                                <a href="javascript:void(0);" tooltip="Message">
+                                                                <i class="bx bx-lock"></i>
+                                                                </a>
+                                                            </li>
+                                                             <li *ngIf="!fund.status" (click)="changeStatus(fund)" class="list-inline-item px-2">
+                                                                <a href="javascript:void(0);" tooltip="Message"> <i class="bx bx-lock-open"></i></a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
                                                 </tr>
                                             </ng-container>
 

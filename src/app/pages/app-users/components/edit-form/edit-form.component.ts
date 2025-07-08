@@ -107,15 +107,7 @@ export class EditFormComponent implements OnInit {
             pincode: new FormControl('', [ Validators.pattern('^[0-9]{6}$')]),
           })
         ]),
-        office_addresses: new FormArray([
-          new FormGroup({
-            _id: new FormControl(null),
-            address: new FormControl(''),
-            state: new FormControl(''),
-            district: new FormControl(''),
-            pincode: new FormControl('', [ Validators.pattern('^[0-9]{6}$')]),
-          })
-        ]),
+        office_addresses: new FormArray([]),
         banks: new FormArray([
           new FormGroup({
             _id: new FormControl(null),
@@ -205,6 +197,9 @@ export class EditFormComponent implements OnInit {
         cancelButtonText: 'No, cancel!'
       }).then((result) => {
         if (result.isConfirmed) {
+
+          this.formSubmit();
+
           this.userService.upsertKyc({user: this.user_details._id, status: 'Approved'}).subscribe({
             next: (response: any) => {
               if (response.status === 'success') {
