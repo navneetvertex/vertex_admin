@@ -148,7 +148,7 @@
             <div class="row">
 
                     <!-- Annual Rate -->
-                    <div class="mb-3 col-lg-12">
+                    <div class="mb-3 col-lg-6">
                         <label class="col-form-label">Annual Rate (%)</label>
                         <input type="number" class="form-control" placeholder="Settings" formControlName="annual_rate">
                         <span class="text-muted">Enter the yearly interest rate as a percentage</span>
@@ -197,6 +197,11 @@
                                 100, 2500.50).</small>
                             <small *ngIf="saveDepositSettings.get('amount')?.errors?.['min']">Amount must be at least ₹300.</small>
                         </div>
+                    </div>
+
+                    <div class="mb-3 col-lg-6">
+                        <label class="col-form-label">Amount</label>
+                        <input type="number" class="form-control" placeholder="Amount" formControlName="shared_amount">
                     </div>
 
                     <div class="col-md-6 mb-3">

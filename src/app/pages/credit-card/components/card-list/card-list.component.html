@@ -38,6 +38,7 @@
                                                 <th>S.No.</th>
                                                 <th>Card Number</th>
                                                 <th>Status</th>
+                                                <th>Date</th>
                                                 <th>Assigned To</th>
                                                 <th>Assigned On</th>
                                             </tr>
@@ -53,6 +54,7 @@
                                                             'badge-soft-danger': !pins.status
                                                         }">{{pins.status ? 'Active' : 'InActive'}}</span>
                                                     </td>
+                                                    <td>{{pins.created_date | date}}</td>
                                                     <td>
                                                         <ng-container *ngIf="pins.assigned_user">
                                                            {{pins.assigned_user.name}} <br> ({{pins.assigned_user.user_id}})

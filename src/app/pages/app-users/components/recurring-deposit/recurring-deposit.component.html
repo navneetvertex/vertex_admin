@@ -61,7 +61,7 @@
                                     <button type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
                                         class="btn btn-primary dropdown-toggle">
-                                        <i class="bx bxs-cog align-middle me-1"></i> Setting
+                                        <i class="bx bxs-cog align-middle me-1"></i> Create New RD
                                     </button>
                                 </div>
                             </div>
@@ -375,7 +375,7 @@
 <ng-template #editSettingModal role="document" let-modal>
     <div class="modal-header">
         <h5 class="modal-title" id="myModalLabel">Settings</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" *ngIf="canCreateSettings"
             (click)="modal.dismiss('Cross click')"></button>
     </div>
     <form [formGroup]="editDepositSettings">
@@ -455,7 +455,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+            <button type="button" *ngIf="canCreateSettings" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
                 (click)="modal.close('Close click')">Close</button>
             <button type="button" class="btn btn-primary waves-effect waves-light"
                 [disabled]="editDepositSettings.invalid" (click)="editSettings()" >Submit</button>

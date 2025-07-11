@@ -38,7 +38,7 @@ export class FranchiseAddComponent implements OnInit {
     this.addFranchiseFormGroup = new FormGroup({
       user_id: new FormControl('', Validators.required),
       state: new FormControl({value: '', disabled: true}, Validators.required),
-      district: new FormControl('', Validators.required),
+      district: new FormControl({value: '', disabled: true}, Validators.required),
       area: new FormControl([], Validators.required),
     });
   }
@@ -189,7 +189,7 @@ export class FranchiseAddComponent implements OnInit {
     const formData = {
       user_id: this.userDetails._id,
       state: this.userDetails?.state || this.addFranchiseFormGroup.value.state,
-      district: this.addFranchiseFormGroup.value.district,
+      district: this.userDetails?.district || this.addFranchiseFormGroup.value.district,
       area: this.addFranchiseFormGroup.value.area
     };
     console.log('Form Data:', formData);

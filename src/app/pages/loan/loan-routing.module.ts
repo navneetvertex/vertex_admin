@@ -6,7 +6,7 @@ import { AdminLoanTransanctionComponent } from './components/admin-loan-transanc
 import { PayLoanComponent } from './components/pay-loan/pay-loan.component';
 
 const routes: Routes = [
-  { path: 'loans', component: LoanRequestedComponent },
+  { path: 'loans/:type', component: LoanRequestedComponent },
   { path: 'pay-loan', component: PayLoanComponent },
   { path: 'user-transanction',component: LoanTransanctionComponent },
   { path: 'admin-transanction', component: AdminLoanTransanctionComponent }

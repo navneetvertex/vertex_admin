@@ -179,8 +179,14 @@ export const MENU: MenuItem[] = [
             {
                 id: 15,
                 parentId: 7,
-                label: 'Loans',
-                link: '/loan-management/loans'
+                label: 'Personal Loans',
+                link: '/loan-management/loans/Personal'
+            },
+            {
+                id: 19,
+                parentId: 7,
+                label: 'Garanteed Loans',
+                link: '/loan-management/loans/Garanteed'
             },
             {
                 id:18,

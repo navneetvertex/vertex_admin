@@ -10,9 +10,9 @@
                             <!-- [aspectRatio]="4 / 3" [resizeToWidth]="256"  [maintainAspectRatio]="true"-->
                             <image-cropper
                                 [imageChangedEvent]="imageChangedEvent" (loadImageFailed)="loadImageFailed()"
-                                format="jpeg"  [maintainAspectRatio]="false" [imageQuality]="50"
+                                format="jpeg"  [maintainAspectRatio]="false" [imageQuality]="50" 
                                 (imageCropped)="imageCropped($event)" [canvasRotation]="canvasRotation" [transform]="transform"
-                                style="display:block; max-width:100%; max-height:400px; margin:auto;">
+                                style="display:block; max-width:100%; max-height:100%; margin:auto;">
                             </image-cropper>
                         </div>
                         <div class="text-center mt-2">

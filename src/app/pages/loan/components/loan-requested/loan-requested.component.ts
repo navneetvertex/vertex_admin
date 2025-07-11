@@ -4,6 +4,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { interval } from 'rxjs';
 import Swal from 'sweetalert2';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-loan-requested',
@@ -13,18 +14,27 @@ import Swal from 'sweetalert2';
 export class LoanRequestedComponent implements OnInit {
 
   constructor(private loanService: LoanService,
-    private modalService: NgbModal
-  ) { }
+    private modalService: NgbModal,
+    private route: ActivatedRoute
+  ) {
+    this.route.paramMap.subscribe(paramMap => {
+      this.loanType = paramMap.get('type') || '';
+      console.log('Plan from route:', this.loanType);
+      
+    });
+   }
 
   breadCrumbItems: Array<{}>;
   loanList: any[] = []
   total: number = 0;
+  loanType: string = '';
   page: number = 1;
   statusFormGroup: FormGroup
   pageSize: number = 10;
   selectedLoan: any;
   searchFormGroup: FormGroup;
   minDate: string;
+  queryParams: string = '';
   status = ['Pending', 'Approved', 'Rejected', 'Completed', 'Defaulted']
 
   ngOnInit(): void {
@@ -50,7 +60,7 @@ export class LoanRequestedComponent implements OnInit {
 
     this.searchFormGroup = new FormGroup({
       name: new FormControl(''),
-      loan_type: new FormControl(''),
+      loan_type: new FormControl(this.loanType),
       status: new FormControl('Pending'),
       interval: new FormControl(''),
     });
@@ -114,7 +124,7 @@ export class LoanRequestedComponent implements OnInit {
     this.getLoanList();
   }
 
-  getLoanList() {
+  search() {
     const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
     
@@ -124,9 +134,11 @@ export class LoanRequestedComponent implements OnInit {
       }
     });
 
-    const queryParams = queryParamArray.join('&');
-    
-    this.loanService.getLoanList(this.page, this.pageSize, queryParams).subscribe({
+    this.queryParams = queryParamArray.join('&');
+  }
+
+  getLoanList() {
+    this.loanService.getLoanList(this.page, this.pageSize, this.queryParams).subscribe({
       next: (res) => {
         console.log('Loan list fetched successfully:', res);
         this.loanList = res.data.loans;

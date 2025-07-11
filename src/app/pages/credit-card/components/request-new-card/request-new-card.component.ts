@@ -36,7 +36,7 @@ export class RequestNewCardComponent implements OnInit {
     this.getRequestedCreditCard();
 
     const now = new Date();
-    const tomorrow = new Date();
+    const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
     this.minDate = tomorrow.toISOString().split('T')[0];
     this.maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
@@ -83,6 +83,15 @@ export class RequestNewCardComponent implements OnInit {
       return;
     }
     const formData = this.approveCCFormGroup.value;
+
+    const selectedDate = new Date(formData.start_date);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    if (selectedDate <= now) {
+      this.toast.error('Start date must be a future date.');
+      return;
+    }
+
     const data = {
       _id: this.cc_selected._id,
       approved_credit_limit: 1200,

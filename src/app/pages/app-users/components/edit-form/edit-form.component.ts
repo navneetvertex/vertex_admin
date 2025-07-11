@@ -198,7 +198,7 @@ export class EditFormComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
 
-          this.formSubmit();
+          this.formSubmit(false);
 
           this.userService.upsertKyc({user: this.user_details._id, status: 'Approved'}).subscribe({
             next: (response: any) => {
@@ -267,23 +267,25 @@ export class EditFormComponent implements OnInit {
       }
     }
 
-    formSubmit() {
+    formSubmit(shouldShowToast: boolean = true) {
       if (this.profileFormGroup.valid) {
         const profileData = this.profileFormGroup.value;
         this.user_details = profileData;
         this.userService.updateProfile(profileData).subscribe({
           next: (response: any) => {
             if (response.status === 'success') {
-              Swal.fire({
-                title: 'Profile Updated Successfully',
-                text: 'Your profile has been updated successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-              }).then(() => {
-                setTimeout(() => {
-                  window.location.reload();
-                }, 1000);
-              });
+              if(shouldShowToast) {
+                Swal.fire({
+                  title: 'Profile Updated Successfully',
+                  text: 'Your profile has been updated successfully.',
+                  icon: 'success',
+                  confirmButtonText: 'OK'
+                }).then(() => {
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1000);
+                });
+              }
 
             } else {
               this.toast.error('Failed to update profile. Please try again.');
