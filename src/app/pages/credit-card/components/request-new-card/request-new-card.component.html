@@ -109,17 +109,9 @@
 
           <div class="mb-3">
             <label for="card_number" class="form-label">Card Number</label>
-            <select
-              id="card_number"
-              class="form-control"
-              formControlName="card_number"
+            <input type="text" class="form-control mt-2" formControlName="card_number"
               [class.is-invalid]="approveCCFormGroup.get('card_number')?.invalid && (approveCCFormGroup.get('card_number')?.touched || approveCCFormGroup.get('card_number')?.dirty)"
-              required
-              placeholder="Enter card number"
-            >
-                <option value="" disabled selected>Select Card Number</option>
-                <option *ngFor="let card of cardList" [value]="card">{{ card }}</option>
-            </select>
+              placeholder="Enter card number" required>
             <div class="invalid-feedback" *ngIf="approveCCFormGroup.get('card_number')?.errors?.['required']">
               Card number is required.
             </div>

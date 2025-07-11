@@ -30,25 +30,10 @@ export class RequestNewCardComponent implements OnInit {
   cardList: any[] = [];
 
 
-  getLatest5CreditCardNumbers() {
-    this.creditCardService.getLatest5CreditCardNumbers().subscribe({
-      next: (response: any) => {
-        if (response.status) {
-          this.cardList = response.data.cardNumbers.map(es => es.card_number) || [];
-        }
-      },
-      error: (error) => {
-        console.error('Error fetching latest credit card numbers:', error);
-        this.toast.error('Failed to fetch latest credit card numbers. Please try again.');
-      }
-    });
-  }
-
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Credit Management' }, { label: 'Request for new card', active: true }];
     this.getRequestedCreditCard();
-    this.getLatest5CreditCardNumbers();
 
     const now = new Date();
     const tomorrow = new Date();
