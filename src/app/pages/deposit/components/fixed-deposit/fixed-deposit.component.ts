@@ -75,7 +75,6 @@ export class FixedDepositComponent implements OnInit {
       this.depositService.getAllFixedDeposits(this.page, this.pageSize,queryParams).subscribe((res: any) => {
         if (res.status) {
           this.userList = res.data.deposits;
-          console.log(this.userList);
           this.total = res.data.total;
         }
       }, err => {

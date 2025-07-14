@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DepositService } from 'src/app/core/services/deposit.service';
+import { SettingsService } from 'src/app/core/services/settings.service';
 
 @Component({
   selector: 'app-recurring-deposit',
@@ -12,6 +13,7 @@ export class RecurringDepositComponent implements OnInit {
 
   constructor(private depositService: DepositService,
     private modalService: NgbModal,
+    private settingsService: SettingsService
   ) { }
   breadCrumbItems: Array<{}>;
 
@@ -20,6 +22,7 @@ export class RecurringDepositComponent implements OnInit {
   page: number = 1;
   pageSize: number = 10;
   searchFormGroup: FormGroup ;
+  rd_rate: number = 0;
   editDepositSettings: FormGroup;
   statusList: any[] = ['Requested', 'Confirmed', 'Closed']
 
@@ -37,6 +40,12 @@ export class RecurringDepositComponent implements OnInit {
         duration: new FormControl('', [Validators.required]),
         amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
         penality_rate: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+    });
+    this.settingsService.getGeneralSettings$().subscribe(settings => {
+      if (settings) {
+        this.rd_rate = settings.recurring_deposit_rate || 0;
+        this.editDepositSettings.patchValue({annual_rate: this.rd_rate});
+      }
     });
     this.getRecrruingDeposits();
   }
@@ -57,7 +66,6 @@ export class RecurringDepositComponent implements OnInit {
     this.depositService.getAllRecurringDeposits(this.page, this.pageSize,queryParams).subscribe((res: any) => {
       if (res.status) {
         this.userList = res.data.deposits;
-        console.log(this.userList);
         this.total = res.data.total;
       }
     }, err => {
@@ -92,6 +100,7 @@ export class RecurringDepositComponent implements OnInit {
       this.depositService.editRDepositSettings(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.editDepositSettings.reset();
+          this.editDepositSettings.patchValue({annual_rate: this.rd_rate});
           this.modalService.dismissAll();
           this.getRecrruingDeposits();
         }

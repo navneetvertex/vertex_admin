@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { DepositService } from 'src/app/core/services/deposit.service';
+import { SettingsService } from 'src/app/core/services/settings.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class FixedDepositComponent implements OnInit {
     private depositService: DepositService,
     private toast: ToastrService,
     private userService: UserProfileService,
+    private settingsService: SettingsService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -36,6 +38,7 @@ export class FixedDepositComponent implements OnInit {
   selectedSetting: any = null;
   isUserRequested: boolean = false;
   depositList: any[] = [];
+  fd_rate: number = 0;
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Member' }, { label: 'Fixed Deposit', active: true }];
@@ -77,6 +80,14 @@ export class FixedDepositComponent implements OnInit {
       _id: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
+
+    this.settingsService.getGeneralSettings$().subscribe(settings => {
+      if (settings) {
+        this.fd_rate = settings.recurring_deposit_rate || 0;
+        this.editSettingFormGroup.patchValue({annual_rate: this.fd_rate});
+        this.settingFormGroup.patchValue({annual_rate: this.fd_rate});
+      }
+    });
   }
 
   calculateMaturityAmount() {
@@ -120,6 +131,7 @@ export class FixedDepositComponent implements OnInit {
           this.selectedSetting = this.depositSettings[0];
           this.isUserRequested = this.selectedSetting.status === 'Requested';
           if(this.isUserRequested) {
+             this.editSettingFormGroup.patchValue({annual_rate: this.fd_rate});
               this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
           }
           this.editSettingFormGroup.patchValue(this.selectedSetting);

@@ -27,7 +27,6 @@
                 <div  class="card-body">
                     <div  class="row">
                             <div class="table-responsive">
-
                                 <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;" *ngIf="ccList.length === 0" >
                                     <img src="assets/img/not-found.png" width="300px" alt="">
                                     <p class="text-mutes mt-2">No request found.</p>
@@ -54,7 +53,7 @@
                                                     <td>{{ cc?.user?.name }} <br> ({{cc?.user?.user_id}}) </td>
                                                     <td> <span *ngIf="cc?.direct_user">{{ cc?.direct_user?.name }} <br> ({{cc?.direct_user?.user_id}})</span>  </td>
                                                     <td> <span *ngIf="cc?.indirect_user">{{ cc?.indirect_user?.name }} <br> ({{cc?.indirect_user?.user_id}})</span>  </td>
-                                                    <td>{{cc.approved_credit_limit}}</td>
+                                                    <td>₹{{cc.approved_credit_limit}}</td>
                                                     <td>{{cc.card_number}}</td>
                                                     <td>{{cc.interest_rate}}%</td>
                                                     <td>
@@ -69,13 +68,19 @@
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        
-                                                        <span class="mx-1"></span>
-                                                        <span (click)="rejectCreditCardModal(RejectFormModal, cc)" data-bs-toggle="tooltip" data-bs-placement="top" title="Reject">
-                                                            <a href="javascript:void(0);" class="btn btn-sm btn-soft-danger">
-                                                                <i class="mdi mdi-pencil-outline"></i>
-                                                            </a>
-                                                        </span>
+
+                                                        <ul class="list-inline font-size-20 contact-links mb-0" >
+                                                            <li data-bs-toggle="modal" data-bs-target="#myModal" (click)="rejectCreditCardModal(RejectFormModal, cc)" class="list-inline-item px-2">
+                                                                <a href="javascript:void(0);" tooltip="Message">
+                                                                <i class="bx bx-x"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item px-2" (click)="increaseCCLimit(cardLimitModal, cc)" >
+                                                                <a href="javascript:void(0);" tooltip="Message">
+                                                                <i class="bx bx-up-arrow"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
                                                     </td>
                                                 </tr>
                                             </ng-container>
@@ -105,6 +110,42 @@
     </div>
 </div>
 
+<ng-template #cardLimitModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Increase Sahyog Card Limit (Current Limit : {{this.cc_selected.approved_credit_limit}})</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+<form [formGroup]="increaseCCFormGroup" novalidate>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="mb-3">
+                    <label for="approved_credit_limit" class="form-label">Increase Card Limit</label>
+                    <input
+                        type="number"
+                        id="approved_credit_limit"
+                        class="form-control"
+                        formControlName="approved_credit_limit"
+                        min="500"
+                        required
+                        [class.is-invalid]="increaseCCFormGroup.get('approved_credit_limit')?.invalid && (increaseCCFormGroup.get('approved_credit_limit')?.touched || increaseCCFormGroup.get('approved_credit_limit')?.dirty)"
+                    />
+                    <div class="invalid-feedback" *ngIf="increaseCCFormGroup.get('approved_credit_limit')?.errors?.['required']">
+                        Card limit is required.
+                    </div>
+                    <div class="invalid-feedback" *ngIf="increaseCCFormGroup.get('approved_credit_limit')?.errors?.['min']">
+                        Card limit must be at least 500.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" [disabled]="!increaseCCFormGroup.valid" (click)="increaseCreditCardLimit()">Submit</button>
+    </div>
+</form>
+</ng-template>
 
 <ng-template #RejectFormModal role="document" let-modal>
   <div class="modal-header">

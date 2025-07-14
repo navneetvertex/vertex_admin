@@ -1,4 +1,5 @@
 import { Component , OnInit} from '@angular/core';
+import { SettingsService } from './core/services/settings.service';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,11 @@ import { Component , OnInit} from '@angular/core';
 })
 export class AppComponent implements OnInit  {
 
+  constructor(private settingService: SettingsService) { }
+
   ngOnInit() {
-    // document.getElementsByTagName("html")[0].setAttribute("dir", "rtl");
+    this.settingService.loadGeneralSettings().subscribe(() => {
+      console.log('General settings loaded successfully');
+    });
   }
 }

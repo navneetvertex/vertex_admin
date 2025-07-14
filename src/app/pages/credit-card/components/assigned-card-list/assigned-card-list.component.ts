@@ -23,6 +23,7 @@ export class AssignedCardListComponent implements OnInit {
   pageSize: number = 10;
   searchText: string = '';
   rejectCCFormGroup: FormGroup;
+  increaseCCFormGroup: FormGroup;
   cc_selected: any = null;
 
   ngOnInit(): void {
@@ -31,6 +32,9 @@ export class AssignedCardListComponent implements OnInit {
     this.rejectCCFormGroup = new FormGroup({
       reason: new FormControl(null, { nonNullable: true, validators: [Validators.required , Validators.minLength(10)] }),
       status: new FormControl('Rejected', { nonNullable: true, validators: [Validators.required] })
+    });
+    this.increaseCCFormGroup = new FormGroup({
+      approved_credit_limit: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(500)] })
     });
   }
 
@@ -45,6 +49,12 @@ export class AssignedCardListComponent implements OnInit {
         console.error('Error fetching requested credit card:', error);
       }
     });
+  }
+
+  increaseCCLimit(content: any, cc: any) {
+    this.cc_selected = cc;
+    this.increaseCCFormGroup.reset();
+    this.modalService.open(content, { backdrop: 'static' });
   }
 
   rejectCreditCardModal(content: any, cc: any) {
@@ -89,6 +99,29 @@ export class AssignedCardListComponent implements OnInit {
   pageChange(page: number) {
     this.page = page;
     this.getAssignedCreditCard();
+  }
+
+  increaseCreditCardLimit() {
+    if (this.increaseCCFormGroup.invalid) {
+      this.toast.error('Please fill all required fields correctly.');
+      return;
+    }
+
+    const formData = this.increaseCCFormGroup.value;
+
+    console.log('Increasing credit card limit with data:', formData);
+
+    this.creditCardService.increaseCreditCardLimit(this.cc_selected._id, formData).subscribe({
+      next: (response: any) => {
+        this.toast.success('Credit card limit increased successfully.');
+        this.modalService.dismissAll();
+        this.getAssignedCreditCard();
+      },
+      error: (error) => {
+        console.error('Error increasing credit card limit:', error);
+        this.toast.error('Failed to increase credit card limit. Please try again.');
+      }
+    });
   }
 
 }

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { DepositService } from 'src/app/core/services/deposit.service';
+import { SettingsService } from 'src/app/core/services/settings.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class RecurringDepositComponent implements OnInit {
     private toast: ToastrService,
     private userService: UserProfileService,
     private router: Router,
+    private settingsService: SettingsService,
     private route: ActivatedRoute
   ) { 
     this.user_id = this.route.snapshot.paramMap.get('user') || '';
@@ -32,6 +34,7 @@ export class RecurringDepositComponent implements OnInit {
   editDepositFormGroup: FormGroup
   rdSettlementFormGroup: FormGroup;
   canCreateSettings: boolean = true;
+  rd_rate: number = 0;
 
   @ViewChild('editSettingModal') editSettingModal: TemplateRef<any>;
 
@@ -121,6 +124,13 @@ export class RecurringDepositComponent implements OnInit {
       settlement_date: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
+
+    this.settingsService.getGeneralSettings$().subscribe(settings => {
+      if (settings) {
+        this.rd_rate = settings.recurring_deposit_rate || 0;
+        this.saveDepositSettings.patchValue({annual_rate: this.rd_rate});
+      }
+    });
     // if(this.canCreateSettings) this.outstanding(this.user_id)
   }
 
@@ -169,7 +179,7 @@ export class RecurringDepositComponent implements OnInit {
 
         if(!this.canCreateSettings) {
           this.toast.warning('User has requested to open an RD Account. Please click on edit Setting, and fill required fields.', 'Warning');
-          this.editDepositSettings.patchValue({ _id: this.depositSettingsList[0]._id, annual_rate: this.depositSettingsList[0].annual_rate, interval: this.depositSettingsList[0].interval, duration: this.depositSettingsList[0].duration, amount: this.depositSettingsList[0].amount, penality_rate: this.depositSettingsList[0].penality_rate });
+          this.editDepositSettings.patchValue({annual_rate: this.rd_rate,  _id: this.depositSettingsList[0]._id, interval: this.depositSettingsList[0].interval, duration: this.depositSettingsList[0].duration, amount: this.depositSettingsList[0].amount, penality_rate: this.depositSettingsList[0].penality_rate });
            this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
         }
 

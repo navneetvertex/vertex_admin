@@ -7,12 +7,14 @@ import { RecurringDepositComponent } from './components/recurring-deposit/recurr
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CompulsoryDepositsComponent } from './components/compulsory-deposits/compulsory-deposits.component';
 
 
 @NgModule({
   declarations: [
     FixedDepositComponent,
-    RecurringDepositComponent
+    RecurringDepositComponent,
+    CompulsoryDepositsComponent
   ],
   imports: [
     CommonModule,

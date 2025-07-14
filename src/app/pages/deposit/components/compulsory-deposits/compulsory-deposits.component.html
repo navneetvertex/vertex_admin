@@ -1,0 +1,103 @@
+<div class="container-fluid">
+
+    <app-page-title title="Compulsory Deposits" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-body border-bottom">
+                      <form [formGroup]="searchFormGroup">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
+                            </div>
+                            <div class="col-lg-2">
+                                <select class="form-control select2" formControlName="status" >
+                                    <option value="">Select Status</option>
+                                    <option value="All">All</option>
+                                    <option *ngFor="let status of statusList" [value]="status" >{{status}}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-1">
+                                <button type="button" (click)="getRecrruingDeposits()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                            </div>
+                            <div class="col-lg-1" >
+                                    <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                </div>
+                        </div>
+                      </form>
+                  </div>
+                    <div class="row">
+                            <div class="table-responsive">
+                                <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                  <thead>
+                                    <tr>
+                                      <th>Sr No</th>
+                                      <th>Name</th>
+                                      <th>Contact</th>
+                                      <th>Amount</th>
+                                      <th>Int Rate</th>
+                                      <th>Paid</th>
+                                      <th>Balance</th>
+                                      <th>Date</th>
+                                      <th>Action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <ng-container *ngFor="let user of userList; let i = index">
+                                        <tr>
+                                            <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                            <td>{{ user?.user?.name }} ({{user?.user?.user_id}}) </td>
+                                            <td>
+                                                <div class="d-flex flex-column">
+                                                    <span class="text-muted">{{ user?.user?.email_id }}</span>
+                                                    <span class="text-muted">{{ user.user?.mobile_number }}</span>
+                                                </div>
+                                            </td>
+                                            <td>₹{{ user.amount | number: '1.2-2' }}</td>
+                                            <td>
+                                                <span *ngIf="user.annual_rate">{{ user.annual_rate }} %</span>
+                                            </td>
+                                            <td>₹{{ user.paidAmount | number: '1.2-2' }}</td>
+                                            <td>₹{{ user.outstanding | number: '1.2-2' }}</td>
+                                            <td>{{ user.created_date | date}}</td>
+                                            <ul class="list-inline font-size-20 contact-links mb-0">
+                                                <li class="list-inline-item px-2" >
+                                                    <a [routerLink]="['/members/compulsory-deposit/', user?.user?._id]" tooltip="Profile">
+                                                    <i class="bx bx-wallet"></i>
+                                                    </a>
+                                                </li>
+                                                
+                                            </ul>
+                                        </tr>
+                                    </ng-container>
+                                  </tbody>
+                                </table>
+                                <div class="row justify-content-md-between align-items-md-center mt-2">
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                      <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                      {{ findPageShowing() }} of {{ total }}
+                                      entries
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="text-md-right float-md-end pagination-rounded">
+                                      <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                      </ngb-pagination>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

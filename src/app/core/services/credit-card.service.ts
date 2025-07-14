@@ -73,4 +73,8 @@ getLatest5CreditCardNumbers() {
   return this.http.get(`${environment.api_url}credit-cards/getLatest5CreditCardNumbers`);
 }
 
+increaseCreditCardLimit(id: string, payload: any) {
+  return this.http.post(`${environment.api_url}credit-cards/increaseCreditCardLimit/${id}`, payload);
+}
+
 }

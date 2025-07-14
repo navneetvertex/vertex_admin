@@ -95,6 +95,10 @@ getAllFixedDeposits(page: number = 0, limit: number = 10, queryParams: string = 
   return this.http.get(`${environment.api_url}deposit/all_fixed_deposits?page=${page}&limit=${limit}&${queryParams}`);
 }
 
+getAllCompulsoryDeposits(page: number = 0, limit: number = 10, queryParams: string = '') {
+  return this.http.get(`${environment.api_url}deposit/all_compulsory_deposits?page=${page}&limit=${limit}&${queryParams}`);
+}
+
 
 
 }

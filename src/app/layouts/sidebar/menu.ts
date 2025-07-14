@@ -58,6 +58,12 @@ export const MENU: MenuItem[] = [
         icon: 'bx-wallet',
         subItems: [
             {
+                id: 26,
+                parentId: 18,
+                label: 'Complustory Deposit',
+                link: '/deposits/compulsory-deposit'
+            },
+            {
                 id: 25,
                 parentId: 18,
                 label: 'Recurring Deposit',

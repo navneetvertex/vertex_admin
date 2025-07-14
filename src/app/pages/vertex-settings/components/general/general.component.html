@@ -4,23 +4,130 @@
     <div class="row" >
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">General Settings</h5>
-
-                    <div class="row mb-4">
-                        <label for="horizontal-password-input" class="col-sm-3 col-form-label">Ref Income (From 4th Refer)</label>
-                        <div class="col-sm-9">
-                            <input type="number" class="form-control" id="horizontal-password-input">
+                <form [formGroup]="generalSettingsForm">
+                    <div class="card-body">
+                        <h5 class="card-title">General Settings</h5>
+                        <div class="row mb-4">
+                            <label for="credit_card_fees" class="col-sm-3 col-form-label">Credit Card Fees</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="credit_card_fees" formControlName="credit_card_fees">
+                                <div *ngIf="generalSettingsForm.get('credit_card_fees')?.invalid && generalSettingsForm.get('credit_card_fees')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('credit_card_fees')?.errors?.['required']">Credit Card Fees is required.</div>
+                                    <div *ngIf="generalSettingsForm.get('credit_card_fees')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('credit_card_fees')?.errors?.['min']">Value must be at least 0.</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-4">
-                        <label for="horizontal-password-input" class="col-sm-3 col-form-label">Credit Card Fees</label>
-                        <div class="col-sm-9">
-                            <input type="number" class="form-control" id="horizontal-password-input">
+                        <h5 class="card-title">Deposits Annual Rate</h5>
+                        <div class="row mb-4">
+                            <label for="compulsory_deposit_rate" class="col-sm-3 col-form-label">Compulsory Deposit</label>
+                            <div class="col-sm-5">
+                                <input type="number" class="form-control" id="compulsory_deposit_rate" formControlName="compulsory_deposit_rate">
+                                <div *ngIf="generalSettingsForm.get('compulsory_deposit_rate')?.invalid && generalSettingsForm.get('compulsory_deposit_rate')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('compulsory_deposit_rate')?.errors?.['required']">Compulsory Deposit Rate is required.</div>
+                                    <div *ngIf="generalSettingsForm.get('compulsory_deposit_rate')?.errors?.['pattern']">Enter a valid rate (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('compulsory_deposit_rate')?.errors?.['min']">Value must be at least 0.</div>
+                                    <div *ngIf="generalSettingsForm.get('compulsory_deposit_rate')?.errors?.['max']">Value cannot exceed 100.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="form-control" formControlName="compulsory_deposit_update_for">
+                                    <option value="all">All Members</option>
+                                    <option value="future">Future Members</option>
+                                </select>
+                                <div *ngIf="generalSettingsForm.get('compulsory_deposit_update_for')?.invalid && generalSettingsForm.get('compulsory_deposit_update_for')?.touched" class="text-danger small">
+                                    Update For is required.
+                                </div>
+                            </div>
                         </div>
+                        <div class="row mb-4">
+                            <label for="recurring_deposit_rate" class="col-sm-3 col-form-label">Recurring Deposit</label>
+                            <div class="col-sm-5">
+                                <input type="number" class="form-control" id="recurring_deposit_rate" formControlName="recurring_deposit_rate">
+                                <div *ngIf="generalSettingsForm.get('recurring_deposit_rate')?.invalid && generalSettingsForm.get('recurring_deposit_rate')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('recurring_deposit_rate')?.errors?.['required']">Recurring Deposit Rate is required.</div>
+                                    <div *ngIf="generalSettingsForm.get('recurring_deposit_rate')?.errors?.['pattern']">Enter a valid rate (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('recurring_deposit_rate')?.errors?.['min']">Value must be at least 0.</div>
+                                    <div *ngIf="generalSettingsForm.get('recurring_deposit_rate')?.errors?.['max']">Value cannot exceed 100.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="form-control" formControlName="recurring_deposit_update_for">
+                                    <option value="all">All Members</option>
+                                    <option value="future">Future Members</option>
+                                </select>
+                                <div *ngIf="generalSettingsForm.get('recurring_deposit_update_for')?.invalid && generalSettingsForm.get('recurring_deposit_update_for')?.touched" class="text-danger small">
+                                    Update For is required.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="fixed_deposit_rate" class="col-sm-3 col-form-label">Fixed Deposit</label>
+                            <div class="col-sm-5">
+                                <input type="number" class="form-control" id="fixed_deposit_rate" formControlName="fixed_deposit_rate">
+                                <div *ngIf="generalSettingsForm.get('fixed_deposit_rate')?.invalid && generalSettingsForm.get('fixed_deposit_rate')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('fixed_deposit_rate')?.errors?.['required']">Fixed Deposit Rate is required.</div>
+                                    <div *ngIf="generalSettingsForm.get('fixed_deposit_rate')?.errors?.['pattern']">Enter a valid rate (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('fixed_deposit_rate')?.errors?.['min']">Value must be at least 0.</div>
+                                    <div *ngIf="generalSettingsForm.get('fixed_deposit_rate')?.errors?.['max']">Value cannot exceed 100.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="form-control" formControlName="fixed_deposit_update_for">
+                                    <option value="all">All Members</option>
+                                    <option value="future">Future Members</option>
+                                </select>
+                                <div *ngIf="generalSettingsForm.get('fixed_deposit_update_for')?.invalid && generalSettingsForm.get('fixed_deposit_update_for')?.touched" class="text-danger small">
+                                    Update For is required.
+                                </div>
+                            </div>
+                        </div>
+                        <h5 class="card-title">Services Annual Rate</h5>
+                        <div class="row mb-4">
+                            <label for="loan_rate" class="col-sm-3 col-form-label">Loan</label>
+                            <div class="col-sm-5">
+                                <input type="number" class="form-control" id="loan_rate" formControlName="loan_rate">
+                                <div *ngIf="generalSettingsForm.get('loan_rate')?.invalid && generalSettingsForm.get('loan_rate')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('loan_rate')?.errors?.['required']">Loan Rate is required.</div>
+                                    <div *ngIf="generalSettingsForm.get('loan_rate')?.errors?.['pattern']">Enter a valid rate (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('loan_rate')?.errors?.['min']">Value must be at least 0.</div>
+                                    <div *ngIf="generalSettingsForm.get('loan_rate')?.errors?.['max']">Value cannot exceed 100.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="form-control" formControlName="loan_update_for">
+                                    <option value="all">All Members</option>
+                                    <option value="future">Future Members</option>
+                                </select>
+                                <div *ngIf="generalSettingsForm.get('loan_update_for')?.invalid && generalSettingsForm.get('loan_update_for')?.touched" class="text-danger small">
+                                    Update For is required.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="sahyog_card_rate" class="col-sm-3 col-form-label">Sahyog Card</label>
+                            <div class="col-sm-5">
+                                <input type="number" class="form-control" id="sahyog_card_rate" formControlName="sahyog_card_rate">
+                                <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.invalid && generalSettingsForm.get('sahyog_card_rate')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['required']">Sahyog Card Rate is required.</div>
+                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['pattern']">Enter a valid rate (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['min']">Value must be at least 0.</div>
+                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['max']">Value cannot exceed 100.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="form-control" formControlName="sahyog_card_update_for">
+                                    <option value="all">All Members</option>
+                                    <option value="future">Future Members</option>
+                                </select>
+                                <div *ngIf="generalSettingsForm.get('sahyog_card_update_for')?.invalid && generalSettingsForm.get('sahyog_card_update_for')?.touched" class="text-danger small">
+                                    Update For is required.
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" (click)="onSubmit()" [disabled]="generalSettingsForm.invalid">Update</button>
                     </div>
-                    <button class="btn btn-primary" >Submit</button>
-                </div>
+                </form>
             </div>
         </div>
     </div>

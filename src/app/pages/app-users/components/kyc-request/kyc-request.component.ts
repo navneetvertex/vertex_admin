@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DepositService } from 'src/app/core/services/deposit.service';
+import { SettingsService } from 'src/app/core/services/settings.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
 import { ToastService } from 'src/app/shared/ui/toast/toast-service';
 import Swal from 'sweetalert2';
@@ -15,6 +16,7 @@ export class KycRequestComponent implements OnInit {
 
   constructor(private userService: UserProfileService,
     private toast: ToastService,
+    private settingsService: SettingsService,
     private depositService: DepositService,
     private modalService: NgbModal) { }
 
@@ -28,6 +30,7 @@ export class KycRequestComponent implements OnInit {
   pageSize: number = 10;
   searchFormGroup: FormGroup ;
   currUserId: string = '';
+  cd_rate: number = 0;
 
 
   currKYCStatus: string = 'Requested';
@@ -47,6 +50,12 @@ export class KycRequestComponent implements OnInit {
       indirect_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       direct_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       franchise_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
+    });
+    this.settingsService.getGeneralSettings$().subscribe(settings => {
+      if (settings) {
+        this.cd_rate = settings.compulsory_deposit_rate || 0;
+        this.saveDepositSettings.patchValue({annual_rate: this.cd_rate});
+      }
     });
     this.getKycRequests();
   }
@@ -157,6 +166,7 @@ export class KycRequestComponent implements OnInit {
           });
           this.getKycRequests();
           this.saveDepositSettings.reset();
+          this.saveDepositSettings.patchValue({annual_rate: this.cd_rate});
           this.modalService.dismissAll();
         }
       }, (err: any) => {
