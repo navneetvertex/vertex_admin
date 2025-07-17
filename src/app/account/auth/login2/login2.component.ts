@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login2',
@@ -62,6 +63,12 @@ export class Login2Component implements OnInit {
         },
         error => {
           this.error = error ? error : '';
+           Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: 'Invalid email or password',
+            confirmButtonText: 'OK'
+          });
         });
     }
   }
