@@ -19,8 +19,7 @@ export class LoanRequestedComponent implements OnInit {
   ) {
     this.route.paramMap.subscribe(paramMap => {
       this.loanType = paramMap.get('type') || '';
-      console.log('Plan from route:', this.loanType);
-      
+      this.search();
     });
    }
 
@@ -46,16 +45,40 @@ export class LoanRequestedComponent implements OnInit {
     this.minDate = tomorrow.toISOString().split('T')[0];
 
     this.statusFormGroup = new FormGroup({
-      _id: new FormControl(null, Validators.required),
-      status: new FormControl('', Validators.required),
-      interest_rate: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100)]),
+      _id: new FormControl(null),
+      status: new FormControl(''),
+      interest_rate: new FormControl(null, [Validators.min(0), Validators.max(100)]),
       requested_loan_amount: new FormControl({value: '', disabled: true}),
-      approved_loan_amount: new FormControl(null, [Validators.required, Validators.min(0)]),
-      start_date: new FormControl(null, Validators.required),
+      approved_loan_amount: new FormControl(null, [Validators.min(0)]),
+      start_date: new FormControl(null),
       penalty: new FormControl(null, [Validators.min(0), Validators.max(100)]),
-      franchise_refer_per: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100)]),
-      direct_refer_per: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100)]),
-      indirect_refer_per: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(100)]),
+      franchise_refer_per: new FormControl(null, [Validators.min(0), Validators.max(100)]),
+      direct_refer_per: new FormControl(null, [Validators.min(0), Validators.max(100)]),
+      indirect_refer_per: new FormControl(null, [Validators.min(0), Validators.max(100)]),
+      rejected_reason: new FormControl(''),
+    });
+
+    // if status = Rejected then rejected_reason is required
+    // if status = Pending then remaining field is required 
+
+    this.statusFormGroup.get('status')?.valueChanges.subscribe(status => {
+      console.log(status)
+      if (status === 'Rejected') {
+        this.statusFormGroup.get('rejected_reason')?.setValidators([Validators.required]);
+        this.statusFormGroup.get('rejected_reason')?.updateValueAndValidity();
+      } else {
+        this.statusFormGroup.get('rejected_reason')?.clearValidators();
+        this.statusFormGroup.get('interest_rate')?.setValidators([Validators.required, Validators.min(0), Validators.max(100)]);
+        this.statusFormGroup.get('approved_loan_amount')?.setValidators([Validators.required, Validators.min(0)]);
+        this.statusFormGroup.get('start_date')?.setValidators([Validators.required]);
+        this.statusFormGroup.get('franchise_refer_per')?.setValidators([Validators.required, Validators.min(0), Validators.max(100)]);
+        this.statusFormGroup.get('direct_refer_per')?.setValidators([Validators.required, Validators.min(0), Validators.max(100)]);
+        this.statusFormGroup.get('indirect_refer_per')?.setValidators([Validators.required, Validators.min(0), Validators.max(100)]);
+        ['interest_rate', 'approved_loan_amount', 'start_date', 'franchise_refer_per', 'direct_refer_per', 'indirect_refer_per'].forEach(field => {
+          this.statusFormGroup.get(field)?.updateValueAndValidity();
+        });
+      }
+      
     });
 
     this.searchFormGroup = new FormGroup({
@@ -65,7 +88,7 @@ export class LoanRequestedComponent implements OnInit {
       interval: new FormControl(''),
     });
 
-    this.getLoanList();
+    this.search();
 
   }
 
@@ -88,6 +111,13 @@ export class LoanRequestedComponent implements OnInit {
 
   submit() {
     if (this.statusFormGroup.invalid) {
+      console.log('Form is invalid:', this.statusFormGroup.errors);
+      Object.keys(this.statusFormGroup.controls).forEach(key => {
+        const control = this.statusFormGroup.get(key);
+        if (control && control.invalid) {
+          console.log(`Control "${key}" is invalid:`, control.errors);
+        }
+      });
       return;
     }
 
@@ -125,22 +155,32 @@ export class LoanRequestedComponent implements OnInit {
   }
 
   search() {
-    const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
-    
-    Object.keys(searchParams).forEach(key => {
-      if (searchParams[key] !== null && searchParams[key] !== '') {
-      queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
-      }
-    });
+
+    if (this.searchFormGroup && this.searchFormGroup.value) {
+      const searchParams = this.searchFormGroup.value;
+      Object.keys(searchParams).forEach(key => {
+        // Prevent duplicate loan_type
+        if (key === 'loan_type') return;
+        if (searchParams[key] !== null && searchParams[key] !== '') {
+          queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+        }
+      });
+    }
+
+    // Only add loan_type once, from this.loanType
+    if (this.loanType) {
+      queryParamArray.push(`loan_type=${encodeURIComponent(this.loanType)}`);
+    }
 
     this.queryParams = queryParamArray.join('&');
+    this.page = 1; // Reset to first page on new search
+    this.getLoanList();
   }
 
   getLoanList() {
     this.loanService.getLoanList(this.page, this.pageSize, this.queryParams).subscribe({
       next: (res) => {
-        console.log('Loan list fetched successfully:', res);
         this.loanList = res.data.loans;
         this.total = res.data.total;
       },

@@ -29,8 +29,8 @@ getUserFundRequests(page: number = 0, limit: number = 10, queryParams: any) {
   return this.http.get(`${environment.api_url}credit-cards/getUserFundRequests?page=${page}&limit=${limit}&${queryParams}`);
 }
 
-approveUserFundRequest(id: string) {
-  return this.http.get(`${environment.api_url}credit-cards/approveUserFundRequest/${id}`);
+approveUserFundRequest(id: string, amount: number) {
+  return this.http.post(`${environment.api_url}credit-cards/approveUserFundRequest/${id}`, { amount });
 }
 
 rejectUserFundRequest(id: string) {

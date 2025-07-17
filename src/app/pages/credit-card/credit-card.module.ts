@@ -9,7 +9,7 @@ import { PaybleAmountComponent } from './components/payble-amount/payble-amount.
 import { AllTransanctionComponent } from './components/all-transanction/all-transanction.component';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CardListComponent } from './components/card-list/card-list.component';
 
@@ -26,6 +26,7 @@ import { CardListComponent } from './components/card-list/card-list.component';
   imports: [
     CommonModule,
     UIModule,
+    FormsModule,
     NgSelectModule,
     CreditCardRoutingModule,
     ReactiveFormsModule,

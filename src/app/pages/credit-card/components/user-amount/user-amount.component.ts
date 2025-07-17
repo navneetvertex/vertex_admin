@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreditCardService } from 'src/app/core/services/credit-card.service';
 import Swal from 'sweetalert2';
 
@@ -10,12 +11,15 @@ import Swal from 'sweetalert2';
 })
 export class UserAmountComponent implements OnInit {
 
-  constructor(private creditCardService: CreditCardService) { }
+  constructor(private creditCardService: CreditCardService,
+    private modalService: NgbModal
+  ) { }
   breadCrumbItems: Array<{}>;
   fundRequestList: any[] = []
   total: number = 0;
   page: number = 1;
   pageSize: number = 10;
+  approvedAmount: number = 0;
   searchFormGroup: FormGroup;
 
   ngOnInit(): void {
@@ -64,42 +68,42 @@ export class UserAmountComponent implements OnInit {
     });
   }
 
-  approveFundRequest(id: string) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You want to approve this fund request?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, approve it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.creditCardService.approveUserFundRequest(id).subscribe({
-          next: (response: any) => {
-            Swal.fire({
-              title: 'Approved!',
-              text: 'Fund request has been approved successfully.',
-              icon: 'success',
-              confirmButtonText: 'OK'
-            }).then(() => {
-              this.getUserFundRequests();
-            })
-          },
-          error: (error) => {
-            Swal.fire({
-              title: 'Error!',
-              text: 'There was an error approving the fund request.',
-              icon: 'error',
-              confirmButtonText: 'OK'
-            });
-            console.error('Error approving fund request:', error);
-          }
-        });
-      }
-    });
+  // approveFundRequest(id: string) {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "You want to approve this fund request?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, approve it!"
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       this.creditCardService.approveUserFundRequest(id).subscribe({
+  //         next: (response: any) => {
+  //           Swal.fire({
+  //             title: 'Approved!',
+  //             text: 'Fund request has been approved successfully.',
+  //             icon: 'success',
+  //             confirmButtonText: 'OK'
+  //           }).then(() => {
+  //             this.getUserFundRequests();
+  //           })
+  //         },
+  //         error: (error) => {
+  //           Swal.fire({
+  //             title: 'Error!',
+  //             text: 'There was an error approving the fund request.',
+  //             icon: 'error',
+  //             confirmButtonText: 'OK'
+  //           });
+  //           console.error('Error approving fund request:', error);
+  //         }
+  //       });
+  //     }
+  //   });
 
-  }
+  // }
 
   rejectFundRequest(id: string) {
     Swal.fire({
@@ -130,6 +134,42 @@ export class UserAmountComponent implements OnInit {
   pageChange(page: number) {
     this.page = page;
     this.getUserFundRequests();
+  }
+
+  selectedFund: any;
+  selectedFundFn(modal: any, fund: any) {
+    this.modalService.open(modal);
+    this.selectedFund = fund;
+    this.approvedAmount = fund?.amount || 0;
+  }
+
+  submitApprovedAmount() {
+    if (this.approvedAmount > 0) {
+      this.creditCardService.approveUserFundRequest(this.selectedFund._id, this.approvedAmount).subscribe({
+        next: (response: any) => {
+          Swal.fire({
+            title: 'Approved!',
+            text: 'Fund request has been approved successfully.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            this.getUserFundRequests();
+            this.modalService.dismissAll();
+            this.approvedAmount = 0; 
+            this.selectedFund = null; 
+          })
+        },
+        error: (error) => {
+          Swal.fire({
+            title: 'Error!',
+            text: 'There was an error approving the fund request.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+          console.error('Error approving fund request:', error);
+        }
+      });
+    }
   }
 
 }

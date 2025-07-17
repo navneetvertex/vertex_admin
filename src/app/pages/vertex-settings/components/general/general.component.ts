@@ -18,17 +18,17 @@ export class GeneralComponent implements OnInit {
     this.breadCrumbItems = [{ label: 'Settings' }, { label: 'General', active: true }];
 
     this.generalSettingsForm = new FormGroup({
-      credit_card_fees: new FormControl('', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0)]),
-      compulsory_deposit_rate: new FormControl('', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
-      compulsory_deposit_update_for: new FormControl('all', Validators.required),
-      recurring_deposit_rate: new FormControl('', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
-      recurring_deposit_update_for: new FormControl('all', Validators.required),
-      fixed_deposit_rate: new FormControl('', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
-      fixed_deposit_update_for: new FormControl('all', Validators.required),
-      loan_rate: new FormControl('', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
-      loan_update_for: new FormControl('all', Validators.required),
-      sahyog_card_rate: new FormControl('', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
-      sahyog_card_update_for: new FormControl('all', Validators.required),
+      credit_card_fees: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0)]),
+      compulsory_deposit_rate: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      compulsory_deposit_update_for: new FormControl('all'),
+      recurring_deposit_rate: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      recurring_deposit_update_for: new FormControl('all'),
+      fixed_deposit_rate: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      fixed_deposit_update_for: new FormControl('all'),
+      loan_rate: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      loan_update_for: new FormControl('all'),
+      sahyog_card_rate: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      sahyog_card_update_for: new FormControl('all'),
     });
     this.getGeneralSettings();
   }
