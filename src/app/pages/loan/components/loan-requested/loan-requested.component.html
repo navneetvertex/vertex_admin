@@ -274,6 +274,19 @@
                                     0.</small>
                             </div>
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="chequeProof" class="form-label">Cheque Proof</label>
+                            <input type="file" id="chequeProof" class="form-control" #selfPassbookInput (change)="onFileSelected($event, 'chequeProof')"
+                                accept="image/*" formControlName="cheque_proof">
+                            <!-- <div *ngIf="chequeProofError" class="text-danger">
+                                <small>{{ chequeProofError }}</small>
+                            </div> -->
+                        </div>
+                        <div  *ngIf="uploadedChequeProof" class="passbook_box" style="cursor:pointer;" (click)="selfPassbookInput.click()">
+                            <img *ngIf="uploadedChequeProof" src="{{uploadedChequeProof}}" alt="">
+                        </div>
+
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { interval } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ActivatedRoute } from '@angular/router';
+import { ImageCropperComponent } from 'src/app/pages/app-users/components/edit-profile/image-cropper/image-cropper.component';
 
 @Component({
   selector: 'app-loan-requested',
@@ -56,15 +57,29 @@ export class LoanRequestedComponent implements OnInit {
       direct_refer_per: new FormControl(null, [Validators.min(0), Validators.max(100)]),
       indirect_refer_per: new FormControl(null, [Validators.min(0), Validators.max(100)]),
       rejected_reason: new FormControl(''),
+      cheque_proof: new FormControl(''),
     });
 
     // if status = Rejected then rejected_reason is required
     // if status = Pending then remaining field is required 
 
     this.statusFormGroup.get('status')?.valueChanges.subscribe(status => {
-      console.log(status)
       if (status === 'Rejected') {
         this.statusFormGroup.get('rejected_reason')?.setValidators([Validators.required]);
+        ['interest_rate', 'approved_loan_amount', 'start_date', 'franchise_refer_per', 'direct_refer_per', 'indirect_refer_per'].forEach(field => {
+          const control = this.statusFormGroup.get(field);
+          if (control) {
+            const validators = control.validator ? [Validators.min(0), Validators.max(100)].filter(v => field !== 'approved_loan_amount' && field !== 'start_date') : [];
+            if (field === 'approved_loan_amount') {
+              control.setValidators([Validators.min(0)]);
+            } else if (field === 'start_date') {
+              control.setValidators([]);
+            } else {
+              control.setValidators(validators);
+            }
+            control.updateValueAndValidity();
+          }
+        });
         this.statusFormGroup.get('rejected_reason')?.updateValueAndValidity();
       } else {
         this.statusFormGroup.get('rejected_reason')?.clearValidators();
@@ -101,6 +116,7 @@ export class LoanRequestedComponent implements OnInit {
 
   openLoanModal(content: any, loan: any) {
     this.modalService.open(content, { size: 'lg', backdrop: 'static' });
+    this.uploadedChequeProof = null;
     this.statusFormGroup.reset();
     this.statusFormGroup.patchValue({
       _id: loan._id,
@@ -173,6 +189,10 @@ export class LoanRequestedComponent implements OnInit {
       queryParamArray.push(`loan_type=${encodeURIComponent(this.loanType)}`);
     }
 
+    if (!queryParamArray.some(param => param.startsWith('status='))) {
+      queryParamArray.push(`status=Pending`);
+    }
+
     this.queryParams = queryParamArray.join('&');
     this.page = 1; // Reset to first page on new search
     this.getLoanList();
@@ -194,5 +214,86 @@ export class LoanRequestedComponent implements OnInit {
     this.selectedLoan = loan;
     this.modalService.open(content, { backdrop: 'static' });
   }
+
+  onFileSelected(event: Event, from: string): void {
+      const input = event.target as HTMLInputElement;
+  
+      if (!input.files || input.files.length === 0) {
+        return;
+      }
+      const file = input.files[0];
+      if (!file.type.startsWith('image/')) {
+        Swal.fire({
+          title: 'Invalid File Type',
+          text: 'Please select a valid image file.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        input.value = '';
+        return;
+      }
+  
+      if (input.files && input.files.length > 0) {
+        this.openImageCropper({ file : event, from: from });
+      }
+    }
+  
+    openImageCropper(data: any) {
+      const modalRef = this.modalService.open(ImageCropperComponent, { centered: true, size: 'xl' });
+      modalRef.componentInstance.data = data;
+      modalRef.result.then((result) => {
+        console.log('Modal closed with:', result);
+        if(result) {
+          if (result.image) {
+            const base64 = result.image;
+            this.cropAndSetPhoto(base64, result.from);
+          }
+        }
+      }).catch((reason) => {
+        console.log('Modal dismissed:', reason);
+      });
+    }
+
+    uploadedChequeProof: string = '';
+  
+     cropAndSetPhoto(base64: string, type: string = 'profile_image') {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * 0.5;
+        canvas.height = img.height * 0.5;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.3);
+
+        if(type === 'chequeProof') {
+          this.uploadedChequeProof = compressedBase64;
+          this.statusFormGroup.patchValue({ cheque_proof: compressedBase64 });
+        }
+  
+        // if (type === 'profile_image') {
+        //   this.selected_photo = compressedBase64;
+        //   this.profileFormGroup.patchValue({ profile_image: compressedBase64 });
+        // } else if (type === 'signature') {
+        //   this.selected_signature = compressedBase64;
+        //   this.profileFormGroup.patchValue({ signature: compressedBase64 });
+        // } else if (type === 'passbook_cheque') {
+        //   this.selected_cheque = compressedBase64;
+        //   this.profileFormGroup.patchValue({ passbook_cheque: compressedBase64 });
+        // } else if(type === 'disability_image') {
+        //   this.profileFormGroup.patchValue({ disability_image: compressedBase64 });
+        // } else if(type === 'aadhar_front') {
+        //   this.profileFormGroup.patchValue({ aadhar_front: compressedBase64 });
+        // }
+        // else if(type === 'aadhar_back') {
+        //   this.profileFormGroup.patchValue({ aadhar_back: compressedBase64 });
+        // }
+        // else if(type === 'pan_image') {
+        //   this.profileFormGroup.patchValue({ pan_image: compressedBase64 });
+        // }
+        console.log(`Selected ${type}:`);
+      };
+      img.src = base64;
+    }
 
 }
