@@ -4,7 +4,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { interval } from 'rxjs';
 import Swal from 'sweetalert2';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ImageCropperComponent } from 'src/app/pages/app-users/components/edit-profile/image-cropper/image-cropper.component';
 
 @Component({
@@ -16,7 +16,8 @@ export class LoanRequestedComponent implements OnInit {
 
   constructor(private loanService: LoanService,
     private modalService: NgbModal,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.route.paramMap.subscribe(paramMap => {
       this.loanType = paramMap.get('type') || '';
@@ -34,8 +35,11 @@ export class LoanRequestedComponent implements OnInit {
   selectedLoan: any;
   searchFormGroup: FormGroup;
   minDate: string;
+  LoanTable : any[] = [];
+  LoanTotal: any = null;
   queryParams: string = '';
   status = ['Pending', 'Approved', 'Rejected', 'Completed', 'Defaulted']
+  loanSelected: any = null;
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Loans' }, { label: 'Requested Loan', active: true }];
@@ -143,7 +147,6 @@ export class LoanRequestedComponent implements OnInit {
 
     this.loanService.updateLoanStatus(loanData._id, loanData).subscribe({
       next: (res) => {
-        console.log('Loan status updated successfully:', res);
         Swal.fire({
           title: 'Success',
           text: `Loan status updated to ${loanData.status}`,
@@ -210,9 +213,57 @@ export class LoanRequestedComponent implements OnInit {
     });
   }
 
-  viewLoan(content: any, loan: any) {
+  viewGuaranteedLoan(content: any, loan: any) {
     this.selectedLoan = loan;
-    this.modalService.open(content, { backdrop: 'static' });
+
+    this.loanService.getLoanSchedule(loan._id).subscribe({
+      next: (res) => {
+        this.LoanTable = res.data.schedule;
+        this.LoanTotal = res.data.totals;
+        this.loanSelected = loan;
+      },
+      error: (err) => {
+        console.error('Error fetching guaranteed loan schedule:', err);
+        Swal.fire({
+          title: 'Error',
+          text: 'Failed to fetch guaranteed loan schedule.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+   
+    this.modalService.open(content, { size: 'xl', backdrop: 'static' });
+  }
+
+  viewPersonalLoan(content: any, loan: any) {
+    this.selectedLoan = loan;
+
+    this.loanService.getPersonalLoanSchedule(loan._id).subscribe({
+      next: (res) => {
+        this.LoanTable = res.data.schedule;
+        this.LoanTotal = res.data.totals;
+        this.loanSelected = loan;
+      },
+      error: (err) => {
+        console.error('Error fetching personal loan schedule:', err);
+        Swal.fire({
+          title: 'Error',
+          text: 'Failed to fetch personal loan schedule.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+    this.modalService.open(content, { size: 'xl', backdrop: 'static' });
+  }
+
+  payloan() {
+    this.router.navigate(
+      ['/loan-management/pay-loan'],
+      { queryParams: { id: this.loanSelected._id, user: this.loanSelected?.user.user_id } }
+    );
+    this.modalService.dismissAll();
   }
 
   onFileSelected(event: Event, from: string): void {
@@ -236,13 +287,12 @@ export class LoanRequestedComponent implements OnInit {
       if (input.files && input.files.length > 0) {
         this.openImageCropper({ file : event, from: from });
       }
-    }
+  }
   
     openImageCropper(data: any) {
       const modalRef = this.modalService.open(ImageCropperComponent, { centered: true, size: 'xl' });
       modalRef.componentInstance.data = data;
       modalRef.result.then((result) => {
-        console.log('Modal closed with:', result);
         if(result) {
           if (result.image) {
             const base64 = result.image;
@@ -271,29 +321,10 @@ export class LoanRequestedComponent implements OnInit {
           this.statusFormGroup.patchValue({ cheque_proof: compressedBase64 });
         }
   
-        // if (type === 'profile_image') {
-        //   this.selected_photo = compressedBase64;
-        //   this.profileFormGroup.patchValue({ profile_image: compressedBase64 });
-        // } else if (type === 'signature') {
-        //   this.selected_signature = compressedBase64;
-        //   this.profileFormGroup.patchValue({ signature: compressedBase64 });
-        // } else if (type === 'passbook_cheque') {
-        //   this.selected_cheque = compressedBase64;
-        //   this.profileFormGroup.patchValue({ passbook_cheque: compressedBase64 });
-        // } else if(type === 'disability_image') {
-        //   this.profileFormGroup.patchValue({ disability_image: compressedBase64 });
-        // } else if(type === 'aadhar_front') {
-        //   this.profileFormGroup.patchValue({ aadhar_front: compressedBase64 });
-        // }
-        // else if(type === 'aadhar_back') {
-        //   this.profileFormGroup.patchValue({ aadhar_back: compressedBase64 });
-        // }
-        // else if(type === 'pan_image') {
-        //   this.profileFormGroup.patchValue({ pan_image: compressedBase64 });
-        // }
         console.log(`Selected ${type}:`);
       };
       img.src = base64;
     }
+
 
 }

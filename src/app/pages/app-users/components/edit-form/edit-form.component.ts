@@ -96,6 +96,7 @@ export class EditFormComponent implements OnInit {
             state: new FormControl(''),
             district: new FormControl(''),
             pincode: new FormControl('', [ Validators.pattern('^[0-9]{6}$')]),
+            status: new FormControl(false),
           })
         ]),
         permanent_addresses: new FormArray([
@@ -105,6 +106,7 @@ export class EditFormComponent implements OnInit {
             state: new FormControl(''),
             district: new FormControl(''),
             pincode: new FormControl('', [ Validators.pattern('^[0-9]{6}$')]),
+            status: new FormControl(false),
           })
         ]),
         office_addresses: new FormArray([]),
@@ -115,6 +117,7 @@ export class EditFormComponent implements OnInit {
             account_number: new FormControl('', [ Validators.pattern('^[0-9]{9,18}$')]),
             ifsc_code: new FormControl('', [ Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
             branch_name: new FormControl(''),
+            status: new FormControl(false),
           })
         ]),
       })
@@ -130,6 +133,7 @@ export class EditFormComponent implements OnInit {
             state: new FormControl(''),
             district: new FormControl(''),
             pincode: new FormControl('', [ Validators.pattern('^[0-9]{6}$')]),
+            status: new FormControl(false),
           })
       );
     }
@@ -152,6 +156,7 @@ export class EditFormComponent implements OnInit {
             state: new FormControl(''),
             district: new FormControl(''),
             pincode: new FormControl('', [ Validators.pattern('^[0-9]{6}$')]),
+            status: new FormControl(false),
           })
       );
     }
@@ -174,6 +179,7 @@ export class EditFormComponent implements OnInit {
             state: new FormControl(''),
             district: new FormControl(''),
             pincode: new FormControl('', [ Validators.pattern('^[0-9]{6}$')]),
+            status: new FormControl(false),
           })
       );
     }
@@ -227,6 +233,7 @@ export class EditFormComponent implements OnInit {
           account_number: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{9,18}$')]),
           ifsc_code: new FormControl('', [Validators.required, Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
           branch_name: new FormControl('', [Validators.required]),
+          status: new FormControl(false),
         })
       );
     }
@@ -338,6 +345,7 @@ export class EditFormComponent implements OnInit {
                     district: new FormControl(address.district, [Validators.required]),
                     address: new FormControl(address.address, [Validators.required]),
                     pincode: new FormControl(address.pincode, [Validators.required, Validators.pattern('^[0-9]{6}$')]),
+                    status: new FormControl(address.status || false),
                   })
                 );
               });
@@ -354,6 +362,7 @@ export class EditFormComponent implements OnInit {
                     district: new FormControl(address.district, [Validators.required]),
                     address: new FormControl(address.address, [Validators.required]),
                     pincode: new FormControl(address.pincode, [Validators.required, Validators.pattern('^[0-9]{6}$')]),
+                    status: new FormControl(address.status)
                   })
                 );
               });
@@ -386,6 +395,7 @@ export class EditFormComponent implements OnInit {
                     account_number: new FormControl(bank.account_number, [Validators.required, Validators.pattern('^[0-9]{9,18}$')]),
                     ifsc_code: new FormControl(bank.ifsc_code, [Validators.required, Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
                     branch_name: new FormControl(bank.branch_name, [Validators.required]),
+                    status: new FormControl(bank.status),
                   })
                 );
               });
@@ -399,6 +409,7 @@ export class EditFormComponent implements OnInit {
                   account_number: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{9,18}$')]),
                   ifsc_code: new FormControl('', [Validators.required, Validators.pattern('^[A-Z]{4}[0-9]{7}$')]),
                   branch_name: new FormControl('', [Validators.required]),
+                  status: new FormControl(false),
                 })
               );
             }

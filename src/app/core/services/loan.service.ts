@@ -37,4 +37,12 @@ recordPayment(paymentData: any) {
   return this.http.post<any>(`${environment.api_url}loans/record-payment`, paymentData);
 }
 
+getLoanSchedule(loanId: string) {
+  return this.http.get<any>(`${environment.api_url}loans/schedule/${loanId}`);
+}
+
+getPersonalLoanSchedule(loanId: string) {
+  return this.http.get<any>(`${environment.api_url}loans/personal/schedule/${loanId}`);
+}
+
 }

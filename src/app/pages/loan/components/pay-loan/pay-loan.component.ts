@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoanService } from 'src/app/core/services/loan.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
@@ -13,8 +14,16 @@ export class PayLoanComponent implements OnInit {
 
   constructor(private userService: UserProfileService,
     private loanService: LoanService,
-    private toast: ToastrService
-  ) { }
+    private toast: ToastrService,
+    private route: ActivatedRoute
+  ) { 
+    // Initialize userDetails and loanList
+    this.userDetails = null;
+    this.loanList = [];
+    
+    // Get query parameters
+    
+  }
 
   breadCrumbItems: Array<{}>;
   paymentFormGroup: FormGroup;
@@ -31,6 +40,16 @@ export class PayLoanComponent implements OnInit {
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
       paymentMethod: new FormControl('', Validators.required),
       transactionId: new FormControl('', Validators.required)
+    });
+    this.route.queryParams.subscribe(params => {
+      if (params['user']) {
+        this.paymentFormGroup.patchValue({ id: params['user'] });
+        this.getDetails();
+      }
+      if (params['id']) {
+        this.paymentFormGroup.patchValue({ loanId: params['id'] });
+        this.getTotalPaybleAmount({ _id: params['id'] });
+      }
     });
   }
 
