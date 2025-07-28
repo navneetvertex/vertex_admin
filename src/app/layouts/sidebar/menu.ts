@@ -216,6 +216,12 @@ export const MENU: MenuItem[] = [
     },
     {
         id: 8,
+        label: 'SHG',
+        icon: 'bx-group',
+        link: '/shg'
+    },
+    {
+        id: 8,
         label: 'Careers',
         icon: 'bx-briefcase',
         link: '/careers'

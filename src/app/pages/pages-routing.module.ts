@@ -24,6 +24,7 @@ const routes: Routes = [
   { path: 'agents', loadChildren: () => import('./agents/agents.module').then(m => m.AgentsModule) },
   { path: 'franchises', loadChildren: () => import('./franchise/franchise.module').then(m => m.FranchiseModule) },
   { path: 'deposits', loadChildren: () => import('./deposit/deposit.module').then(m => m.DepositModule) },
+  { path: 'shg', loadChildren: () => import('./shg/shg.module').then(m => m.ShgModule) },
 ];
 
 @NgModule({

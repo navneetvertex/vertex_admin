@@ -18,6 +18,10 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users/advisors?page=${page}&limit=${limit}&${queryParams}`);
     }
 
+    getSHGCoordinators(page: number = 0, limit: number = 10, queryParams: string) {
+        return this.http.get(`${environment.api_url}users/shg?page=${page}&limit=${limit}&${queryParams}`);
+    }
+
     getDirectRefUsers(page: number = 0, limit: number = 10, queryParams: string, userId: string) {
         return this.http.get(`${environment.api_url}users/direct-ref-users/${userId}?page=${page}&limit=${limit}&${queryParams}`);
     }

@@ -1,0 +1,276 @@
+<div class="container-fluid">
+
+    <app-page-title title="SHG" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-body border-bottom">
+                      <form [formGroup]="searchFormGroup">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="search" class="form-control" id="searchInput" formControlName="account_number" placeholder="Search for Account Number...">
+                            </div>
+                            <div class="col-lg-2">
+                                <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
+                            </div>
+                            <div class="col-lg-2">
+                                <select class="form-control select2" formControlName="status" >
+                                    <option value="">Select Status</option>
+                                    <option value="All">All</option>
+                                    <option *ngFor="let status of statusList" [ngValue]="status" >{{status}}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-1">
+                                <button type="button" (click)="search()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
+                            </div>
+                            <div class="col-lg-1" >
+                                    <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
+                                </div>
+                        </div>
+                      </form>
+                  </div>
+                    <div class="row">
+                            <div class="table-responsive">
+                                <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                  <thead>
+                                    <tr>
+                                      <th>Sr No</th>
+                                      <th>Name</th>
+                                      <th>UserId</th>
+                                      <th>Refer Id</th>
+                                      <th>District</th>
+                                      <th>Areas</th>
+                                      <!-- <th>Direct Ref</th>
+                                      <th>InDirect Ref</th> -->
+                                      <th>Account Number</th>
+                                      <th>Gender</th>
+                                      <th>Age</th>
+                                      <th>Date</th>
+                                      <th [width]="10" >Status</th>
+                                      <th [width]="10" >Action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let user of userList; let i = index">
+                                      <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                      <td>
+                                        {{ user.name }} <br>
+                                        <span *ngIf="user.guardian_name" class="text-muted" > Gardian  : {{ user.guardian_name || '-' }} ({{user.guardian_relation}}) <br></span>
+
+                                      </td>
+                                      <td>{{ user.user_id }}</td>
+                                      <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
+                                      <td>
+                                        <span>{{ user.district_info[0]?.name || '-' }}</span>
+                                      </td>
+                                      <td>
+                                        <span *ngFor="let area of user.shg_area_info; let last = last" class="badge badge-soft-primary" style="margin-right: 4px;">
+                                            {{ area.name }}<br>
+                                        </span>
+                                      </td>
+                                      <!-- <td>
+                                        <span routerLink="/agents/direct-ref/{{user._id}}" *ngIf="user.direct_ref_count && user.direct_ref_count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.direct_ref_count}}</span>
+                                      </td>
+                                      <td>
+                                        <span routerLink="/agents/indirect-ref/{{user._id}}" *ngIf="user.indirect_ref_count && user.indirect_ref_count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.indirect_ref_count}}</span>
+                                      </td> -->
+                                      <td>{{ user.account_number || '-' }}</td>
+                                      <td>{{ user.gender || '-' }}</td>
+                                      <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>
+                                      <td>
+                                        Joining : {{ user.created_date | date}} <br>
+                                        SHG Approved : {{ user.shg_approved_date | date}}
+                                      </td>
+                                      <td>
+                                        <a href="javascript: void(0);" class="badge font-size-11 m-1" 
+                                          [ngClass]="{
+                                            'badge-soft-primary': user.status === 'Active',
+                                            'badge-soft-warning': user.status === 'Pending',
+                                            'badge-soft-danger': user.status === 'Blocked' || user.status === 'Deleted',
+                                            'badge-soft-secondary': user.status === 'Inactive'
+                                          }">
+                                          Account {{ user.status }}
+                                        </a>
+                                        <a *ngIf="user.kyc.length == 1" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                          [ngClass]="{
+                                            'badge-soft-primary': user?.kyc[0]?.status === 'Approved',
+                                            'badge-soft-warning': user?.kyc[0]?.status === 'Requested',
+                                            'badge-soft-danger': user?.kyc[0]?.status === 'Rejected'
+                                          }">
+                                          KYC {{ user?.kyc[0]?.status }}
+                                        </a>
+                                        <a *ngIf="user.franchise_status" href="javascript: void(0);" class="badge font-size-11 m-1"
+                                          [ngClass]="{
+                                            'badge-soft-primary': user.franchise_status === 'Approved',
+                                            'badge-soft-warning': user.franchise_status === 'Requested',
+                                            'badge-soft-danger': user.franchise_status === 'Rejected'
+                                          }">
+                                          Franchise {{ user.franchise_status }}
+                                        </a>
+                                        <a *ngIf="user.shg_status" href="javascript: void(0);" class="badge font-size-11 m-1" (click)="advisorModalFn(user, changeAdvisorStatusModal)"
+                                          [ngClass]="{
+                                            'badge-soft-primary': user.shg_status === 'Approved',
+                                            'badge-soft-warning': user.shg_status === 'Requested',
+                                            'badge-soft-danger': user.shg_status === 'Rejected'
+                                          }">
+                                          SHG {{ user.shg_status }}
+                                        </a>
+                                      </td>
+                                      <td>
+                                        <ul class="list-inline font-size-20 contact-links mb-0" *ngIf="user.status !== 'Deleted'">
+                                          <li data-bs-toggle="modal" data-bs-target="#myModal" (click)="sendNotification(messageModal, user)" class="list-inline-item px-2">
+                                            <a href="javascript:void(0);" tooltip="Message">
+                                              <i class="bx bx-message-square-dots"></i>
+                                            </a>
+                                          </li>
+                                          <li class="list-inline-item px-2" >
+                                            <a routerLink="/members/view/{{user._id}}" tooltip="Profile">
+                                              <i class="bx bx-user-circle"></i>
+                                            </a>
+                                          </li>
+                                        </ul>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                <div class="row justify-content-md-between align-items-md-center mt-2">
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">Showing
+                                      <b>{{ (page - 1) * pageSize + 1 }}</b> to
+                                      {{ findPageShowing() }} of {{ total }}
+                                      entries
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-12 col-md-5">
+                                    <div class="text-md-right float-md-end pagination-rounded">
+                                      <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                      </ngb-pagination>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #changeAdvisorStatusModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Status</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+      <div class="row" >
+        <div class="col-md-12">
+            <form [formGroup]="approveSHGRequestFormGroup">
+                <div class="mb-3">
+                    <label class="col-form-label">Change Status:</label>
+                    <div>
+                        <label *ngFor="let status of kycStatusList" class="me-3">
+                            <input type="radio" name="shg_status" [value]="status" formControlName="shg_status">
+                            {{status}}
+                        </label>
+                    </div>
+                    <div *ngIf="approveSHGRequestFormGroup.get('shg_status')?.invalid && (approveSHGRequestFormGroup.get('shg_status')?.dirty || approveSHGRequestFormGroup.get('shg_status')?.touched)" class="text-danger mt-1">
+                        <small *ngIf="approveSHGRequestFormGroup.get('shg_status')?.errors?.['required']">Status is required.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="col-form-label">Loan Amount:</label>
+                    <input type="number" class="form-control" formControlName="shg_loanAmount" placeholder="Enter Loan Amount">
+                    <div *ngIf="approveSHGRequestFormGroup.get('shg_loanAmount')?.invalid && (approveSHGRequestFormGroup.get('shg_loanAmount')?.dirty || approveSHGRequestFormGroup.get('shg_loanAmount')?.touched)" class="text-danger mt-1">
+                        <small *ngIf="approveSHGRequestFormGroup.get('shg_loanAmount')?.errors?.['required']">Loan Amount is required.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="col-form-label">SHG Areas:</label>
+                    <ng-select 
+                        [items]="allAreas" 
+                        [multiple]="true" 
+                        formControlName="shg_areas"
+                        [searchable]="true"
+                        placeholder="Search for areas..." 
+                        bindLabel="name" 
+                        bindValue="_id" 
+                        [maxSelectedItems]="3"
+                        [closeOnSelect]="false"
+                        class="custom-ng-select">
+                    </ng-select>
+                    <div *ngIf="approveSHGRequestFormGroup.get('shgAreas')?.invalid && (approveSHGRequestFormGroup.get('shgAreas')?.dirty || approveSHGRequestFormGroup.get('shgAreas')?.touched)" class="text-danger mt-1">
+                        <small *ngIf="approveSHGRequestFormGroup.get('shgAreas')?.errors?.['required']">SHG Areas is required.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="col-form-label">SHG Penalty:</label>
+                    <input type="number" class="form-control" formControlName="shgPenalty" placeholder="Enter SHG Penalty">
+                    <div *ngIf="approveSHGRequestFormGroup.get('shgPenalty')?.invalid && (approveSHGRequestFormGroup.get('shgPenalty')?.dirty || approveSHGRequestFormGroup.get('shgPenalty')?.touched)" class="text-danger mt-1">
+                        <small *ngIf="approveSHGRequestFormGroup.get('shgPenalty')?.errors?.['required']">SHG Penalty is required.</small>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="col-form-label">SHG Duration:</label>
+                    <input type="number" class="form-control" formControlName="shgDuration" placeholder="Enter SHG Duration">
+                    <div *ngIf="approveSHGRequestFormGroup.get('shgDuration')?.invalid && (approveSHGRequestFormGroup.get('shgDuration')?.dirty || approveSHGRequestFormGroup.get('shgDuration')?.touched)" class="text-danger mt-1">
+                        <small *ngIf="approveSHGRequestFormGroup.get('shgDuration')?.errors?.['required']">SHG Duration is required.</small>
+                    </div>
+                </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" (click)="changeShgStatus()" >Submit</button>
+      </div>
+</ng-template>
+
+
+<ng-template #messageModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="myModalLabel">Send Notification</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <form [formGroup]="notificationFormGroup">
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="mb-3">
+          <label for="recipient-name" class="col-form-label">Title:</label>
+          <input type="text" class="form-control" id="recipient-name" formControlName="title" placeholder="Enter Title">
+          <div *ngIf="notificationFormGroup.get('title')?.invalid && (notificationFormGroup.get('title')?.dirty || notificationFormGroup.get('title')?.touched)" class="text-danger mt-1">
+            <small *ngIf="notificationFormGroup.get('title')?.errors?.['required']">Title is required.</small>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="message-text" class="col-form-label">Message:</label>
+          <textarea class="form-control" id="message-text" formControlName="message" placeholder="Enter Message"></textarea>
+          <div *ngIf="notificationFormGroup.get('message')?.invalid && (notificationFormGroup.get('message')?.dirty || notificationFormGroup.get('message')?.touched)" class="text-danger mt-1">
+            <small *ngIf="notificationFormGroup.get('message')?.errors?.['required']">Message is required.</small>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+    <button type="submit" class="btn btn-primary waves-effect waves-light" [disabled]="notificationFormGroup.invalid" (click)="sendMessage()" >Send Message</button>
+  </div>
+</form>
+
+</ng-template>
+
+
