@@ -26,7 +26,7 @@
                                     <small *ngIf="paymentFormGroup.get('loanId')?.errors?.['required']">Loan ID is required.</small>
                                 </div>
                             </div>
-                            <div class="mb-3 col-lg-12">
+                            <div class="mb-3 col-lg-6">
                                 <label for="amount" class="form-label">Amount</label>
                                 <input type="number" class="form-control" id="amount" formControlName="amount" placeholder="Enter amount" min="1">
                                 <div *ngIf="paymentFormGroup.get('amount')?.touched && paymentFormGroup.get('amount')?.invalid" class="text-danger">
@@ -44,13 +44,6 @@
                                 </select>
                                 <div *ngIf="paymentFormGroup.get('paymentMethod')?.touched && paymentFormGroup.get('paymentMethod')?.invalid" class="text-danger">
                                     <small *ngIf="paymentFormGroup.get('paymentMethod')?.errors?.['required']">Payment Method is required.</small>
-                                </div>
-                            </div>
-                             <div class="mb-3 col-lg-6">
-                                <label for="transactionId" class="form-label">Transanction Id</label>
-                                <input type="text" class="form-control" id="transactionId" formControlName="transactionId" placeholder="Enter Transanction Id" min="1">
-                                <div *ngIf="paymentFormGroup.get('transactionId')?.touched && paymentFormGroup.get('transactionId')?.invalid" class="text-danger">
-                                    <small *ngIf="paymentFormGroup.get('transactionId')?.errors?.['required']">Transanction Id is required.</small>
                                 </div>
                             </div>
                         </div>

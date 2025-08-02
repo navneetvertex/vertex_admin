@@ -31,19 +31,20 @@ export class PayLoanComponent implements OnInit {
   loanList: any[] = [];
   paymentMethods: any[] = ['Cash', 'Bank Transfer', 'Cash', 'Cheque']
   totalPayableAmount: number = 0;
+  userId: string = '';
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Loans' }, { label: 'Pay Loans', active: true }];
     this.paymentFormGroup = new FormGroup({
-      id : new FormControl('', Validators.required),
+      id : new FormControl({value:'', disabled: true}, Validators.required),
       loanId: new FormControl('', Validators.required),
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
-      paymentMethod: new FormControl('', Validators.required),
-      transactionId: new FormControl('', Validators.required)
+      paymentMethod: new FormControl('', Validators.required)
     });
     this.route.queryParams.subscribe(params => {
       if (params['user']) {
         this.paymentFormGroup.patchValue({ id: params['user'] });
+        this.userId = params['user'];
         this.getDetails();
       }
       if (params['id']) {
@@ -54,8 +55,11 @@ export class PayLoanComponent implements OnInit {
   }
 
   getDetails() {
-    if(!this.paymentFormGroup.value.id) return;
-    this.userService.getBasicUserProfile(this.paymentFormGroup.value.id).subscribe({
+    let userId = this.paymentFormGroup.value.id;
+    if(!userId) {
+      userId = this.userId
+    };
+    this.userService.getBasicUserProfile(userId).subscribe({
       next: (res: any) => {
         if (res.status) {
           this.userDetails = res?.data?.user;
@@ -73,6 +77,8 @@ export class PayLoanComponent implements OnInit {
         console.log('Total Payment Amount:', res);
         if (res.status) {
           this.totalPayableAmount = res?.data?.outstandingAmount;
+          this.paymentFormGroup.patchValue({ amount: this.totalPayableAmount });
+          this.paymentFormGroup.get('amount')?.disable();
         } else {
           console.error('Error fetching total payment amount:', res.message);
         }
@@ -107,7 +113,8 @@ export class PayLoanComponent implements OnInit {
     }
 
     const paymentData = {
-      ...this.paymentFormGroup.value
+      ...this.paymentFormGroup.value,
+      amount: this.totalPayableAmount
     };
 
     paymentData.amount = parseFloat(paymentData.amount);
