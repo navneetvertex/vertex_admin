@@ -218,6 +218,7 @@ export class LoanRequestedComponent implements OnInit {
 
     this.loanService.getLoanSchedule(loan._id).subscribe({
       next: (res) => {
+        console.log(res)
         this.LoanTable = res.data.schedule;
         this.LoanTotal = res.data.totals;
         this.loanSelected = loan;
@@ -241,6 +242,7 @@ export class LoanRequestedComponent implements OnInit {
 
     this.loanService.getPersonalLoanSchedule(loan._id).subscribe({
       next: (res) => {
+        
         this.LoanTable = res.data.schedule;
         this.LoanTotal = res.data.totals;
         this.loanSelected = loan;

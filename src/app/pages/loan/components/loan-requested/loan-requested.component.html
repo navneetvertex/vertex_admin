@@ -335,6 +335,57 @@
                     <button class="btn btn-sm btn-primary" (click)="payloan()">Pay Loan</button>
                 </div>
             </div>
+
+            <div class="row mb-3" *ngIf="LoanTotal && loanType === 'Garanteed'">
+                <div class="col-md-2" *ngFor="let item of [
+                    {label:'Total Days', value:LoanTotal['Total Days']},
+                    {label:'Principal', value:'₹'+LoanTotal['Total Principal']},
+                    {label:'Interest', value:'₹'+LoanTotal['Total Interest']},
+                    {label:'Projected EMI', value:'₹'+LoanTotal['Projected Total EMI']},
+                    {label:'Projected (Penalties)', value:'₹'+LoanTotal['Projected Total (with Penalties)']},
+                    {label:'Penalty', value:'₹'+LoanTotal['Total Penalty']},
+                    {label:'Paid', value:'₹'+LoanTotal['Total Amount Paid']},
+                    {label:'Remaining', value:'₹'+LoanTotal['Total Remaining Amount']},
+                    {label:'Fully Paid', value:LoanTotal['Fully Paid Installments']},
+                    {label:'Partially Paid', value:LoanTotal['Partially Paid Installments']},
+                    {label:'Pending', value:LoanTotal['Pending Installments']},
+                    {label:'Paid Interest', value:'₹'+LoanTotal['Paid Interest']},
+                    {label:'Rem. Interest', value:'₹'+LoanTotal['Remaining Interest']}
+                ]">
+                    <div class="card card-body p-2 mb-2 text-center">
+                        <small class="text-muted">{{item.label}}</small>
+                        <div class="fw-bold">{{item.value}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3" *ngIf="LoanTotal && loanType === 'Personal'">
+                <div class="col-md-2" *ngFor="let item of [
+                    {label:'Loan Period', value:LoanTotal['Loan Period']},
+                    {label:'Principal', value:'₹'+LoanTotal['Principal Amount']},
+                    {label:'Interest', value:'₹'+LoanTotal['Total Interest']},
+                    {label:'Total', value:'₹'+LoanTotal['Total Amount']},
+                    {label:'EMI', value:'₹'+LoanTotal['EMI Amount']},
+                    {label:'Expected EMI', value:'₹'+LoanTotal['Expected Total EMI']},
+                    {label:'Paid', value:'₹'+LoanTotal['Total Amount Paid']},
+                    {label:'Projected (Penalties)', value:'₹'+LoanTotal['Projected Total (with Penalties)']},
+                    {label:'Penalty', value:'₹'+LoanTotal['Total Penalty']},
+                    {label:'Remaining', value:'₹'+LoanTotal['Total Remaining Amount']},
+                    {label:'Fully Paid', value:LoanTotal['Fully Paid Installments']},
+                    {label:'Partially Paid', value:LoanTotal['Partially Paid Installments']},
+                    {label:'Pending', value:LoanTotal['Pending Installments']},
+                    {label:'Paid Principal', value:'₹'+LoanTotal['Paid Principal']},
+                    {label:'Paid Interest', value:'₹'+LoanTotal['Paid Interest']},
+                    {label:'Rem. Principal', value:'₹'+LoanTotal['Remaining Principal']},
+                    {label:'Rem. Interest', value:'₹'+LoanTotal['Remaining Interest']}
+                ]">
+                    <div class="card card-body p-2 mb-2 text-center">
+                        <small class="text-muted">{{item.label}}</small>
+                        <div class="fw-bold">{{item.value}}</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline" >
                     <tbody>
@@ -362,22 +413,6 @@
                                 <td>{{installment['Status']}}</td>
                             </tr>
                         </ng-container>
-                        <tr *ngIf="LoanTotal && loanType === 'Garanteed'">
-                            <td colspan="2" >Total No of Days: {{LoanTotal['Total Days']}}</td>
-                            <td>Total EMI Paid : ₹ {{LoanTotal['Total EMI Paid']}}</td>
-                            <td>Total Interest : ₹ {{LoanTotal['Total Interest']}}</td>
-                            <td colspan="2">Paid Interest : ₹ {{LoanTotal['Paid Interest']}}</td>
-                            <td colspan="2" >Total Principal: ₹ {{LoanTotal['Total Principal']}}</td>
-                            <td colspan="2" >Paid Installments: {{LoanTotal['Paid Installments']}}</td>
-                        </tr>
-                        <tr *ngIf="LoanTotal && loanType === 'Personal'">
-                            <td colspan="2" >Loan Period: {{LoanTotal['Loan Period']}}</td>
-                            <td>Total EMI Paid : ₹ {{LoanTotal['Total EMI Paid']}}</td>
-                            <td>Total Interest : ₹ {{LoanTotal['Total Interest']}}</td>
-                            <td colspan="2">Paid Interest : ₹ {{LoanTotal['Paid Interest']}}</td>
-                            <td colspan="2" >Grand Total (EMI + Penalty): ₹ {{LoanTotal['Grand Total (EMI + Penalty)']}}</td>
-                            <td colspan="2" >Paid Installments: ₹ {{LoanTotal['Paid Installments']}}</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

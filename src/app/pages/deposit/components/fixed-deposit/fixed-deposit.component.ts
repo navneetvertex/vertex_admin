@@ -37,6 +37,7 @@ export class FixedDepositComponent implements OnInit {
         duration: new FormControl('', [Validators.required]),
         maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
         annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
+        user: new FormControl('', [Validators.required]),
         // indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
         // direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
       });
@@ -99,6 +100,7 @@ export class FixedDepositComponent implements OnInit {
   
     openRDSettingFn(settingModal: any, user: any) {
       this.editSettingFormGroup.patchValue(user)
+      this.editSettingFormGroup.patchValue({user: user._id})
       this.modalService.open(settingModal, { size: 'lg', centered: true });
     }
   
