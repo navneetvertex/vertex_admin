@@ -96,5 +96,9 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users/export/user/admin`, { responseType: 'blob' });
     }
 
+    hardDeleteUser(userId: string) {
+        return this.http.delete(`${environment.api_url}users/hard-delete/${userId}`);
+    }
+
 
 }

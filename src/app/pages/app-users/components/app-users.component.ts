@@ -257,4 +257,28 @@ export class AppUsersComponent implements OnInit {
     });
   }
 
+  deleteAccount(_id: string) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You want to delete this account?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, delete it!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.hardDeleteUser(_id).subscribe((res: any) => {
+          this.modalService.dismissAll();
+          this.toast.success(`Account deleted successfully`);
+          this.getAllUsers();
+        }, (err: any) => {
+          console.error('Error deleting user account:', err);
+          this.modalService.dismissAll();
+          this.toast.error(`Failed to delete account`);
+        });
+      }
+    });
+  }
+
 }
