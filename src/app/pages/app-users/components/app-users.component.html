@@ -59,6 +59,7 @@
                                       <th>Aadhar Number</th>
                                       <th>Gender</th>
                                       <th>Age</th>
+                                      <th>Payment Mode</th>
                                       <th>Date</th>
                                       <th [width]="10" >Status</th>
                                       <th [width]="10" >Action</th>
@@ -90,6 +91,7 @@
                                       </td>
                                       <td>{{ user.gender || '-' }}</td>
                                       <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>
+                                      <td> {{ user.payment_method ? (user.payment_method | titlecase) : '-' }} </td>
                                       <td>
                                         Joining : {{ user.created_date | date}} <br>
                                         Approved : {{ user.approved_date | date}}
