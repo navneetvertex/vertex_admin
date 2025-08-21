@@ -377,7 +377,7 @@
             <ng-container *ngFor="let notification of listNotifications">
               <a href="javascript: void(0);" (click)="clickSingleNotification(notification)" class="text-reset notification-item">
                   <div class="d-flex">
-                    <img src="{{notification.user_id.profile_image || 'assets/images/users/user_placeholder.png'}}"
+                    <img src="{{notification?.user_id?.profile_image || 'assets/images/users/user_placeholder.png'}}"
                       class="me-3 rounded-circle avatar-xs"
                       alt="user-pic"
                       style="width:32px; height:32px; object-fit:cover;">
