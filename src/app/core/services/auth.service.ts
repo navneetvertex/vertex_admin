@@ -6,6 +6,8 @@ import { User } from '../models/auth.models';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({ providedIn: 'root' })
 
@@ -15,7 +17,10 @@ export class AuthenticationService {
     private currentUserSubject: BehaviorSubject<User>;
     public currentUser: Observable<User>;
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient,
+        private router: Router,
+        private cookieService: CookieService
+    ) {
         this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
         this.currentUser = this.currentUserSubject.asObservable();
     }
@@ -49,12 +54,15 @@ export class AuthenticationService {
 
     logout() {
         return this.http.get<any>(`${environment.api_url}auth/logout`, { withCredentials: true })
-            .pipe(map(user => {
-                 localStorage.clear()
+            .pipe(map(user => user))
+            .toPromise()
+            .finally(() => {
+                localStorage.clear();
                 localStorage.removeItem('currentUser');
                 this.currentUserSubject.next(null);
-                return false;
-            }));
+                this.cookieService.deleteAll('/');
+                this.router.navigate(['/account/login']);
+            });
     }
 }
 

@@ -40,8 +40,11 @@ export class JwtInterceptor implements HttpInterceptor {
         if (error instanceof HttpErrorResponse && error.status === 403) {
           this.toast.error('You do not have permission to access this resource.', 'Access Denied');
           this.authService.logout();
+          // Redirect will happen automatically after logout
         } else if (error instanceof HttpErrorResponse && error.status === 404) {
           this.toast.error('The requested resource was not found.', 'Not Found');
+          this.authService.logout();
+          // Redirect will happen automatically after logout
         } else if (error instanceof HttpErrorResponse && error.status >= 500) {
           this.toast.error('An unexpected error occurred. Please try again later.', 'Server Error');
         } else {
@@ -82,8 +85,9 @@ export class JwtInterceptor implements HttpInterceptor {
         }),
         catchError((err) => {
           this.isRefreshing = false;
+          // this.toast.error('Session expired. Please login again.', 'Authentication Error');
           this.authService.logout();
-          return throwError(() => err);
+          return of(null); // Return empty observable to prevent error propagation
         })
       );
     } else {

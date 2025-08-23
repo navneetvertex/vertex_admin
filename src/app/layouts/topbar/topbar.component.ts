@@ -153,6 +153,7 @@ export class TopbarComponent implements OnInit {
     localStorage.clear()
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+    this._cookiesService.deleteAll('/');
     this.router.navigate(['/account/login']);
   }
 

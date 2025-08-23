@@ -23,6 +23,7 @@ export class DirefRefernceListComponent implements OnInit {
   breadCrumbItems: Array<{}>;
   notificationFormGroup: FormGroup
   currStatus: string = 'Pending';
+  totalDirectCommission: number = 0;
   currUserId: string = '';
   currKYCStatus: string = ''
   currentUserId: string = '';
@@ -50,7 +51,6 @@ export class DirefRefernceListComponent implements OnInit {
     
     this.route.params.subscribe(params => {
       this.currentUserId = params['id'];
-      console.log('Current User ID:', this.currentUserId);
       this.getDiretRefUsers(this.currentUserId);
     });
   }
@@ -83,13 +83,11 @@ export class DirefRefernceListComponent implements OnInit {
 
     const queryParams = queryParamArray.join('&');
 
-    console.log('Query Params:', this.currUserId);
-
     this.userService.getDirectRefUsers(this.page, this.pageSize, queryParams, userId).subscribe((res: any) => {
       if (res && res.data) {
-        this.userList = res?.data?.users?.data || [];
-        console.log('User List:', this.userList);
-        this.total = res?.data?.users?.metadata[0]?.total || 0;
+        this.userList = res?.data?.users || [];
+        this.total = res?.data?.total || 0;
+        this.totalDirectCommission = res?.data?.commissionSummary?.totalDirectCommission || 0;
       } else {
         this.userList = [];
       }

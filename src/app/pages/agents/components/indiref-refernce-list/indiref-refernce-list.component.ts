@@ -33,6 +33,7 @@ export class IndirefRefernceListComponent implements OnInit {
     total: number = 0;
     page: number = 1;
     pageSize: number = 10;
+    totalIndirectCommission: number = 0;
     searchFormGroup: FormGroup ;
   
     ngOnInit(): void {
@@ -83,13 +84,12 @@ export class IndirefRefernceListComponent implements OnInit {
   
       const queryParams = queryParamArray.join('&');
   
-      console.log('Query Params:', this.currUserId);
-  
       this.userService.getInDirectRefUsers(this.page, this.pageSize, queryParams, userId).subscribe((res: any) => {
+        console.log(res)
         if (res && res.data) {
-          this.userList = res?.data?.users?.data || [];
-          console.log('User List:', this.userList);
-          this.total = res?.data?.users?.metadata[0]?.total || 0;
+          this.userList = res?.data?.users || [];
+          this.totalIndirectCommission = res?.data?.commissionSummary?.totalIndirect || 0;
+          this.total = res?.data?.total || 0;
         } else {
           this.userList = [];
         }

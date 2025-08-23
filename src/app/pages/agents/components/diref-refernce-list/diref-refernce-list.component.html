@@ -7,6 +7,12 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="card-title mb-0">Direct Reference List</h4>
+                        <div class="bg-soft-success px-3 py-2 rounded">
+                            <h5 class="mb-0">Total Commission: ₹{{ totalDirectCommission | number:'1.2-2' }}</h5>
+                        </div>
+                    </div>
                     <div class="card-body border-bottom">
                       <form [formGroup]="searchFormGroup">
                         <div class="row">
@@ -49,6 +55,7 @@
                                       <th>Name</th>
                                       <th>UserId</th>
                                       <th>Refer Id</th>
+                                      <th>Commission</th>
                                       <!-- <th>Direct Ref</th>
                                       <th>InDirect Ref</th> -->
                                       <th>Account Number</th>
@@ -70,6 +77,15 @@
                                       </td>
                                       <td>{{ user.user_id }}</td>
                                       <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
+                                      <td>
+                                        <span>
+                                          ₹{{ user.commission.direct || 0}}
+                                          <!-- <br>
+                                          <b>Indirect Commission: </b> {{ user.commission.indirect || 0 }}
+                                          <br>
+                                          <b>Total Commission: </b> {{ user.commission.total || 0 }} -->
+                                        </span>
+                                      </td>
                                       <!-- <td>
                                         <span routerLink="/agents/direct-ref/{{user._id}}" *ngIf="user.direct_ref[0]?.count && user.direct_ref[0]?.count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.direct_ref[0]?.count}}</span>
                                       </td>
