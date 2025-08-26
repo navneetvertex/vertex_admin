@@ -6,6 +6,7 @@ import { interval } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ImageCropperComponent } from 'src/app/pages/app-users/components/edit-profile/image-cropper/image-cropper.component';
+import { SettingsService } from 'src/app/core/services/settings.service';
 
 @Component({
   selector: 'app-loan-requested',
@@ -17,6 +18,7 @@ export class LoanRequestedComponent implements OnInit {
   constructor(private loanService: LoanService,
     private modalService: NgbModal,
     private route: ActivatedRoute,
+    private settingsService: SettingsService,
     private router: Router
   ) {
     this.route.paramMap.subscribe(paramMap => {
@@ -63,6 +65,8 @@ export class LoanRequestedComponent implements OnInit {
       rejected_reason: new FormControl(''),
       cheque_proof: new FormControl(''),
     });
+
+    
 
     // if status = Rejected then rejected_reason is required
     // if status = Pending then remaining field is required 
@@ -114,6 +118,7 @@ export class LoanRequestedComponent implements OnInit {
   refresh() {
     this.page = 1;
     this.searchFormGroup.reset();
+    
     this.searchFormGroup.patchValue({status: 'Pending', loan_type: '' , name: '', interval: ''});
     this.getLoanList();
   }
@@ -122,6 +127,11 @@ export class LoanRequestedComponent implements OnInit {
     this.modalService.open(content, { size: 'lg', backdrop: 'static' });
     this.uploadedChequeProof = null;
     this.statusFormGroup.reset();
+    this.settingsService.getGeneralSettings$().subscribe(settings => {
+        if (settings) {
+          this.statusFormGroup.patchValue({interest_rate: settings.loan_rate || 0, indirect_refer_per: settings.loan_indirect_percentage || 0, direct_refer_per: settings.loan_direct_percentage || 0, franchise_refer_per: settings.loan_francise_percentage || 0});
+        }
+      });
     this.statusFormGroup.patchValue({
       _id: loan._id,
       // status: loan.status,
@@ -157,6 +167,11 @@ export class LoanRequestedComponent implements OnInit {
         this.selectedLoan = null;
         this.modalService.dismissAll();
         this.getLoanList();
+        this.settingsService.getGeneralSettings$().subscribe(settings => {
+        if (settings) {
+          this.statusFormGroup.patchValue({interest_rate: settings.loan_rate || 0, indirect_refer_per: settings.loan_indirect_percentage || 0, direct_refer_per: settings.loan_direct_percentage || 0, franchise_refer_per: settings.loan_francise_percentage || 0});
+        }
+      });
       },
       error: (err) => {
         console.error('Error updating loan status:', err);

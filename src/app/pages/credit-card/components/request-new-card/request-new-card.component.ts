@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { CreditCardService } from 'src/app/core/services/credit-card.service';
+import { SettingsService } from 'src/app/core/services/settings.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,6 +15,7 @@ export class RequestNewCardComponent implements OnInit {
 
   constructor(private creditCardService: CreditCardService,
     private modalService: NgbModal,
+    private settingsService: SettingsService,
     private toast: ToastrService
   ) { }
   breadCrumbItems: Array<{}>;
@@ -56,6 +58,12 @@ export class RequestNewCardComponent implements OnInit {
       indirect_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       direct_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       franchise_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
+    });
+
+    this.settingsService.getGeneralSettings$().subscribe(settings => {
+      if (settings) {
+        this.approveCCFormGroup.patchValue({interest_rate: settings.sahyog_card_rate || 0, indirect_refer_per: settings.credit_indirect_rs || 0, direct_refer_per: settings.credit_direct_rs || 0, franchise_refer_per: settings.credit_francise_rs || 0});
+      }
     });
 
     this.rejectCCFormGroup = new FormGroup({
@@ -115,6 +123,11 @@ export class RequestNewCardComponent implements OnInit {
         this.approveCCFormGroup.reset();
         this.modalService.dismissAll();
         this.getRequestedCreditCard();
+        this.settingsService.getGeneralSettings$().subscribe(settings => {
+          if (settings) {
+            this.approveCCFormGroup.patchValue({interest_rate: settings.sahyog_card_rate || 0, indirect_refer_per: settings.credit_indirect_rs || 0, direct_refer_per: settings.credit_direct_rs || 0, franchise_refer_per: settings.credit_francise_rs || 0});
+          }
+        });
       },
       error: (error) => {
         console.error('Error approving credit card:', error);
@@ -131,8 +144,6 @@ export class RequestNewCardComponent implements OnInit {
 
   approveCreditCard(content: any, cc: any) {
     this.cc_selected = cc;
-    console.log('Selected credit card for approval:', this.cc_selected);
-    this.approveCCFormGroup.reset();
     this.approveCCFormGroup.patchValue({
       card_number: cc.card_number,
       approved_credit_limit: 1200,
