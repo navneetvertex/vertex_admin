@@ -100,5 +100,9 @@ export class UserProfileService {
         return this.http.delete(`${environment.api_url}users/hard-delete/${userId}`);
     }
 
+    getCommissionReport() {
+        return this.http.get(`${environment.api_url}users/commission-report`);
+    }
+
 
 }

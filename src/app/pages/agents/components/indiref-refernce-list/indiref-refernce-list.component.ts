@@ -85,10 +85,9 @@ export class IndirefRefernceListComponent implements OnInit {
       const queryParams = queryParamArray.join('&');
   
       this.userService.getInDirectRefUsers(this.page, this.pageSize, queryParams, userId).subscribe((res: any) => {
-        console.log(res)
         if (res && res.data) {
           this.userList = res?.data?.users || [];
-          this.totalIndirectCommission = res?.data?.commissionSummary?.totalIndirect || 0;
+          this.totalIndirectCommission = res?.data?.commissionSummary?.totalIndirectCommission || 0;
           this.total = res?.data?.total || 0;
         } else {
           this.userList = [];

@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EventService } from '../../../core/services/event.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
+import { UserProfileService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'app-default',
@@ -47,15 +48,18 @@ export class DefaultComponent implements OnInit {
   isActive: string;
   isActiveLoanCredit: string;
   data: any = null;
+  totalCommission: any = null;
 
   @ViewChild('content') content;
-  constructor(private modalService: NgbModal, private configService: ConfigService, private eventService: EventService, private dashboardService: DashboardService) {
+  constructor(private modalService: NgbModal, 
+    private userService: UserProfileService ,
+    private configService: ConfigService, private eventService: EventService, private dashboardService: DashboardService) {
   }
 
   ngOnInit() {
     this.getDashboardData();
      const attribute = document.body.getAttribute('data-layout');
-
+    this.getCommissionReport()
      this.isVisible = attribute;
      const vertical = document.getElementById('layout-vertical');
      if (vertical != null) {
@@ -65,7 +69,6 @@ export class DefaultComponent implements OnInit {
        const horizontal = document.getElementById('layout-horizontal');
        if (horizontal != null) {
          horizontal.setAttribute('checked', 'true');
-         console.log(horizontal);
        }
      }
 
@@ -76,6 +79,12 @@ export class DefaultComponent implements OnInit {
      * Fetches the data
      */
     // this.fetchData();
+  }
+
+  getCommissionReport() {
+    this.userService.getCommissionReport().subscribe((report: any) => {
+      this.totalCommission = report.data.summary;
+    });
   }
 
   getDashboardData() {
