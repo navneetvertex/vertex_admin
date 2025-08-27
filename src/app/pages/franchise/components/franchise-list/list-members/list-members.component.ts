@@ -21,6 +21,7 @@ export class ListMembersComponent implements OnInit {
   searchFormGroup: FormGroup ;
   queryParams: string = '';
   userId: string = '';
+  totalDirectCommission: number = 0;
   userList: any[] = [];
   breadCrumbItems: Array<{}>;
   statusList: any[] = ['Pending', 'Active', 'Inactive', 'Blocked'];
@@ -81,10 +82,9 @@ export class ListMembersComponent implements OnInit {
     this.franchiseService.getFranchiseMembers(id, this.page, this.pageSize, queryParams).subscribe({
       next: (response: any) => {
         if (response && response.data) {
-          console.log(response.data.users);
           this.userList = response.data?.users?.data || [];
           this.total = response.data.users?.metadata[0]?.total || 0;
-          console.log(this.userList);
+          this.totalDirectCommission = response.data.users?.metadata[0]?.totalFranchiseCommission || 0;
         }
       },
       error: (error) => {

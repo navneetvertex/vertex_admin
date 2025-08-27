@@ -36,11 +36,18 @@
                         </div>
                       </form>
                   </div>
+                  <div class="commission-legend d-flex justify-content-between align-items-center" *ngIf="userList && userList.length > 0">
+                        <div class="mb-2 ms-auto d-flex align-items-center">
+                          <strong class="me-2">Total Franchise Commission:</strong>
+                          <span>₹ {{ totalDirectCommission }}</span>
+                        </div>
+                      </div>
                     <div class="row">
                         <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!userList || userList.length === 0">
                             <img src="assets/img/not-found.png" width="300px" alt="">
                             <p class="text-mutes mt-2">No Users Found in current filter.</p>
                         </div>
+                        
                             <div class="table-responsive" *ngIf="userList && userList.length > 0">
                                 <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
                                   <thead>
@@ -49,6 +56,7 @@
                                       <th>Name</th>
                                       <th>UserId</th>
                                       <th>Refer Id</th>
+                                      <th>Commission</th>
                                       <!-- <th>Direct Ref</th>
                                       <th>InDirect Ref</th> -->
                                       <th>Account Number</th>
@@ -70,6 +78,7 @@
                                       </td>
                                       <td>{{ user.user_id }}</td>
                                       <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
+                                      <td>₹ {{ user.franchiseCommission }}</td>
                                       <!-- <td>
                                         <span routerLink="/agents/direct-ref/{{user._id}}" *ngIf="user.direct_ref[0]?.count && user.direct_ref[0]?.count !== 0" class="badge badge-soft-primary cursor-pointer">Count: {{user.direct_ref[0]?.count}}</span>
                                       </td>

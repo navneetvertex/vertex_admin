@@ -1,0 +1,109 @@
+/* No Commission Row Styling */
+.table .no-commission-row {
+  background-color: #fff2f0 !important;
+  
+  &:hover {
+    background-color: #ffe7e6 !important;
+  }
+  
+  td:first-child {
+    color: #262626 !important;
+    border-left: 3px solid #ff7875 !important;
+  }
+  
+  td:first-child {
+    position: relative;
+    
+    &::after {
+      content: 'No Commission';
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      font-size: 9px;
+      color: #ff4d4f;
+      background-color: #fff1f0;
+      padding: 1px 4px;
+      border-radius: 8px;
+      border: 1px solid #ffccc7;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Commission Eligible Row Styling */
+.table .commission-eligible-row {
+  background-color: #f6fff6 !important;
+  
+  &:hover {
+    background-color: #e6f7e6 !important;
+  }
+  
+  td:first-child {
+    color: #262626 !important;
+    border-left: 3px solid #52c41a !important;
+  }
+}
+
+/* No Commission Badge */
+.no-commission-badge {
+  display: block;
+  font-size: 10px;
+  color: #ff4d4f;
+  font-weight: 600;
+  margin-top: 2px;
+  background-color: #fff1f0;
+  padding: 2px 6px;
+  border-radius: 12px;
+  border: 1px solid #ffccc7;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  
+  i {
+    margin-right: 2px;
+    font-size: 10px;
+  }
+}
+
+/* Table header enhancement */
+.table thead th {
+  background-color: #fafafa;
+  border-bottom: 2px solid #f0f0f0;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Add a legend/info box */
+.commission-legend {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      margin-right: 6px;
+      border: 1px solid #d9d9d9;
+    }
+    
+    &.no-commission .legend-color {
+      background-color: #fff2f0;
+      border-color: #ff7875;
+    }
+    
+    &.commission-eligible .legend-color {
+      background-color: #f6fff6;
+      border-color: #52c41a;
+    }
+  }
+}
