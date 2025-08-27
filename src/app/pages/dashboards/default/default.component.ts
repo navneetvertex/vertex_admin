@@ -49,6 +49,7 @@ export class DefaultComponent implements OnInit {
   isActiveLoanCredit: string;
   data: any = null;
   totalCommission: any = null;
+  advisorCommission: any = null;
 
   @ViewChild('content') content;
   constructor(private modalService: NgbModal, 
@@ -83,7 +84,9 @@ export class DefaultComponent implements OnInit {
 
   getCommissionReport() {
     this.userService.getCommissionReport().subscribe((report: any) => {
+      console.log(report);
       this.totalCommission = report.data.summary;
+      this.advisorCommission = report.data.advisorCommissionSummary;
     });
   }
 
@@ -100,7 +103,6 @@ export class DefaultComponent implements OnInit {
       this.isActiveLoanCredit = 'week';
       this.weeklyreport();
       this.weeklyLoanCreditreport();
-      console.log(data.data);
     });
   }
 

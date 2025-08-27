@@ -164,7 +164,7 @@
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <div class="text-center p-3 border rounded">
-                                <i class="bx bx-network-chart font-size-24 text-success"></i>
+                                <i class="bx bx-sitemap font-size-24 text-success"></i>
                                 <h5 class="mt-2 mb-1">Indirect Referral Income</h5>
                                 <p class="text-muted mb-0">₹{{data?.indirectReferralAmount | number}}</p>
                             </div>
@@ -243,22 +243,43 @@
                         <div class="col-md-4 col-sm-6">
                             <div class="text-center p-3 border rounded">
                                 <i class="bx bx-money font-size-24 text-primary"></i>
-                                <h5 class="mt-2 mb-1">Total Direct Commission</h5>
+                                <h5 class="mt-2 mb-1">Admin Direct Commission</h5>
                                 <p class="text-muted mb-0">₹{{totalCommission?.totalDirectCommission | number}}</p>
                             </div>
                         </div>
                         <div class="col-md-4 col-sm-6">
                             <div class="text-center p-3 border rounded">
                                 <i class="bx bx-wallet font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Total InDirect Commission</h5>
+                                <h5 class="mt-2 mb-1">Admin InDirect Commission</h5>
                                 <p class="text-muted mb-0">₹{{totalCommission?.totalIndirectCommission | number}}</p>
                             </div>
                         </div>
                         <div class="col-md-4 col-sm-12">
                             <div class="text-center p-3 border rounded">
                                 <i class="bx bx-calculator font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Grand Total</h5>
+                                <h5 class="mt-2 mb-1">Admin Grand Total</h5>
                                 <p class="text-muted mb-0">₹{{totalCommission?.grandTotal | number}}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="text-center p-3 border rounded">
+                                <i class="bx bx-user-check font-size-24 text-primary"></i>
+                                <h5 class="mt-2 mb-1">Advisor Direct Commission</h5>
+                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorDirectCommission | number}}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="text-center p-3 border rounded">
+                                <i class="bx bx-bar-chart font-size-24 text-success"></i>
+                                <h5 class="mt-2 mb-1">Advisor InDirect Commission</h5>
+                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorIndirectCommission | number}}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="text-center p-3 border rounded">
+                                <i class="bx bx-bar-chart-alt-2 font-size-24 text-success"></i>
+                                <h5 class="mt-2 mb-1">Advisor Grand Total</h5>
+                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorCommission | number}}</p>
                             </div>
                         </div>
                     </div>
