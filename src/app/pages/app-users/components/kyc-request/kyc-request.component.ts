@@ -54,7 +54,7 @@ export class KycRequestComponent implements OnInit {
     this.settingsService.getGeneralSettings$().subscribe(settings => {
       if (settings) {
         this.cd_rate = settings.compulsory_deposit_rate || 0;
-        this.saveDepositSettings.patchValue({annual_rate: this.cd_rate, indirect_refer_per: settings.compulsory_indirect_rs || 0, direct_refer_per: settings.compulsory_direct_rs || 0, franchise_refer_per: settings.compulsory_francise_rs || 0});
+        this.saveDepositSettings.patchValue({penalty_amount: settings.compulsory_penalty, annual_rate: this.cd_rate, indirect_refer_per: settings.compulsory_indirect_rs || 0, direct_refer_per: settings.compulsory_direct_rs || 0, franchise_refer_per: settings.compulsory_francise_rs || 0});
       }
     });
     this.getKycRequests();
@@ -141,7 +141,7 @@ export class KycRequestComponent implements OnInit {
             this.settingsService.getGeneralSettings$().subscribe(settings => {
               if (settings) {
                 this.cd_rate = settings.compulsory_deposit_rate || 0;
-                this.saveDepositSettings.patchValue({annual_rate: this.cd_rate, indirect_refer_per: settings.compulsory_indirect_rs || 0, direct_refer_per: settings.compulsory_direct_rs || 0, franchise_refer_per: settings.compulsory_francise_rs || 0});
+                this.saveDepositSettings.patchValue({penalty_amount: settings.compulsory_penalty, annual_rate: this.cd_rate, indirect_refer_per: settings.compulsory_indirect_rs || 0, direct_refer_per: settings.compulsory_direct_rs || 0, franchise_refer_per: settings.compulsory_francise_rs || 0});
               }
             });
           }, (err: any) => {
@@ -172,6 +172,12 @@ export class KycRequestComponent implements OnInit {
           });
           this.getKycRequests();
           this.saveDepositSettings.reset();
+          this.settingsService.getGeneralSettings$().subscribe(settings => {
+              if (settings) {
+                this.cd_rate = settings.compulsory_deposit_rate || 0;
+                this.saveDepositSettings.patchValue({penalty_amount: settings.compulsory_penalty, annual_rate: this.cd_rate, indirect_refer_per: settings.compulsory_indirect_rs || 0, direct_refer_per: settings.compulsory_direct_rs || 0, franchise_refer_per: settings.compulsory_francise_rs || 0});
+              }
+            });
           this.saveDepositSettings.patchValue({annual_rate: this.cd_rate});
           this.modalService.dismissAll();
         }

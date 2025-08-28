@@ -62,7 +62,7 @@ export class RequestNewCardComponent implements OnInit {
 
     this.settingsService.getGeneralSettings$().subscribe(settings => {
       if (settings) {
-        this.approveCCFormGroup.patchValue({interest_rate: settings.sahyog_card_rate || 0, indirect_refer_per: settings.credit_indirect_rs || 0, direct_refer_per: settings.credit_direct_rs || 0, franchise_refer_per: settings.credit_francise_rs || 0});
+        this.approveCCFormGroup.patchValue({penalty: settings.sahyog_penalty || 0, interest_rate: settings.sahyog_card_rate || 0, indirect_refer_per: settings.credit_indirect_rs || 0, direct_refer_per: settings.credit_direct_rs || 0, franchise_refer_per: settings.credit_francise_rs || 0});
       }
     });
 
@@ -125,7 +125,7 @@ export class RequestNewCardComponent implements OnInit {
         this.getRequestedCreditCard();
         this.settingsService.getGeneralSettings$().subscribe(settings => {
           if (settings) {
-            this.approveCCFormGroup.patchValue({interest_rate: settings.sahyog_card_rate || 0, indirect_refer_per: settings.credit_indirect_rs || 0, direct_refer_per: settings.credit_direct_rs || 0, franchise_refer_per: settings.credit_francise_rs || 0});
+            this.approveCCFormGroup.patchValue({penalty: settings.sahyog_penalty || 0, interest_rate: settings.sahyog_card_rate || 0, indirect_refer_per: settings.credit_indirect_rs || 0, direct_refer_per: settings.credit_direct_rs || 0, franchise_refer_per: settings.credit_francise_rs || 0});
           }
         });
       },

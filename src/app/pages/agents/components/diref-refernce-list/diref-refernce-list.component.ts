@@ -87,7 +87,7 @@ export class DirefRefernceListComponent implements OnInit {
       if (res && res.data) {
         this.userList = res?.data?.users || [];
         this.total = res?.data?.total || 0;
-        this.totalDirectCommission = res?.data?.commissionSummary?.totalDirectCommission || 0;
+        this.totalDirectCommission = res?.data?.commissionSummary?.totalCommission || 0;
       } else {
         this.userList = [];
       }

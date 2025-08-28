@@ -66,6 +66,8 @@ export class LoanRequestedComponent implements OnInit {
       cheque_proof: new FormControl(''),
     });
 
+
+    
     
 
     // if status = Rejected then rejected_reason is required
@@ -129,7 +131,7 @@ export class LoanRequestedComponent implements OnInit {
     this.statusFormGroup.reset();
     this.settingsService.getGeneralSettings$().subscribe(settings => {
         if (settings) {
-          this.statusFormGroup.patchValue({interest_rate: settings.loan_rate || 0, indirect_refer_per: settings.loan_indirect_percentage || 0, direct_refer_per: settings.loan_direct_percentage || 0, franchise_refer_per: settings.loan_francise_percentage || 0});
+          this.statusFormGroup.patchValue({penalty: settings.loan_penalty || 0, interest_rate: settings.loan_rate || 0, indirect_refer_per: settings.loan_indirect_percentage || 0, direct_refer_per: settings.loan_direct_percentage || 0, franchise_refer_per: settings.loan_francise_percentage || 0});
         }
       });
     this.statusFormGroup.patchValue({

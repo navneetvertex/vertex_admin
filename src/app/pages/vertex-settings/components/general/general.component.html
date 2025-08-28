@@ -18,6 +18,15 @@
                                 </div>
                             </div>
                             <div class="col-sm-2">
+                                <label for="sahyog_card_rate" >Rate %</label>
+                                <input type="number" class="form-control" id="sahyog_card_rate" formControlName="sahyog_card_rate" placeholder="Rate %">
+                                <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.invalid && generalSettingsForm.get('sahyog_card_rate')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['pattern']">Enter a valid rate (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['min']">Value must be at least 0.</div>
+                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['max']">Value cannot exceed 100.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
                                 <label for="">Francise Rs</label>
                                 <input type="number" class="form-control" id="credit_francise_rs" formControlName="credit_francise_rs" placeholder="Francise Rs">
                                 <div *ngIf="generalSettingsForm.get('credit_francise_rs')?.invalid && generalSettingsForm.get('credit_francise_rs')?.touched" class="text-danger small">
@@ -39,6 +48,14 @@
                                 <div *ngIf="generalSettingsForm.get('credit_direct_rs')?.invalid && generalSettingsForm.get('credit_direct_rs')?.touched" class="text-danger small">
                                     <div *ngIf="generalSettingsForm.get('credit_direct_rs')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
                                     <div *ngIf="generalSettingsForm.get('credit_direct_rs')?.errors?.['min']">Value must be at least 0.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="">Penalty</label>
+                                <input type="number" class="form-control" id="sahyog_penalty" formControlName="sahyog_penalty" placeholder="Penalty">
+                                <div *ngIf="generalSettingsForm.get('sahyog_penalty')?.invalid && generalSettingsForm.get('sahyog_penalty')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('sahyog_penalty')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('sahyog_penalty')?.errors?.['min']">Value must be at least 0.</div>
                                 </div>
                             </div>
                             <div class="col-sm-2">
@@ -88,6 +105,14 @@
                                 <div *ngIf="generalSettingsForm.get('compulsory_direct_rs')?.invalid && generalSettingsForm.get('compulsory_direct_rs')?.touched" class="text-danger small">
                                     <div *ngIf="generalSettingsForm.get('compulsory_direct_rs')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
                                     <div *ngIf="generalSettingsForm.get('compulsory_direct_rs')?.errors?.['min']">Value must be at least 0.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="compulsory_penalty" class="col-form-label">Penalty</label>
+                                <input type="number" class="form-control" id="compulsory_penalty" formControlName="compulsory_penalty" placeholder="Penalty">
+                                <div *ngIf="generalSettingsForm.get('compulsory_penalty')?.invalid && generalSettingsForm.get('compulsory_penalty')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('compulsory_penalty')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('compulsory_penalty')?.errors?.['min']">Value must be at least 0.</div>
                                 </div>
                             </div>
                             <div class="col-sm-2">
@@ -142,6 +167,14 @@
                                 </div>
                             </div>
                             <div class="col-sm-2">
+                                <label for="recurring_penalty" class="col-form-label">Penalty</label>
+                                <input type="number" class="form-control" id="recurring_penalty" formControlName="recurring_penalty" placeholder="Penalty">
+                                <div *ngIf="generalSettingsForm.get('recurring_penalty')?.invalid && generalSettingsForm.get('recurring_penalty')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('recurring_penalty')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('recurring_penalty')?.errors?.['min']">Value must be at least 0.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
                                 <label for="recurring_deposit_update_for" class="col-form-label">Update For</label>
                                 <select class="form-control" formControlName="recurring_deposit_update_for">
                                     <!-- <option value="all">All Members</option> -->
@@ -190,6 +223,14 @@
                                 <div *ngIf="generalSettingsForm.get('fixed_direct_rs')?.invalid && generalSettingsForm.get('fixed_direct_rs')?.touched" class="text-danger small">
                                     <div *ngIf="generalSettingsForm.get('fixed_direct_rs')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
                                     <div *ngIf="generalSettingsForm.get('fixed_direct_rs')?.errors?.['min']">Value must be at least 0.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="fixed_penalty" class="col-form-label">Penalty</label>
+                                <input type="number" class="form-control" id="fixed_penalty" formControlName="fixed_penalty" placeholder="Penalty">
+                                <div *ngIf="generalSettingsForm.get('fixed_penalty')?.invalid && generalSettingsForm.get('fixed_penalty')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('fixed_penalty')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('fixed_penalty')?.errors?.['min']">Value must be at least 0.</div>
                                 </div>
                             </div>
                             <div class="col-sm-2">
@@ -248,6 +289,14 @@
                                 </div>
                             </div>
                             <div class="col-sm-2">
+                                <label for="loan_penalty" class="col-form-label">Penalty</label>
+                                <input type="number" class="form-control" id="loan_penalty" formControlName="loan_penalty" placeholder="Penalty">
+                                <div *ngIf="generalSettingsForm.get('loan_penalty')?.invalid && generalSettingsForm.get('loan_penalty')?.touched" class="text-danger small">
+                                    <div *ngIf="generalSettingsForm.get('loan_penalty')?.errors?.['pattern']">Enter a valid amount (up to 2 decimals).</div>
+                                    <div *ngIf="generalSettingsForm.get('loan_penalty')?.errors?.['min']">Value must be at least 0.</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
                                 <label for="loan_update_for" class="col-form-label">Update For</label>
                                 <select class="form-control" formControlName="loan_update_for">
                                     <!-- <option value="all">All Members</option> -->
@@ -263,34 +312,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="row mb-4">
-                            <label for="sahyog_card_rate" class="col-sm-1 col-form-label mt-4">Sahyog Card</label>
-                            <div class="col-sm-2">
-                                <label for="sahyog_card_rate" class="col-form-label">Rate %</label>
-                                <input type="number" class="form-control" id="sahyog_card_rate" formControlName="sahyog_card_rate" placeholder="Rate %">
-                                <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.invalid && generalSettingsForm.get('sahyog_card_rate')?.touched" class="text-danger small">
-                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['pattern']">Enter a valid rate (up to 2 decimals).</div>
-                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['min']">Value must be at least 0.</div>
-                                    <div *ngIf="generalSettingsForm.get('sahyog_card_rate')?.errors?.['max']">Value cannot exceed 100.</div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6"></div>
-                            <div class="col-sm-2">
-                                <label for="sahyog_card_update_for" class="col-form-label">Update For</label>
-                                <select class="form-control" formControlName="sahyog_card_update_for">
-                                    <!-- <option value="all">All Members</option> -->
-                                    <option value="future">New Members</option>
-                                </select>
-                                <div *ngIf="generalSettingsForm.get('sahyog_card_update_for')?.invalid && generalSettingsForm.get('sahyog_card_update_for')?.touched" class="text-danger small">
-                                    Update For is required.
-                                </div>
-                            </div>
-                            <div class="col-sm-1 mt-5">
-                                <button type="button" class="btn btn-success" (click)="onSubmit()" [disabled]="generalSettingsForm.get('sahyog_card_rate')?.invalid">
-                                    Save
-                                </button>
-                            </div>
-                        </div>
+                        
                     </div>
                 </form>
             </div>
