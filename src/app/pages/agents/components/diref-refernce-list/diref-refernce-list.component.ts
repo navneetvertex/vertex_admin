@@ -84,6 +84,7 @@ export class DirefRefernceListComponent implements OnInit {
     const queryParams = queryParamArray.join('&');
 
     this.userService.getDirectRefUsers(this.page, this.pageSize, queryParams, userId).subscribe((res: any) => {
+      console.log(res)
       if (res && res.data) {
         this.userList = res?.data?.users || [];
         this.total = res?.data?.total || 0;

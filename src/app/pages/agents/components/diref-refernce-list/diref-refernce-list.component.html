@@ -79,9 +79,9 @@
                                       <td> {{user.referred_by[0]?.name}} <br> {{ user.referred_by[0]?.user_id || '-' }}   </td>
                                       <td>
                                         <span>
-                                          <b>Member Commission: </b> ₹{{ user.commission.direct || 0 }}
-                                          <br>
-                                          <b>Card Commission: </b> ₹{{ user.commission.cc_direct || 0 }}
+                                          <b>Member: </b> ₹{{ user.commission.direct || 0 }} <br>
+                                          <b>Card: </b> ₹{{ user.commission.cc_direct || 0 }} <br>
+                                          <b>Loan: </b> ₹{{ user.commission.loan_direct || 0 | number }} <br>
                                         </span>
                                       </td>
                                       <!-- <td>

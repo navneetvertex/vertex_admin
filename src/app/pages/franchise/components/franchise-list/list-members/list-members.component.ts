@@ -81,10 +81,11 @@ export class ListMembersComponent implements OnInit {
     
     this.franchiseService.getFranchiseMembers(id, this.page, this.pageSize, queryParams).subscribe({
       next: (response: any) => {
+        console.log(response)
         if (response && response.data) {
           this.userList = response.data?.users?.data || [];
-          this.total = response.data.users?.metadata[0]?.total || 0;
-          this.totalDirectCommission = response.data.users?.metadata[0]?.totalFranchiseCommission || 0;
+          this.total = response.data.users?.metadata[0]?.count || 0;
+          this.totalDirectCommission = (response.data.users?.metadata[0]?.totalFranchiseCommission || 0) + (response.data.users?.metadata[0]?.totalCreditCardFranchiseCommission || 0)  + (response.data.users?.metadata[0]?.totalLoanFranchise || 0);
         }
       },
       error: (error) => {
@@ -93,6 +94,5 @@ export class ListMembersComponent implements OnInit {
     });
   }
 
-  sea
 
 }
