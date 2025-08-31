@@ -57,6 +57,7 @@
                                       <th>InDirect Ref</th>
                                       <th>Account Number</th>
                                       <th>Aadhar Number</th>
+                                      <th style="width: 10%;" >Location</th>
                                       <th>Gender</th>
                                       <th>Age</th>
                                       <th>Payment Mode</th>
@@ -88,6 +89,11 @@
                                       <td>{{ user.account_number || '-' }}</td>
                                       <td>
                                         <span *ngIf="user.user_type !== 'admin'">{{ user?.kyc[0]?.aadhar || '-' }}</span>
+                                      </td>
+                                      <td>
+                                        District : {{ user?.district_info?.name || '-' }} <br>
+                                        Area : {{ user?.area_info?.name || '-' }}
+
                                       </td>
                                       <td>{{ user.gender || '-' }}</td>
                                       <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>
