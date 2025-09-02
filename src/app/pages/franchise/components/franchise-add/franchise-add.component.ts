@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ImageCropperComponent } from 'ngx-image-cropper';
+import { ImageCropperComponent } from 'src/app/pages/app-users/components/edit-profile/image-cropper/image-cropper.component';
 import { ToastrService } from 'ngx-toastr';
 import { FranchiseService } from 'src/app/core/services/franchise.service';
 import { MastersService } from 'src/app/core/services/masters.service';
@@ -10,18 +10,19 @@ import { UserProfileService } from 'src/app/core/services/user.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-franchise-add',
-  templateUrl: './franchise-add.component.html',
-  styleUrls: ['./franchise-add.component.scss']
+  selector: "app-franchise-add",
+  templateUrl: "./franchise-add.component.html",
+  styleUrls: ["./franchise-add.component.scss"],
 })
 export class FranchiseAddComponent implements OnInit {
-
-  constructor(private userService: UserProfileService,
-      private toast: ToastrService,
-      private router: Router,
-      private masterService: MastersService,
-      private franchiseService: FranchiseService,
-    ) { }
+  constructor(
+    private userService: UserProfileService,
+    private toast: ToastrService,
+    private router: Router,
+    private modalService: NgbModal,
+    private masterService: MastersService,
+    private franchiseService: FranchiseService
+  ) {}
   breadCrumbItems: Array<{}>;
   addFranchiseFormGroup: FormGroup;
   userDetails: any = null;
@@ -29,56 +30,71 @@ export class FranchiseAddComponent implements OnInit {
   allAreas: any[] = [];
   allStates: any[] = [];
   allAreasWithFranchiseUser: any[] = [];
-  areaAlreadyExistsmessage: string = '';
+  areaAlreadyExistsmessage: string = "";
 
   ngOnInit(): void {
-    this.breadCrumbItems = [{ label: 'Franchise' }, { label: 'Manage', active: true }];
+    this.breadCrumbItems = [
+      { label: "Franchise" },
+      { label: "Manage", active: true },
+    ];
     this.getStates();
     this.getAllAreasWithFranchise();
     this.addFranchiseFormGroup = new FormGroup({
-      user_id: new FormControl('', Validators.required),
-      state: new FormControl({value: '', disabled: true}, Validators.required),
-      district: new FormControl({value: '', disabled: true}, Validators.required),
+      user_id: new FormControl("", Validators.required),
+      state: new FormControl(
+        { value: "", disabled: true },
+        Validators.required
+      ),
+      district: new FormControl(
+        { value: "", disabled: true },
+        Validators.required
+      ),
       area: new FormControl([], Validators.required),
+      cheque_proof: new FormControl(null, Validators.required),
     });
   }
 
   getUserDetails() {
-    if(!this.addFranchiseFormGroup.value.user_id) return;
+    if (!this.addFranchiseFormGroup.value.user_id) return;
 
-    this.franchiseService.getAdvisorStatus(this.addFranchiseFormGroup.value.user_id).subscribe({
-      next: (res: any) => {
-        if(res && res.status === 'success') {
-          if(res.data.isAdvisor) {
-            this.addFranchiseFormGroup.get('user_id')?.setErrors(null);
-            this.addFranchiseFormGroup.get('user_id')?.markAsPristine();
-            this.addFranchiseFormGroup.get('user_id')?.markAsUntouched();
-            this.userDetails = res.data.user;
-            this.getFranchiseByUserId(this.userDetails._id);
-            this.getDistricts({_id :this.userDetails.state});
-            this.getAreas({_id: this.userDetails.district});
-            this.addFranchiseFormGroup.patchValue({
-              state: this.userDetails.state,
-              district: this.userDetails.district,
-              area: this.userDetails.area
-            });
-            this.addFranchiseFormGroup.get('state')?.disable();
-          } else {
-            if(res.data.user) {
+    this.franchiseService
+      .getAdvisorStatus(this.addFranchiseFormGroup.value.user_id)
+      .subscribe({
+        next: (res: any) => {
+          if (res && res.status === "success") {
+            if (res.data.isAdvisor) {
+              this.addFranchiseFormGroup.get("user_id")?.setErrors(null);
+              this.addFranchiseFormGroup.get("user_id")?.markAsPristine();
+              this.addFranchiseFormGroup.get("user_id")?.markAsUntouched();
               this.userDetails = res.data.user;
-               this.addFranchiseFormGroup.get('user_id')?.setErrors({ 'notAdvisor': true });
+              this.getFranchiseByUserId(this.userDetails._id);
+              this.getDistricts({ _id: this.userDetails.state });
+              this.getAreas({ _id: this.userDetails.district });
+              this.addFranchiseFormGroup.patchValue({
+                state: this.userDetails.state,
+                district: this.userDetails.district
+              });
+              this.addFranchiseFormGroup.get("state")?.disable();
             } else {
-              this.userDetails = null;
-               this.addFranchiseFormGroup.get('user_id')?.setErrors({ 'userNotFound': true });
+              if (res.data.user) {
+                this.userDetails = res.data.user;
+                this.addFranchiseFormGroup
+                  .get("user_id")
+                  ?.setErrors({ notAdvisor: true });
+              } else {
+                this.userDetails = null;
+                this.addFranchiseFormGroup
+                  .get("user_id")
+                  ?.setErrors({ userNotFound: true });
+              }
             }
-           
           }
-        }
-      }, error: (err) => {
-        console.error('Error checking advisor status:', err);
-        this.toast.error('An error occurred while checking advisor status');
-      }
-    });
+        },
+        error: (err) => {
+          console.error("Error checking advisor status:", err);
+          this.toast.error("An error occurred while checking advisor status");
+        },
+      });
 
     // this.userService.getBasicUserProfile(this.addFranchiseFormGroup.value.user_id).subscribe({
     //   next: (res: any) => {
@@ -97,7 +113,7 @@ export class FranchiseAddComponent implements OnInit {
     //         });
     //         this.addFranchiseFormGroup.get('state')?.disable();
     //       }
-    //     } 
+    //     }
     //   }, error: (err) => {
     //     console.error('Error fetching user details:', err);
     //   }
@@ -109,14 +125,18 @@ export class FranchiseAddComponent implements OnInit {
       next: (response: any) => {
         if (response && response.data) {
           const isUserAlreadyFranchise = response.data.franchise;
-          this.addFranchiseFormGroup.patchValue({area : isUserAlreadyFranchise?.area || []});
-          console.log('Franchise Details:', isUserAlreadyFranchise);
+          this.addFranchiseFormGroup.patchValue({
+            area: isUserAlreadyFranchise?.area.map((area: any) => area._id) || [],
+            cheque_proof: isUserAlreadyFranchise?.cheque_proof || null
+          });
+          console.log("Franchise Details:", isUserAlreadyFranchise);
+          this.uploadedChequeProof = isUserAlreadyFranchise?.cheque_proof || null;
         }
       },
       error: (error) => {
-        console.error('Error fetching franchise by user ID:', error);
-        this.toast.error('An error occurred while fetching franchise details');
-      }
+        console.error("Error fetching franchise by user ID:", error);
+        this.toast.error("An error occurred while fetching franchise details");
+      },
     });
   }
 
@@ -128,8 +148,8 @@ export class FranchiseAddComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error loading states:', error);
-      }
+        console.error("Error loading states:", error);
+      },
     });
   }
 
@@ -139,10 +159,10 @@ export class FranchiseAddComponent implements OnInit {
       return;
     }
 
-    if(!state?._id) {
+    if (!state?._id) {
       this.allDistricts = [];
       return;
-    } 
+    }
 
     this.masterService.districts(state._id).subscribe({
       next: (response: any) => {
@@ -151,8 +171,8 @@ export class FranchiseAddComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error loading districts:', error);
-      }
+        console.error("Error loading districts:", error);
+      },
     });
   }
 
@@ -162,7 +182,7 @@ export class FranchiseAddComponent implements OnInit {
       return;
     }
 
-    if(!district?._id) {
+    if (!district?._id) {
       this.allAreas = [];
       return;
     }
@@ -174,77 +194,85 @@ export class FranchiseAddComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Error loading areas:', error);
-      }
+        console.error("Error loading areas:", error);
+      },
     });
   }
 
   onSubmit() {
     if (this.addFranchiseFormGroup.invalid) {
       this.addFranchiseFormGroup.markAllAsTouched();
-      this.toast.error('Please fix the errors in the form.');
+      this.toast.error("Please fix the errors in the form.");
       return;
     }
-   
+
     const formData = {
       user_id: this.userDetails._id,
       state: this.userDetails?.state || this.addFranchiseFormGroup.value.state,
-      district: this.userDetails?.district || this.addFranchiseFormGroup.value.district,
-      area: this.addFranchiseFormGroup.value.area
+      district:
+        this.userDetails?.district || this.addFranchiseFormGroup.value.district,
+      area: this.addFranchiseFormGroup.value.area,
+      cheque_proof: this.uploadedChequeProof
     };
-    console.log('Form Data:', formData);
+    console.log("Form Data:", formData);
     this.franchiseService.addFranchise(formData).subscribe({
       next: (response: any) => {
         if (response.status) {
           Swal.fire({
-            title: 'Success',
-            text: 'Franchise added successfully',
-            icon: 'success',
-            confirmButtonText: 'OK'
+            title: "Success",
+            text: "Franchise added successfully",
+            icon: "success",
+            confirmButtonText: "OK",
           }).then(() => {
-            this.router.navigate(['/franchises/list']);
+            this.router.navigate(["/franchises/list"]);
           });
-          this.toast.success('Franchise added successfully');
+          this.toast.success("Franchise added successfully");
           this.addFranchiseFormGroup.reset();
           this.userDetails = null;
           this.allDistricts = [];
           this.allAreas = [];
         } else {
-          this.toast.error(response.message || 'Failed to add franchise');
+          this.toast.error(response.message || "Failed to add franchise");
         }
-      }
-      , error: (error) => {
-        console.error('Error adding franchise:', error);
-        this.toast.error('An error occurred while adding the franchise');
+      },
+      error: (error) => {
+        console.error("Error adding franchise:", error);
+        this.toast.error("An error occurred while adding the franchise");
         Swal.fire({
-          title: 'Error',
-          text: 'An error occurred while adding the franchise',
-          icon: 'error',
-          confirmButtonText: 'OK'
+          title: "Error",
+          text: "An error occurred while adding the franchise",
+          icon: "error",
+          confirmButtonText: "OK",
         });
-      }
+      },
     });
   }
 
   areaSelected(event: any) {
     const last_selectedArea = event[event.length - 1];
     if (last_selectedArea && last_selectedArea._id) {
-        const isAreaAlreadySelected : any = this.allAreasWithFranchiseUser.find((area: any) => area._id === last_selectedArea._id);
-        if (isAreaAlreadySelected) {
-          this.toast.error(`This area is already associated with a franchise ${isAreaAlreadySelected?.user[0]?.name} (${isAreaAlreadySelected?.user[0]?.user_id})`);
-          this.addFranchiseFormGroup.get('area')?.setErrors({ 'areaAlreadyExists': true });
-          setTimeout(() => {
-            this.addFranchiseFormGroup.get('area')?.setErrors(null);
-            this.areaAlreadyExistsmessage = '';
-          }, 5000);
-          this.areaAlreadyExistsmessage = `${isAreaAlreadySelected.name} area is already associated with a franchise ${isAreaAlreadySelected?.user[0]?.name} (${isAreaAlreadySelected?.user[0]?.user_id})`;
-          this.addFranchiseFormGroup.markAllAsTouched();
-          this.addFranchiseFormGroup.patchValue({
-            area: event
-              .filter((area: any) => area._id !== last_selectedArea._id)
-              .map((area: any) => area._id)
-          });
-        }
+      const isAreaAlreadySelected: any = this.allAreasWithFranchiseUser.find(
+        (area: any) => area._id === last_selectedArea._id
+      );
+      if (isAreaAlreadySelected) {
+        this.toast.error(
+          `This area is already associated with a franchise ${isAreaAlreadySelected?.user[0]?.name} (${isAreaAlreadySelected?.user[0]?.user_id})`
+        );
+        this.addFranchiseFormGroup
+          .get("area")
+          ?.setErrors({ areaAlreadyExists: true });
+        setTimeout(() => {
+          this.addFranchiseFormGroup.get("area")?.setErrors(null);
+          this.areaAlreadyExistsmessage = "";
+        }, 5000);
+        this.areaAlreadyExistsmessage = `${isAreaAlreadySelected.name} area is already associated with a franchise ${isAreaAlreadySelected?.user[0]?.name} (${isAreaAlreadySelected?.user[0]?.user_id})`;
+        this.addFranchiseFormGroup.markAllAsTouched();
+        this.addFranchiseFormGroup.patchValue({
+          area: event
+            .filter((area: any) => area._id !== last_selectedArea._id)
+            .map((area: any) => area._id),
+        });
+      }
     }
   }
 
@@ -252,16 +280,83 @@ export class FranchiseAddComponent implements OnInit {
     this.franchiseService.getAllAreasWithFranchise().subscribe({
       next: (response: any) => {
         this.allAreasWithFranchiseUser = response?.data?.areas || [];
-        console.log('Areas with franchise:', this.allAreasWithFranchiseUser);
+       
+        console.log("Areas with franchise:", this.allAreasWithFranchiseUser);
         // if (response && response.data) {
         //   this.allAreas = response.data || [];
         // }
       },
       error: (error) => {
-        console.error('Error loading areas with franchise:', error);
-        this.toast.error('An error occurred while loading areas with franchise');
-      }
+        console.error("Error loading areas with franchise:", error);
+        this.toast.error(
+          "An error occurred while loading areas with franchise"
+        );
+      },
     });
   }
 
+  onFileSelected(event: Event, from: string): void {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+    const file = input.files[0];
+    if (!file.type.startsWith("image/")) {
+      Swal.fire({
+        title: "Invalid File Type",
+        text: "Please select a valid image file.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      input.value = "";
+      return;
+    }
+
+    if (input.files && input.files.length > 0) {
+      this.openImageCropper({ file: event, from: from });
+    }
+  }
+
+  openImageCropper(data: any) {
+    const modalRef = this.modalService.open(ImageCropperComponent, {
+      centered: true,
+      size: "xl",
+    });
+    modalRef.componentInstance.data = data;
+    modalRef.result
+      .then((result) => {
+        if (result) {
+          if (result.image) {
+            const base64 = result.image;
+            this.cropAndSetPhoto(base64, result.from);
+          }
+        }
+      })
+      .catch((reason) => {
+        console.log("Modal dismissed:", reason);
+      });
+  }
+
+  uploadedChequeProof: string = "";
+
+  cropAndSetPhoto(base64: string, type: string = "chequeProof") {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width * 0.5;
+      canvas.height = img.height * 0.5;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressedBase64 = canvas.toDataURL("image/jpeg", 0.3);
+
+      if (type === "chequeProof") {
+        this.uploadedChequeProof = compressedBase64;
+        this.addFranchiseFormGroup.patchValue({ cheque_proof: compressedBase64 });
+      }
+
+      console.log(`Selected ${type}:`);
+    };
+    img.src = base64;
+  }
 }

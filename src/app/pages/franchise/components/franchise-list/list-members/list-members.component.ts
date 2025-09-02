@@ -83,6 +83,7 @@ export class ListMembersComponent implements OnInit {
       next: (response: any) => {
         if (response && response.data) {
           this.userList = response.data?.users?.data || [];
+          console.log(this.userList)
           this.total = response.data.users?.metadata[0]?.count || 0;
           this.totalDirectCommission = (response.data.users?.metadata[0]?.totalFranchiseCommission || 0) + (response.data.users?.metadata[0]?.totalCreditCardFranchiseCommission || 0)  + (response.data.users?.metadata[0]?.totalLoanFranchise || 0);
         }

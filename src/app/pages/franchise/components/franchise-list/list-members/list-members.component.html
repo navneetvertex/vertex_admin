@@ -57,6 +57,7 @@
                                       <th>UserId</th>
                                       <th>Refer Id</th>
                                       <th>Commission</th>
+                                      <th>Area</th>
                                       <!-- <th>Direct Ref</th>
                                       <th>InDirect Ref</th> -->
                                       <th>Account Number</th>
@@ -82,6 +83,7 @@
                                         <b> Card: </b> ₹ {{ user.creditCardFranchiseCommission | number: '1.2-2' }} <br>
                                         <b> Loan: </b> ₹ {{ user.loan_franchise | number: '1.2-2' }} <br>
                                       </td>
+                                      <td>{{ user?.area_info[0]?.name || '-' }}</td>
                                       <td>{{ user.account_number || '-' }}</td>
                                       <td>{{ user.gender || '-' }}</td>
                                       <td> {{ user.date_of_birth ? (getAge(user.date_of_birth)) : '-' }} </td>

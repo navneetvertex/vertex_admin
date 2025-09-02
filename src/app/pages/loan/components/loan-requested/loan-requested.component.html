@@ -67,7 +67,11 @@
                                       <tbody>
                                         <tr *ngFor="let loan of loanList; let i = index">
                                           <td>{{ (page - 1) * pageSize + i + 1 }}</td>
-                                          <td>{{loan.loan_id}}</td>
+                                          <td>
+                                            {{loan.loan_id}}
+                                            <br>
+                                            Requested Date: {{loan.created_date | date}}
+                                        </td>
                                           <td>{{loan.user.name}} ({{loan.user.user_id}})  </td>
                                           <td>₹{{loan.requested_loan_amount}}</td>
                                           <td>{{loan.duration}}  {{loan.interval === 'Daily' ? 'day(s)' : 'month(s)'}} </td>
@@ -357,6 +361,10 @@
                         <div class="fw-bold">{{item.value}}</div>
                     </div>
                 </div>
+            </div>
+
+            <div class="passbook_box">
+                <img  src="{{document_to}}" alt="">
             </div>
 
             <div class="row mb-3" *ngIf="LoanTotal && loanType === 'Personal'">

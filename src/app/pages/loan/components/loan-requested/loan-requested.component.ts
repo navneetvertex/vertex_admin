@@ -230,6 +230,8 @@ export class LoanRequestedComponent implements OnInit {
     });
   }
 
+  document_to : string = null
+
   viewGuaranteedLoan(content: any, loan: any) {
     this.selectedLoan = loan;
 
@@ -239,6 +241,7 @@ export class LoanRequestedComponent implements OnInit {
         this.LoanTable = res.data.schedule;
         this.LoanTotal = res.data.totals;
         this.loanSelected = loan;
+        this.document_to = res.data.loan.cheque_proof || null;
       },
       error: (err) => {
         console.error('Error fetching guaranteed loan schedule:', err);
@@ -263,6 +266,7 @@ export class LoanRequestedComponent implements OnInit {
         this.LoanTable = res.data.schedule;
         this.LoanTotal = res.data.totals;
         this.loanSelected = loan;
+        this.document_to = res.data.loan.doc || null;
       },
       error: (err) => {
         console.error('Error fetching personal loan schedule:', err);

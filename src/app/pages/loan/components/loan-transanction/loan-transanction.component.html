@@ -63,6 +63,7 @@
                                           <th>Loan ID</th>
                                           <th>Transanction Id</th>
                                           <th>Transanction Type</th>
+                                          <th>Approval Amount</th>
                                           <th>Credit Amount</th>
                                           <th>Debit Amount</th>
                                           <th>Payment Method</th>
@@ -85,6 +86,10 @@
                                               }">
                                               {{ loan.transaction_type | titlecase }}
                                             </a>
+                                          </td>
+                                          <td>
+                                            Amount: ₹{{loan?.loan?.approved_loan_amount | number}} <br>
+                                            Requested Date: {{loan?.loan?.created_date | date}}
                                           </td>
                                           <td>
                                             <div *ngIf="loan.transaction_type === 'interest'  " >
