@@ -131,7 +131,8 @@ export class LoanRequestedComponent implements OnInit {
     this.statusFormGroup.reset();
     this.settingsService.getGeneralSettings$().subscribe(settings => {
         if (settings) {
-          this.statusFormGroup.patchValue({penalty: settings.loan_penalty || 0, interest_rate: settings.loan_rate || 0, indirect_refer_per: settings.loan_indirect_percentage || 0, direct_refer_per: settings.loan_direct_percentage || 0, franchise_refer_per: settings.loan_francise_percentage || 0});
+          if(this.loanType === 'Personal') this.statusFormGroup.patchValue({penalty: settings.loan_penalty || 0, interest_rate: settings.loan_rate || 0, indirect_refer_per: settings.loan_indirect_percentage || 0, direct_refer_per: settings.loan_direct_percentage || 0, franchise_refer_per: settings.loan_francise_percentage || 0});
+          if(this.loanType !== 'Personal') this.statusFormGroup.patchValue({penalty: settings.g_loan_penalty || 0, interest_rate: settings.g_loan_rate || 0, indirect_refer_per: settings.g_loan_indirect_percentage || 0, direct_refer_per: settings.g_loan_direct_percentage || 0, franchise_refer_per: settings.g_loan_francise_percentage || 0});
         }
       });
     this.statusFormGroup.patchValue({
@@ -339,10 +340,8 @@ export class LoanRequestedComponent implements OnInit {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.3);
 
-        if(type === 'chequeProof') {
-          this.uploadedChequeProof = compressedBase64;
-          this.statusFormGroup.patchValue({ cheque_proof: compressedBase64 });
-        }
+        this.uploadedChequeProof = compressedBase64;
+        this.statusFormGroup.patchValue({ cheque_proof: compressedBase64 });
   
         console.log(`Selected ${type}:`);
       };

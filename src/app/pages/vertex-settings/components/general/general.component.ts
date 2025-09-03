@@ -39,13 +39,21 @@ export class GeneralComponent implements OnInit {
       loan_indirect_percentage: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
       loan_direct_percentage: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
       loan_update_for: new FormControl('future'),
+      loan_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
       sahyog_card_rate: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
       sahyog_card_update_for: new FormControl('future'),
       sahyog_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
       compulsory_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
       recurring_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
       fixed_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
-      loan_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+
+      g_loan_rate: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      g_loan_francise_percentage: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      g_loan_indirect_percentage: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      g_loan_direct_percentage: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+      g_loan_update_for: new FormControl('future'),
+      g_loan_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
+
     });
     this.getGeneralSettings();
   }

@@ -30,8 +30,6 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users/indirect-ref-users/${userId}?page=${page}&limit=${limit}&${queryParams}`);
     }
 
-
-
     changeUserStatus(userId: string, status: string) {
         return this.http.put(`${environment.api_url}users/changeStatus/${userId}`, { status });
     }
@@ -104,5 +102,8 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users/commission-report`);
     }
 
+    getUserIncomeStatistics(advisor_id: string, userId: string, type: string) {
+        return this.http.get(`${environment.api_url}users/income-statistics?advisorId=${advisor_id}&userId=${userId}&type=${type}`);
+    }
 
 }

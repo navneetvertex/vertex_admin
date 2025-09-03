@@ -1,0 +1,308 @@
+<div class="container-fluid">
+  <app-page-title title="Income Statistics" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p class="mt-2">Loading income statistics...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error && !isLoading" class="alert alert-danger" role="alert">
+    <i class="bx bx-error-circle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="refreshData()">
+      <i class="bx bx-refresh"></i> Retry
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !error && incomeData">
+    <!-- Filters and Controls -->
+    <div class="row mb-4">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title mb-1">Income Statistics Overview</h5>
+                <p class="text-muted mb-0">
+                  Financial Year: {{ incomeData.financialYear?.current?.start }} to {{ incomeData.financialYear?.current?.end }}
+                </p>
+              </div>
+              <div class="d-flex gap-2">
+
+                <!-- Action Buttons -->
+                <button type="button" class="btn btn-primary btn-sm" (click)="refreshData()">
+                  <i class="bx bx-refresh me-1"></i> Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+      <div class="col-xl-3 col-md-6" *ngFor="let card of summaryCards">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="avatar-sm flex-shrink-0">
+                <div class="avatar-title bg-{{ card.color }} rounded-circle font-size-16">
+                  <i class="{{ card.icon }}"></i>
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <p class="text-muted mb-1">{{ card.title }}</p>
+                <h4 class="mb-0">{{ card.value }}</h4>
+                <p class="text-muted mb-0 mt-1">
+                  <span class="badge bg-{{ card.color }}-subtle text-{{ card.color }}">
+                    {{ card.growth }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Income Chart -->
+    <div class="row mb-4">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Income Trend (Current vs Previous Year)</h5>
+          </div>
+          <div class="card-body">
+            <div class="apex-charts" dir="ltr">
+              <apx-chart
+                [series]="mainChartOptions.series"
+                [chart]="mainChartOptions.chart"
+                [xaxis]="mainChartOptions.xaxis"
+                [yaxis]="mainChartOptions.yaxis"
+                [dataLabels]="mainChartOptions.dataLabels"
+                [grid]="mainChartOptions.grid"
+                [stroke]="mainChartOptions.stroke"
+                [title]="mainChartOptions.title"
+                [legend]="mainChartOptions.legend"
+                [colors]="mainChartOptions.colors"
+                [markers]="mainChartOptions.markers"
+                [tooltip]="mainChartOptions.tooltip">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income Breakdown Chart -->
+    <div class="row mb-4">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Income Breakdown by Source</h5>
+          </div>
+          <div class="card-body">
+            <div class="apex-charts" dir="ltr">
+              <apx-chart
+                [series]="breakdownChartOptions.series"
+                [chart]="breakdownChartOptions.chart"
+                [plotOptions]="breakdownChartOptions.plotOptions"
+                [xaxis]="breakdownChartOptions.xaxis"
+                [yaxis]="breakdownChartOptions.yaxis"
+                [dataLabels]="breakdownChartOptions.dataLabels"
+                [colors]="breakdownChartOptions.colors"
+                [legend]="breakdownChartOptions.legend"
+                [tooltip]="breakdownChartOptions.tooltip">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Statistics Table -->
+    <div class="row mb-4">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Monthly Income Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Month</th>
+                    <th>Current Year</th>
+                    <th>Previous Year</th>
+                    <th>Growth</th>
+                    <th>Income Sources (Current Year)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let month of incomeData.metadata?.months; let i = index">
+                    <td><strong>{{ month }}</strong></td>
+                    <td>₹{{ (incomeData.monthlyData?.current?.total[i] || 0).toLocaleString() }}</td>
+                    <td>₹{{ (incomeData.monthlyData?.previous?.total[i] || 0).toLocaleString() }}</td>
+                    <td>
+                      <span class="badge"
+                            [ngClass]="{
+                              'bg-success': calculateMonthlyGrowth(i) >= 0,
+                              'bg-danger': calculateMonthlyGrowth(i) < 0,
+                              'bg-secondary': calculateMonthlyGrowth(i) === 0
+                            }">
+                        {{ calculateMonthlyGrowth(i) }}%
+                      </span>
+                    </td>
+                    <td>
+                      <small class="text-muted">
+                        Member: ₹{{ (incomeData.monthlyData?.current?.member[i] || 0).toLocaleString() }} |
+                        Card: ₹{{ (incomeData.monthlyData?.current?.card[i] || 0).toLocaleString() }} |
+                        Loan: ₹{{ (incomeData.monthlyData?.current?.loan[i] || 0).toLocaleString() }}
+                      </small>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot class="table-light">
+                  <tr>
+                    <th>Total</th>
+                    <th>₹{{ incomeData.totals?.current?.total?.toLocaleString() || '0' }}</th>
+                    <th>₹{{ incomeData.totals?.previous?.total?.toLocaleString() || '0' }}</th>
+                    <th>
+                      <span class="badge bg-primary">
+                        {{ incomeData.totals?.growth?.total || '0' }}%
+                      </span>
+                    </th>
+                    <th>
+                      <small class="text-muted">
+                        Member: ₹{{ incomeData.totals?.current?.member?.toLocaleString() || '0' }} |
+                        Card: ₹{{ incomeData.totals?.current?.card?.toLocaleString() || '0' }} |
+                        Loan: ₹{{ incomeData.totals?.current?.loan?.toLocaleString() || '0' }}
+                      </small>
+                    </th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income Source Comparison -->
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Income Source Distribution (Current Year)</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-around">
+              <div class="text-center">
+                <div class="avatar-lg mx-auto mb-3">
+                  <div class="avatar-title bg-primary rounded-circle">
+                    <i class="bx bx-user font-size-24"></i>
+                  </div>
+                </div>
+                <h5 class="mb-1">{{ incomeData.summary?.incomeBreakdown?.member || '0%' }}</h5>
+                <p class="text-muted mb-0">Member Income</p>
+                <p class="text-muted mb-0">₹{{ incomeData.totals?.current?.member?.toLocaleString() || '0' }}</p>
+              </div>
+              <div class="text-center">
+                <div class="avatar-lg mx-auto mb-3">
+                  <div class="avatar-title bg-success rounded-circle">
+                    <i class="bx bx-credit-card font-size-24"></i>
+                  </div>
+                </div>
+                <h5 class="mb-1">{{ incomeData.summary?.incomeBreakdown?.card || '0%' }}</h5>
+                <p class="text-muted mb-0">Card Income</p>
+                <p class="text-muted mb-0">₹{{ incomeData.totals?.current?.card?.toLocaleString() || '0' }}</p>
+              </div>
+              <div class="text-center">
+                <div class="avatar-lg mx-auto mb-3">
+                  <div class="avatar-title bg-warning rounded-circle">
+                    <i class="bx bx-money font-size-24"></i>
+                  </div>
+                </div>
+                <h5 class="mb-1">{{ incomeData.summary?.incomeBreakdown?.loan || '0%' }}</h5>
+                <p class="text-muted mb-0">Loan Income</p>
+                <p class="text-muted mb-0">₹{{ incomeData.totals?.current?.loan?.toLocaleString() || '0' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Year-over-Year Growth</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-4 text-center">
+                <div class="mb-3">
+                  <h4 class="mb-1"
+                      [ngClass]="{
+                        'text-success': (incomeData.totals?.growth?.member || 0) >= 0,
+                        'text-danger': (incomeData.totals?.growth?.member || 0) < 0
+                      }">
+                    {{ incomeData.totals?.growth?.member || '0' }}%
+                  </h4>
+                  <p class="text-muted mb-0">Member</p>
+                </div>
+              </div>
+              <div class="col-4 text-center">
+                <div class="mb-3">
+                  <h4 class="mb-1"
+                      [ngClass]="{
+                        'text-success': (incomeData.totals?.growth?.card || 0) >= 0,
+                        'text-danger': (incomeData.totals?.growth?.card || 0) < 0
+                      }">
+                    {{ incomeData.totals?.growth?.card || '0' }}%
+                  </h4>
+                  <p class="text-muted mb-0">Card</p>
+                </div>
+              </div>
+              <div class="col-4 text-center">
+                <div class="mb-3">
+                  <h4 class="mb-1"
+                      [ngClass]="{
+                        'text-success': (incomeData.totals?.growth?.loan || 0) >= 0,
+                        'text-danger': (incomeData.totals?.growth?.loan || 0) < 0
+                      }">
+                    {{ incomeData.totals?.growth?.loan || '0' }}%
+                  </h4>
+                  <p class="text-muted mb-0">Loan</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data State -->
+  <div *ngIf="!isLoading && !error && !incomeData" class="text-center py-5">
+    <div class="avatar-lg mx-auto mb-4">
+      <div class="avatar-title bg-light rounded-circle">
+        <i class="bx bx-bar-chart-alt-2 font-size-48 text-muted"></i>
+      </div>
+    </div>
+    <h4 class="mb-3">No Income Statistics Available</h4>
+    <p class="text-muted mb-4">Unable to load income statistics for the selected advisor.</p>
+    <button type="button" class="btn btn-primary" (click)="refreshData()">
+      <i class="bx bx-refresh me-1"></i> Try Again
+    </button>
+  </div>
+</div>
+
+
+
