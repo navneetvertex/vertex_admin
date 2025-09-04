@@ -41,7 +41,11 @@ export class RequestNewCardComponent implements OnInit {
     const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
     this.minDate = tomorrow.toISOString().split('T')[0];
-    this.maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    
+    // Set max date to today + 5 days
+    const maxSelectableDate = new Date(now);
+    maxSelectableDate.setDate(now.getDate() + 5);
+    this.maxDate = maxSelectableDate.toISOString().split('T')[0];
 
     this.approveCCFormGroup = new FormGroup({
       card_number: new FormControl('', {

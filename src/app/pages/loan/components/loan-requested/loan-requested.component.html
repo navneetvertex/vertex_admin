@@ -228,7 +228,7 @@
 
                         <div class="form-group mb-3 col-lg-6">
                             <label for="start_date">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" [min]="minDate" formControlName="start_date">
+                            <input type="date" class="form-control" id="start_date" [min]="minDate" [max]="maxDate" [value]="minDate" formControlName="start_date">
                             <div class="text-danger"
                                 *ngIf="statusFormGroup.get('start_date')?.touched && statusFormGroup.get('start_date')?.invalid">
                                 <small *ngIf="statusFormGroup.get('start_date')?.errors?.['required']">Start Date is

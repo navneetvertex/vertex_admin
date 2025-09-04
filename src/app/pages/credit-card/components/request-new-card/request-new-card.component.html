@@ -193,9 +193,11 @@
                         <input
                             type="date"
                             [min]="minDate"
+                            [max]="maxDate"
                             id="start_date"
                             class="form-control"
                             formControlName="start_date"
+                            [value]="minDate"
                             [class.is-invalid]="approveCCFormGroup.get('start_date')?.invalid && (approveCCFormGroup.get('start_date')?.touched || approveCCFormGroup.get('start_date')?.dirty)"
                             required
                         />

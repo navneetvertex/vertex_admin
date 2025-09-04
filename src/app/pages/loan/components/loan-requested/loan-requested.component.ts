@@ -37,6 +37,7 @@ export class LoanRequestedComponent implements OnInit {
   selectedLoan: any;
   searchFormGroup: FormGroup;
   minDate: string;
+  maxDate: string;
   LoanTable : any[] = [];
   LoanTotal: any = null;
   queryParams: string = '';
@@ -50,6 +51,11 @@ export class LoanRequestedComponent implements OnInit {
     const tomorrow = new Date();
     tomorrow.setDate(now.getDate() + 1);
     this.minDate = tomorrow.toISOString().split('T')[0];
+    
+    // Set max date to today + 5 days
+    const maxSelectableDate = new Date(now);
+    maxSelectableDate.setDate(now.getDate() + 5);
+    this.maxDate = maxSelectableDate.toISOString().split('T')[0];
 
     this.statusFormGroup = new FormGroup({
       _id: new FormControl(null),
