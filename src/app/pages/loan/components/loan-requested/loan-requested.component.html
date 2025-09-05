@@ -80,8 +80,8 @@
                                           <td>{{loan.start_date | date}}</td>
                                           <td>{{loan.purpose}}</td>
                                           <td *ngIf="this.loanType !== 'Personal'">
-                                            <span *ngIf="loan.guarantor_1" [ngClass]="loan.guarantor_1_approved? 'text-success': 'text-danger'" >{{loan?.guarantor_1?.name}} ({{loan?.guarantor_1?.user_id}}) - <strong>Guarantor 1</strong> &nbsp; <i class="bx bx-check-circle" *ngIf="loan.guarantor_1_approved" ></i> <i class="bx bx-x-circle" *ngIf="!loan.guarantor_1_approved" ></i> </span> <br>
-                                            <span *ngIf="loan.guarantor_2" [ngClass]="loan.guarantor_2_approved? 'text-success': 'text-danger'">{{loan?.guarantor_2?.name}} ({{loan?.guarantor_2?.user_id}}) - <strong>Guarantor 2</strong> &nbsp; <i class="bx bx-check-circle" *ngIf="loan.guarantor_2_approved" ></i> <i class="bx bx-x-circle" *ngIf="!loan.guarantor_2_approved" ></i></span>
+                                            <span *ngIf="loan?.guarantor_1?.length !== 0" [ngClass]="loan?.guarantor_1_approved? 'text-success': 'text-danger'" >{{loan?.guarantor_1[0]?.name}} ({{loan?.guarantor_1[0]?.user_id}}) - <strong>Guarantor 1</strong> &nbsp; <i class="bx bx-check-circle" *ngIf="loan?.guarantor_1_approved" ></i> <i class="bx bx-x-circle" *ngIf="!loan?.guarantor_1_approved" ></i> </span> <br>
+                                            <span *ngIf="loan?.guarantor_2?.length !== 0" [ngClass]="loan?.guarantor_2_approved? 'text-success': 'text-danger'">{{loan?.guarantor_2[0]?.name}} ({{loan?.guarantor_2[0]?.user_id}}) - <strong>Guarantor 2</strong> &nbsp; <i class="bx bx-check-circle" *ngIf="loan?.guarantor_2_approved" ></i> <i class="bx bx-x-circle" *ngIf="!loan?.guarantor_2_approved" ></i></span>
                                             </td>
                                           <td>
                                              <a *ngIf="loan.status" href="javascript: void(0);" class="badge font-size-11 m-1"

@@ -229,6 +229,7 @@ export class LoanRequestedComponent implements OnInit {
     this.loanService.getLoanList(this.page, this.pageSize, this.queryParams).subscribe({
       next: (res) => {
         this.loanList = res.data.loans;
+        console.log('Fetched loan list:', this.loanList);
         this.total = res.data.total;
       },
       error: (err) => {
