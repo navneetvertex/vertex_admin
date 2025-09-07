@@ -190,7 +190,7 @@
                 </div>
 
                 <!-- Indirect Referral -->
-                <!-- <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-3">
                     <label for="indirectReferral" class="form-label">Indirect Referral Percentage</label>
                     <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
                         placeholder="Enter indirect referral %">
@@ -203,10 +203,10 @@
                         <small *ngIf="editSettingFormGroup.get('indirect_refer_per')?.errors?.['max']">Must be 100% or
                             less.</small>
                     </div>
-                </div> -->
+                </div>
 
                 <!-- Direct Referral -->
-                <!-- <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-3">
                     <label for="directReferral" class="form-label">Direct Referral Percentage</label>
                     <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
                         placeholder="Enter direct referral %">
@@ -219,7 +219,22 @@
                         <small *ngIf="editSettingFormGroup.get('direct_refer_per')?.errors?.['max']">Must be 100% or
                             less.</small>
                     </div>
-                </div> -->
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="directReferral" class="form-label">Franchise Referral Percentage</label>
+                    <input type="number" id="directReferral" class="form-control" formControlName="franchise_refer_per"
+                        placeholder="Enter direct referral %">
+                    <div *ngIf="editSettingFormGroup.get('franchise_refer_per')?.touched && editSettingFormGroup.get('franchise_refer_per')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="editSettingFormGroup.get('franchise_refer_per')?.errors?.['required']">Direct referral %
+                            is required.</small>
+                        <small *ngIf="editSettingFormGroup.get('franchise_refer_per')?.errors?.['min']">Must be at least
+                            0%.</small>
+                        <small *ngIf="editSettingFormGroup.get('franchise_refer_per')?.errors?.['max']">Must be 100% or
+                            less.</small>
+                    </div>
+                </div>
             </div>
         </div>
 

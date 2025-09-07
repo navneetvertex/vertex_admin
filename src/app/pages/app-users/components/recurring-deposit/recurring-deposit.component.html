@@ -347,10 +347,11 @@
                         <label class="col-form-label">Payment Interval</label>
                         <select class="form-control select2" formControlName="interval">
                             <option value="" disabled>Select Interval</option>
-                            <option value="Monthly">Monthly</option>
-                            <option value="Quaterly">Quaterly</option>
-                            <option value="Half Yearly">Half Yearly</option>
-                            <option value="Yearly">Yearly</option>
+                            <option value="daily">Daily</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="half-yearly">Half Yearly</option>
+                            <option value="yearly">Yearly</option>
                         </select>
                         <div class="text-danger"
                             *ngIf="saveDepositSettings.get('interval')?.touched && saveDepositSettings.get('interval')?.invalid">

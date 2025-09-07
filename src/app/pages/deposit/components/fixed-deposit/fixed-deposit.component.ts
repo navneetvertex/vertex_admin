@@ -38,8 +38,9 @@ export class FixedDepositComponent implements OnInit {
         maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
         annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
         user: new FormControl('', [Validators.required]),
-        // indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
-        // direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
+        indirect_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
+        direct_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
+        franchise_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       });
       this.getRecrruingDeposits();
     }
