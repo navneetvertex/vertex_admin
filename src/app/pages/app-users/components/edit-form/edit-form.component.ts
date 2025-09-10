@@ -1,5 +1,5 @@
 import { formatDate } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -44,6 +44,11 @@ export class EditFormComponent implements OnInit {
     profileFormGroup: FormGroup;
 
     nominee_relation: any[] = ['Father', 'Mother', 'Brother', 'Sister', 'Wife', 'Husband', 'Son', 'Daughter']
+
+    @ViewChild('aadharFrontInput') aadharFrontInput!: ElementRef;
+    @ViewChild('aadharBackInput') aadharBackInput!: ElementRef;
+    @ViewChild('panImageInput') panImageInput!: ElementRef;
+    @ViewChild('disabilityImageInput') disabilityImageInput!: ElementRef;
 
     ngOnInit(): void {
        this.breadCrumbItems = [{ label: 'Members' }, { label: 'Edit Profile', active: true }];
@@ -669,6 +674,37 @@ export class EditFormComponent implements OnInit {
       console.log(`Selected ${type}:`);
     };
     img.src = base64;
+  }
+
+  changeImage(imageType: string) {
+    Swal.fire({
+      title: 'Change Image',
+      text: 'Are you sure you want to change this image?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Trigger the appropriate file input based on imageType
+        switch (imageType) {
+          case 'aadhar_front':
+            this.aadharFrontInput.nativeElement.click();
+            break;
+          case 'aadhar_back':
+            this.aadharBackInput.nativeElement.click();
+            break;
+          case 'pan_image':
+            this.panImageInput.nativeElement.click();
+            break;
+          case 'disability_image':
+            this.disabilityImageInput.nativeElement.click();
+            break;
+        }
+      }
+    });
   }
 
 }

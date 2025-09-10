@@ -29,6 +29,10 @@
                             <img *ngIf="selected_photo" src="{{selected_photo}}" alt="">
                         </div>
                         <input type="file" #selfPhotoInput style="display:none" (change)="onFileSelected($event, 'profile_image')" accept="image/*" />
+                        <input type="file" #aadharFrontInput style="display:none" accept="image/*"  (change)="onFileSelected($event, 'aadhar_front')" >
+                        <input type="file" #aadharBackInput style="display:none" accept="image/*"  (change)="onFileSelected($event, 'aadhar_back')" >
+                        <input type="file" #panImageInput style="display:none" accept="image/*"  (change)="onFileSelected($event, 'pan_image')" >
+                        <input type="file" #disabilityImageInput style="display:none" accept="image/*"  (change)="onFileSelected($event, 'disability_image')" >
                     </div>
                 </div>
                 <div class="col-lg-12" >
@@ -158,12 +162,22 @@
                         <div class="col-sm-2" *ngIf="!profileFormGroup.get('aadhar_front')?.value">
                             <input type="file"  id="aadhar_front" placeholder="Aadhar Front" class="form-control" (change)="onFileSelected($event, 'aadhar_front')" accept="image/*" >
                         </div>
-                        <button class="btn btn-sm btn-primary col-sm-1 me-2" *ngIf="profileFormGroup.get('aadhar_front')?.value" (click)="viewImage(profileFormGroup.get('aadhar_front')?.value, viewImageModal)" >
-                            <i class="mdi mdi-eye"></i> Aadhar Front
-                        </button>
-                        <button class="btn btn-sm btn-primary col-sm-1 me-2" *ngIf="profileFormGroup.get('aadhar_back')?.value" (click)="viewImage(profileFormGroup.get('aadhar_back')?.value, viewImageModal)" >
-                            <i class="mdi mdi-eye"></i> Aadhar Back
-                        </button>
+                        <div class="col-sm-2 d-flex flex-column gap-1" *ngIf="profileFormGroup.get('aadhar_front')?.value">
+                            <button class="btn btn-sm btn-primary" (click)="viewImage(profileFormGroup.get('aadhar_front')?.value, viewImageModal)" >
+                                <i class="mdi mdi-eye"></i> View Aadhar Front
+                            </button>
+                            <button class="btn btn-sm btn-warning" (click)="changeImage('aadhar_front')">
+                                <i class="mdi mdi-pencil"></i> Change
+                            </button>
+                        </div>
+                        <div class="col-sm-2 d-flex flex-column gap-1" *ngIf="profileFormGroup.get('aadhar_back')?.value">
+                            <button class="btn btn-sm btn-primary" (click)="viewImage(profileFormGroup.get('aadhar_back')?.value, viewImageModal)" >
+                                <i class="mdi mdi-eye"></i> View Aadhar Back
+                            </button>
+                            <button class="btn btn-sm btn-warning" (click)="changeImage('aadhar_back')">
+                                <i class="mdi mdi-pencil"></i> Change
+                            </button>
+                        </div>
                         <label for="pan_image" *ngIf="!profileFormGroup.get('aadhar_back')?.value" class="col-sm-1 col-form-label">Aadhar Back</label>
                         <div class="col-sm-2" *ngIf="!profileFormGroup.get('aadhar_back')?.value">
                             <input type="file" id="aadhar_back" placeholder="Aadhar Back" class="form-control" (change)="onFileSelected($event, 'aadhar_back')" accept="image/*" >
@@ -181,9 +195,14 @@
                         <div class="col-sm-2" *ngIf="!profileFormGroup.get('pan_image')?.value">
                             <input type="file" id="pan_image" placeholder="PAN Image" class="form-control"  (change)="onFileSelected($event, 'pan_image')" accept="image/*" >
                         </div>
-                        <button class="btn btn-sm btn-primary col-sm-1 me-2"  (click)="viewImage(profileFormGroup.get('pan_image')?.value, viewImageModal)" *ngIf="profileFormGroup.get('pan_image')?.value">
-                            <i class="mdi mdi-eye"></i> PAN Image
-                        </button>
+                        <div class="col-sm-2 d-flex flex-column gap-1" *ngIf="profileFormGroup.get('pan_image')?.value">
+                            <button class="btn btn-sm btn-primary" (click)="viewImage(profileFormGroup.get('pan_image')?.value, viewImageModal)">
+                                <i class="mdi mdi-eye"></i> View PAN Image
+                            </button>
+                            <button class="btn btn-sm btn-warning" (click)="changeImage('pan_image')">
+                                <i class="mdi mdi-pencil"></i> Change
+                            </button>
+                        </div>
                     </div>
 
                     <div class="row mb-4">
@@ -523,9 +542,14 @@
                         <div class="col-sm-2" *ngIf="profileFormGroup.get('is_divyang')?.value === true && !profileFormGroup.get('disability_image')?.value">
                             <input type="file" accept="image/*" id="disability_image" class="form-control" (change)="onFileSelected($event, 'disability_image')">
                         </div>
-                        <button class="btn btn-sm btn-primary col-sm-2 me-2"  (click)="viewImage(profileFormGroup.get('disability_image')?.value, viewImageModal)" *ngIf="profileFormGroup.get('disability_image')?.value">
-                            <i class="mdi mdi-eye"></i> Disability Certificate
-                        </button>
+                        <div class="col-sm-3 d-flex flex-column gap-1" *ngIf="profileFormGroup.get('disability_image')?.value">
+                            <button class="btn btn-sm btn-primary" (click)="viewImage(profileFormGroup.get('disability_image')?.value, viewImageModal)">
+                                <i class="mdi mdi-eye"></i> View Disability Certificate
+                            </button>
+                            <button class="btn btn-sm btn-warning" (click)="changeImage('disability_image')">
+                                <i class="mdi mdi-pencil"></i> Change
+                            </button>
+                        </div>
                     </div>
 
                     <div class="row mb-4">
