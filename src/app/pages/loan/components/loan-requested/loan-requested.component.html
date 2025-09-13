@@ -143,7 +143,7 @@
 
 <ng-template #loanModal role="document" let-modal>
     <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Approve/Reject Loan</h5>
+        <h5 class="modal-title" id="myModalLabel">Approved/Reject {{loanType}} Loan</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
             (click)="modal.dismiss('Cross click')"></button>
     </div>
@@ -374,23 +374,20 @@
 
             <div class="row mb-3" *ngIf="LoanTotal && loanType === 'Personal'">
                 <div class="col-md-2" *ngFor="let item of [
-                    {label:'Loan Period', value:LoanTotal['Loan Period']},
-                    {label:'Principal', value:'₹'+LoanTotal['Principal Amount']},
+                    {label:'Total Days', value:LoanTotal['Total Days']},
+                    {label:'Principal', value:'₹'+LoanTotal['Total Principal']},
                     {label:'Interest', value:'₹'+LoanTotal['Total Interest']},
-                    {label:'Total', value:'₹'+LoanTotal['Total Amount']},
-                    {label:'EMI', value:'₹'+LoanTotal['EMI Amount']},
-                    {label:'Expected EMI', value:'₹'+LoanTotal['Expected Total EMI']},
-                    {label:'Paid', value:'₹'+LoanTotal['Total Amount Paid']},
+                    {label:'Projected EMI', value:'₹'+LoanTotal['Projected Total EMI']},
                     {label:'Projected (Penalties)', value:'₹'+LoanTotal['Projected Total (with Penalties)']},
                     {label:'Penalty', value:'₹'+LoanTotal['Total Penalty']},
+                    {label:'Paid', value:'₹'+LoanTotal['Total Amount Paid']},
                     {label:'Remaining', value:'₹'+LoanTotal['Total Remaining Amount']},
                     {label:'Fully Paid', value:LoanTotal['Fully Paid Installments']},
                     {label:'Partially Paid', value:LoanTotal['Partially Paid Installments']},
                     {label:'Pending', value:LoanTotal['Pending Installments']},
-                    {label:'Paid Principal', value:'₹'+LoanTotal['Paid Principal']},
                     {label:'Paid Interest', value:'₹'+LoanTotal['Paid Interest']},
-                    {label:'Rem. Principal', value:'₹'+LoanTotal['Remaining Principal']},
-                    {label:'Rem. Interest', value:'₹'+LoanTotal['Remaining Interest']}
+                    {label:'Rem. Interest', value:'₹'+LoanTotal['Remaining Interest']},
+                    {label:'Outstanding', value:'₹'+LoanTotal['Outstanding']}
                 ]">
                     <div class="card card-body p-2 mb-2 text-center">
                         <small class="text-muted">{{item.label}}</small>
@@ -419,7 +416,7 @@
                                 <td>{{installment.Date}}</td>
                                 <td>₹{{installment['Principal O/S']}}</td>
                                 <td>₹{{installment.EMI}}</td>
-                                <td>₹{{installment.Penalty}} ({{installment['Penalty Days']}} Days)</td>
+                                <td>₹{{installment.Penalty}}</td>
                                 <td>₹{{installment.Interest}}</td>
                                 <td>₹{{installment.Principal}}</td>
                                 <td>₹{{installment.Balance}}</td>

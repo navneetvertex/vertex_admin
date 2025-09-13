@@ -50,9 +50,10 @@
                                                     <td>{{pins.card_number}}</td>
                                                     <td>
                                                         <span class="badge font-size-11 m-1" [ngClass]="{
-                                                            'badge-soft-success': pins.status,
-                                                            'badge-soft-danger': !pins.status
-                                                        }">{{pins.status ? 'Active' : 'InActive'}}</span>
+                                                            'badge-soft-warning': pins.assigned_on,
+                                                            'badge-soft-success': !pins.assigned_on && pins.status,
+                                                            'badge-soft-danger': !pins.assigned_on && !pins.status
+                                                        }">{{ pins.assigned_on ? 'Used' : (pins.status ? 'Active' : 'InActive') }}</span>
                                                     </td>
                                                     <td>{{pins.created_date | date}}</td>
                                                     <td>
