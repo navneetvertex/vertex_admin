@@ -66,11 +66,18 @@
                                                 <span *ngIf="user.annual_rate">{{ user.annual_rate }} %</span>
                                             </td>
                                             <td>₹{{ user.paidAmount | number: '1.2-2' }}</td>
-                                            <td>₹{{ user.pendingAmount | number: '1.2-2' }}</td>
-                                            <td>{{ user.notes }}</td>
-                                            <td>{{ user.created_date | date}}</td>
                                             <td>
-                                                <span class="badge font-size-11 m-1 rounded-pill badge-soft-{{ user.status === 'Requested' ? 'warning' : user.status === 'Confirmed' ? 'success' : 'danger' }} text-{{ user.status === 'Requested' ? 'warning' : user.status === 'Confirmed' ? 'success' : 'danger' }}">
+                                                ₹{{ user.pendingAmount | number: '1.2-2' }}
+                                            </td>
+                                            <td>{{ user.notes }}</td>
+                                            <td>
+                                                Requested: {{ user.created_date | date}} <br>
+                                                Approved: {{ user.approved_on ? (user.approved_on | date) : 'N/A' }}<br>
+                                                <span *ngIf="user.closure_requested_on">Closure Requested: {{ user.closure_requested_on | date }}</span><br>
+                                                <span *ngIf="user.completed_on">Completed: {{ user.completed_on | date }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge font-size-11 m-1 rounded-pill badge-soft-{{ user.status === 'Requested' ? 'warning' : user.status === 'Approved' ? 'success' : user.status === 'Completed' ? 'primary' : user.status === 'Close-Requested' ? 'danger' : 'secondary' }} text-{{ user.status === 'Requested' ? 'warning' : user.status === 'Approved' ? 'success' : user.status === 'Completed' ? 'primary' : user.status === 'Close-Requested' ? 'danger' : 'secondary' }}">
                                                     {{ user.status }}
                                                 </span>
                                             </td>
@@ -83,6 +90,11 @@
                                                 <li class="list-inline-item px-2" *ngIf="user.status === 'Requested'">
                                                     <a class="cursor-pointer" (click)="openRDSettingFn(editSettingModal, user)" tooltip="Profile">
                                                     <i class="bx bx-cog bx-spin"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item px-2" *ngIf="user.status === 'Close-Requested'">
+                                                    <a class="cursor-pointer" (click)="openCloseRDModal(closeRDModal, user)" tooltip="Close RD">
+                                                    <i class="bx bx-x"></i>
                                                     </a>
                                                 </li>
                                             </ul>
@@ -150,33 +162,29 @@
                         </div>
                     </div>
 
-                    
-                    <div class="mb-3 col-lg-6">
-                        <label class="col-form-label">Penality Rate(per day)</label>
-                        <input type="number" class="form-control" placeholder="Penality Rate" formControlName="penality_rate">
-                        <div class="text-danger"
-                            *ngIf="editDepositSettings.get('penality_rate')?.touched && editDepositSettings.get('penality_rate')?.invalid">
-                            <small *ngIf="editDepositSettings.get('penality_rate')?.errors?.['required']">Amount is
-                                required.</small>
-                            <small *ngIf="editDepositSettings.get('penality_rate')?.errors?.['pattern']">Enter a valid number
-                                (e.g.100, 2500.50).</small>
-                        </div>
-                    </div>
-
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label">Duration</label>
                         <select class="form-control select2" formControlName="duration">
                             <option value="" disabled>Select Duration</option>
                             <option value="0.5">Half Year</option>
                             <option value="1">1 Year</option>
+                            <option value="1.5">1.5 Year</option>
                             <option value="2">2 Year</option>
+                            <option value="2.5">2.5 Year</option>
                             <option value="3">3 Year</option>
+                            <option value="3.5">3.5 Year</option>
                             <option value="4">4 Year</option>
+                            <option value="4.5">4.5 Year</option>
                             <option value="5">5 Year</option>
+                            <option value="5.5">5.5 Year</option>
                             <option value="6">6 Year</option>
+                            <option value="6.5">6.5 Year</option>
                             <option value="7">7 Year</option>
+                            <option value="7.5">7.5 Year</option>
                             <option value="8">8 Year</option>
+                            <option value="8.5">8.5 Year</option>
                             <option value="9">9 Year</option>
+                            <option value="9.5">9.5 Year</option>
                             <option value="10">10 Year</option>
                         </select>
                         <div class="text-danger"
@@ -191,9 +199,9 @@
                             <option value="" disabled>Select Interval</option>
                             <option value="daily">Daily</option>
                             <option value="monthly">Monthly</option>
-                            <option value="quarterly">Quarterly</option>
+                            <!-- <option value="quarterly">Quarterly</option>
                             <option value="half-yearly">Half Yearly</option>
-                            <option value="yearly">Yearly</option>
+                            <option value="yearly">Yearly</option> -->
                         </select>
                         <div class="text-danger"
                             *ngIf="editDepositSettings.get('interval')?.touched && editDepositSettings.get('interval')?.invalid">
@@ -214,3 +222,203 @@
     </form>
 
 </ng-template>
+
+
+
+<ng-template #closeRDModal role="document" let-modal>
+    <div class="modal-header">
+        <div class="d-flex align-items-center">
+            <h5 class="modal-title me-3" id="closeRDModalLabel">Process RD Closure</h5>
+            <span class="badge" [ngClass]="{
+                'badge-soft-danger': selectedUser.status === 'Close-Requested',
+                'badge-soft-success': selectedUser.status === 'Completed'
+            }">
+                {{ selectedUser.status }}
+            </span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="closeRDFormGroup">
+        <div class="modal-body">
+            <div class="row">
+                <!-- Account Summary -->
+                <div class="col-lg-12 mb-4">
+                    <div class="card border">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">Account Summary</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Total Paid</p>
+                                        <h5 class="text-success">₹{{depositSummary?.paid || 0}}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Total Interest</p>
+                                        <h5 class="text-primary">₹{{depositSummary?.interest || 0}}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Net Amount</p>
+                                        <h5 class="text-info">₹{{depositSummary?.total || 0}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Closure Details (if any) -->
+                <div class="col-lg-12 mb-4" *ngIf="selectedUser.closure_requested_on">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning-subtle">
+                            <h6 class="card-title mb-0">
+                                <i class="mdi mdi-information-outline me-2"></i>
+                                Existing Closure Request Details
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Requested On</p>
+                                        <h6 class="mb-0">{{ selectedUser.closure_requested_on | date:'mediumDate' }}</h6>
+                                        <small class="text-muted">{{ selectedUser.closure_requested_on | date:'shortTime' }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Penalty Amount</p>
+                                        <h6 class="mb-0 text-warning">₹{{ selectedUser.penalty_amount || 0 }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Final Amount</p>
+                                        <h6 class="mb-0 text-success">₹{{ selectedUser.final_amount || 0 }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Status</p>
+                                        <span class="badge" 
+                                              [ngClass]="{
+                                                'badge-soft-danger': selectedUser.status === 'Close-Requested',
+                                                'badge-soft-success': selectedUser.status === 'Completed'
+                                              }">
+                                            {{ selectedUser.status }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3" *ngIf="selectedUser.closure_notes">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <strong>Closure Notes:</strong> {{ selectedUser.closure_notes }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Penalty Section -->
+                <div class="col-lg-12">
+                    <div class="alert" [ngClass]="depositSummary?.paid < selectedUser.amount ? 'alert-danger' : 'alert-warning'" role="alert">
+                        <i class="mdi mdi-alert-circle-outline me-2"></i>
+                        <strong>Closure Processing:</strong>
+                        <span *ngIf="depositSummary?.paid < selectedUser.amount">
+                            This RD has an outstanding amount of ₹{{ selectedUser.pendingAmount || 0 }}.
+                            Consider applying an appropriate penalty for early closure.
+                        </span>
+                        <span *ngIf="depositSummary?.paid >= selectedUser.amount">
+                            This RD has no outstanding amounts. Review the closure request details below.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mb-3 col-lg-6">
+                    <label for="penalty-amount" class="col-form-label">Penalty Amount</label>
+                    <input type="number" class="form-control" id="penalty-amount" formControlName="penalty_amount"
+                        placeholder="Enter penalty amount" min="0" step="0.01">
+                    <div *ngIf="closeRDFormGroup.get('penalty_amount')?.touched && closeRDFormGroup.get('penalty_amount')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="closeRDFormGroup.get('penalty_amount')?.errors?.['min']">Penalty amount cannot be negative</small>
+                    </div>
+                </div>
+
+                <div class="mb-3 col-lg-6">
+                    <label for="final-amount" class="col-form-label">Final Settlement Amount</label>
+                    <input type="number" class="form-control" id="final-amount" formControlName="final_amount"
+                        placeholder="Final amount" readonly>
+                    <small class="text-muted">Total Paid + Interest - Penalty</small>
+                </div>
+
+                <!-- Calculation Summary -->
+                <div class="col-lg-12 mb-3">
+                    <div class="card border-info">
+                        <div class="card-header bg-info-subtle">
+                            <h6 class="card-title mb-0">
+                                <i class="mdi mdi-calculator me-2"></i>
+                                Settlement Calculation
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="border-end">
+                                        <p class="text-muted mb-1">Total Paid</p>
+                                        <h5 class="text-success">₹{{ depositSummary?.paid || 0 }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border-end">
+                                        <p class="text-muted mb-1">+ Interest</p>
+                                        <h5 class="text-primary">₹{{ depositSummary?.interest || 0 }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div>
+                                        <p class="text-muted mb-1">- Penalty</p>
+                                        <h5 class="text-warning">-₹{{ closeRDFormGroup.get('penalty_amount')?.value || 0 }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h4 class="text-info mb-0">
+                                        <i class="mdi mdi-equal me-2"></i>
+                                        Final Amount: ₹{{ closeRDFormGroup.get('final_amount')?.value || 0 }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3 col-lg-12">
+                    <label for="closure-notes" class="col-form-label">Closure Notes</label>
+                    <textarea class="form-control" id="closure-notes" rows="3" formControlName="notes"
+                        placeholder="Enter any notes for closure request"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Cancel</button>
+            <button type="submit" class="btn btn-danger waves-effect waves-light"
+                [disabled]="closeRDFormGroup.invalid" (click)="submitCloseRDRequest()">
+                <i class="mdi mdi-lock-check me-1"></i>Submit Closure Request
+            </button>
+        </div>
+    </form>
+
+</ng-template>
+

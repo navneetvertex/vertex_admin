@@ -1,7 +1,14 @@
 <div class="container-fluid">
     <app-page-title title="Fixed Deposit" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
-    <div role="alert" *ngIf="isUserRequested" class="alert alert-warning ng-star-inserted">User have requested for open an Fixed Deposit. </div>
+    <div role="alert" *ngIf="isUserRequested" class="alert alert-warning ng-star-inserted">
+        <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+                <strong>User Request:</strong> User have requested for opening a Fixed Deposit Account.
+            </div>
+            <span class="badge badge-soft-warning ms-2">Requested</span>
+        </div>
+    </div>
 
     <div  class="row" *ngIf="profile">
         <div  class="col-lg-12">
@@ -18,6 +25,15 @@
                                         <p  class="mb-2">Welcome to Fixed Deposit</p>
                                         <h5  class="mb-1">{{profile.name}}</h5>
                                         <p  class="mb-0">{{profile.account_number}}</p>
+                                        <span *ngIf="selectedSetting" class="badge badge-pill mt-2" 
+                                              [ngClass]="{
+                                                'badge-soft-warning': selectedSetting.status === 'Requested',
+                                                'badge-soft-success': selectedSetting.status === 'Approved',
+                                                'badge-soft-primary': selectedSetting.status === 'Completed',
+                                                'badge-soft-danger': selectedSetting.status === 'Close-Requested'
+                                              }">
+                                            {{ selectedSetting.status }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -56,6 +72,27 @@
                                         class="btn btn-secondary dropdown-toggle">
                                         <i class="mdi mdi-account-cash-outline align-middle me-1"></i> Settlement
                                     </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item" href="javascript:void(0);" *ngIf="canRequestClosure" (click)="requestCloseFD()">
+                                            <i class="mdi mdi-lock-check me-2"></i>Request Closure
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);" *ngIf="selectedSetting && selectedSetting.status === 'Close-Requested'" (click)="openCloseFDModal(closeFDModal)">
+                                            <i class="mdi mdi-check-circle me-2"></i>Complete Closure
+                                        </a>
+                                        <div class="dropdown-divider" *ngIf="canRequestClosure || (selectedSetting && selectedSetting.status === 'Close-Requested')"></div>
+                                        <h6 class="dropdown-header">Current Status</h6>
+                                        <span class="dropdown-item-text">
+                                            <span class="badge" 
+                                                  [ngClass]="{
+                                                    'badge-soft-warning': selectedSetting?.status === 'Requested',
+                                                    'badge-soft-success': selectedSetting?.status === 'Approved',
+                                                    'badge-soft-primary': selectedSetting?.status === 'Completed',
+                                                    'badge-soft-danger': selectedSetting?.status === 'Close-Requested'
+                                                  }">
+                                                {{ selectedSetting?.status || 'No Status' }}
+                                            </span>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div  (click)="openModal(settingModal)" class="dropdown float-end"><button
                                          type="button" data-toggle="dropdown"
@@ -157,6 +194,122 @@
         </div>
     </div>
 
+    <!-- FD Closure Details Section -->
+    <div class="row" *ngIf="depositSettings.length > 0 && selectedSetting && (selectedSetting.status === 'Close-Requested' || selectedSetting.status === 'Completed')">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title mb-0 flex-grow-1">
+                            <i class="mdi mdi-information-outline me-2"></i>
+                            FD Closure Details
+                        </h5>
+                        <span class="badge" 
+                              [ngClass]="{
+                                'badge-soft-danger': selectedSetting.status === 'Close-Requested',
+                                'badge-soft-success': selectedSetting.status === 'Completed'
+                              }">
+                            {{ selectedSetting.status === 'Close-Requested' ? 'Closure Requested' : 'Account Closed' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Closure Request Date -->
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-primary-subtle text-primary rounded-circle font-size-20">
+                                        <i class="mdi mdi-calendar-clock"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Closure Requested</p>
+                                <h6 class="mb-0">{{ selectedSetting.closure_requested_on ? (selectedSetting.closure_requested_on | date:'mediumDate') : 'N/A' }}</h6>
+                                <small class="text-muted">{{ selectedSetting.closure_requested_on ? (selectedSetting.closure_requested_on | date:'shortTime') : '' }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Penalty Amount -->
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-warning-subtle text-warning rounded-circle font-size-20">
+                                        <i class="mdi mdi-cash-minus"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Penalty Amount</p>
+                                <h6 class="mb-0 text-warning">₹{{ selectedSetting.penalty_amount || 0 }}</h6>
+                                <small class="text-muted">Early closure fee</small>
+                            </div>
+                        </div>
+
+                        <!-- Final Settlement Amount -->
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-success-subtle text-success rounded-circle font-size-20">
+                                        <i class="mdi mdi-cash-check"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Final Settlement</p>
+                                <h6 class="mb-0 text-success">₹{{ selectedSetting.final_amount || 0 }}</h6>
+                                <small class="text-muted">Amount to receive</small>
+                            </div>
+                        </div>
+
+                        <!-- Completion Date (if completed) -->
+                        <div class="col-md-3" *ngIf="selectedSetting.status === 'Completed'">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-info-subtle text-info rounded-circle font-size-20">
+                                        <i class="mdi mdi-check-circle"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Completed On</p>
+                                <h6 class="mb-0">{{ selectedSetting.completed_on ? (selectedSetting.completed_on | date:'mediumDate') : 'N/A' }}</h6>
+                                <small class="text-muted">{{ selectedSetting.completed_on ? (selectedSetting.completed_on | date:'shortTime') : '' }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Closure Notes -->
+                    <div class="row mt-4" *ngIf="selectedSetting.closure_notes">
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                <h6 class="alert-heading">
+                                    <i class="mdi mdi-note-text-outline me-2"></i>
+                                    Closure Notes
+                                </h6>
+                                <p class="mb-0">{{ selectedSetting.closure_notes }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert" 
+                                 [ngClass]="{
+                                   'alert-warning': selectedSetting.status === 'Close-Requested',
+                                   'alert-success': selectedSetting.status === 'Completed'
+                                 }" 
+                                 role="alert">
+                                <div *ngIf="selectedSetting.status === 'Close-Requested'">
+                                    <i class="mdi mdi-clock-outline me-2"></i>
+                                    <strong>Closure Request Pending:</strong> The FD closure request has been submitted and is pending admin approval. The final settlement amount will be processed once approved.
+                                </div>
+                                <div *ngIf="selectedSetting.status === 'Completed'">
+                                    <i class="mdi mdi-check-circle me-2"></i>
+                                    <strong>Account Closed:</strong> The FD account has been successfully closed. The final settlement amount has been processed.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div  class="row">
         <div  class="col-lg-12">
             <div  class="card">
@@ -165,6 +318,12 @@
                         <h5 class="mb-0 card-title flex-grow-1">Deposit History</h5>
                         <div class="flex-shrink-0 d-flex gap-1">
                             <a href="javascript:void(0);" class="btn btn-primary" *ngIf="depositSettings.length > 0 && depositList.length == 0"  (click)="openModal(addDepositModal)" >Add Deposit</a>
+                            <a href="javascript:void(0);"  *ngIf="canRequestClosure" 
+                               class="btn btn-warning" 
+                               (click)="requestCloseFD()" >
+                                <i class="mdi mdi-lock-check me-1"></i>
+                                Request FD Closure
+                            </a>
                             <a href="javascript:void(0);" *ngIf="depositList.length !== 0" class="btn btn-light"><i class="mdi mdi-refresh"></i></a>
                         </div>
                     </div>
@@ -650,6 +809,80 @@
                 (click)="modal.close('Close click')">Close</button>
             <button type="submit" class="btn btn-primary waves-effect waves-light"
                 [disabled]="editAddDepositFormGroup.invalid" (click)="editDeposit()">Edit</button>
+        </div>
+    </form>
+</ng-template>
+
+<!-- FD Closure Modal -->
+<ng-template #closeFDModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Complete FD Closure</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="closeFDFormGroup" (ngSubmit)="submitCloseFDRequest()">
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h6><i class="mdi mdi-information-outline me-2"></i>Closure Summary</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Principal Amount:</strong><br>
+                                ₹{{ selectedSetting?.amount || 0 }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Maturity Amount:</strong><br>
+                                ₹{{ selectedSetting?.maturity_amount || 0 }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Interest Earned:</strong><br>
+                                ₹{{ (selectedSetting?.maturity_amount || 0) - (selectedSetting?.amount || 0) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Penalty Amount (₹)</label>
+                        <input type="number" class="form-control" placeholder="Enter penalty amount"
+                            formControlName="penalty_amount" min="0">
+                        <small class="text-muted">Early closure penalty (if applicable)</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Final Settlement Amount (₹)</label>
+                        <input type="number" class="form-control" placeholder="Final amount"
+                            formControlName="final_amount" readonly>
+                        <small class="text-muted">Amount to be paid to member</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">Closure Notes</label>
+                        <textarea class="form-control" rows="3" placeholder="Enter closure notes"
+                            formControlName="notes"></textarea>
+                        <small class="text-muted">Optional notes about the closure</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Cancel</button>
+            <button type="submit" class="btn btn-success waves-effect waves-light"
+                [disabled]="closeFDFormGroup.invalid">
+                <i class="mdi mdi-check-circle me-1"></i>
+                Complete Closure
+            </button>
         </div>
     </form>
 </ng-template>

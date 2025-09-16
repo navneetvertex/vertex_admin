@@ -18,6 +18,15 @@
                                         <p  class="mb-2">Welcome to Recurring Deposit</p>
                                         <h5  class="mb-1">{{profile.name}}</h5>
                                         <p  class="mb-0">{{profile.account_number}}</p>
+                                        <span *ngIf="selectedSetting" class="badge badge-pill mt-2" 
+                                              [ngClass]="{
+                                                'badge-soft-warning': selectedSetting.status === 'Requested',
+                                                'badge-soft-success': selectedSetting.status === 'Approved',
+                                                'badge-soft-primary': selectedSetting.status === 'Completed',
+                                                'badge-soft-danger': selectedSetting.status === 'Close-Requested'
+                                              }">
+                                            {{ selectedSetting.status }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -50,13 +59,13 @@
                         </div>
                         <div  class="col-lg-4 d-none d-lg-block" *ngIf="canCreateSettings">
                             <div class="clearfix mt-4 mt-lg-0">
-                                <div class="dropdown float-end ms-2" (click)="openModal(settlementModal)" *ngIf="depositList.length > 0">
+                                <!-- <div class="dropdown float-end ms-2" (click)="openModal(settlementModal)" *ngIf="depositList.length > 0">
                                     <button type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
                                         class="btn btn-secondary dropdown-toggle">
                                         <i class="mdi mdi-account-cash-outline align-middle me-1"></i> Settlement
                                     </button>
-                                </div>
+                                </div> -->
                                 <div class="dropdown float-end" (click)="openModal(settingModal)">
                                     <button type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
@@ -77,12 +86,27 @@
         <div class="col-lg-2 mb-3 ms-auto d-flex justify-content-end align-items-center gap-2">
             <select class="form-control w-auto" (change)="settingsChanged($event)">
                 <option *ngFor="let setting of depositSettingsList" [attr.value]="setting._id">
-                    {{setting.id}} - {{setting.amount}} / {{setting.interval}} ({{setting.annual_rate}}%)
+                    {{setting.id}} - {{setting.amount}} / {{setting.interval}} ({{setting.annual_rate}}%) 
+                    <span class="badge badge-pill" 
+                          [ngClass]="{
+                            'badge-soft-warning': setting.status === 'Requested',
+                            'badge-soft-success': setting.status === 'Approved',
+                            'badge-soft-primary': setting.status === 'Completed',
+                            'badge-soft-danger': setting.status === 'Close-Requested'
+                          }">
+                        {{ setting.status }}
+                    </span>
                 </option>
             </select>
-            <button class="btn btn-primary" *ngIf="depositList.length === 0"  (click)="openModal(editSettingModal)" >
-                <i class="bx bx-edit-alt"></i>
-            </button>
+            <div class="d-flex gap-1">
+                <button class="btn btn-primary" *ngIf="depositList.length === 0"  (click)="openModal(editSettingModal)" >
+                    <i class="bx bx-edit-alt"></i>
+                </button>
+                <button class="btn btn-danger" *ngIf="selectedSetting?.status === 'Close-Requested'" (click)="openCloseRDModal(closeRDModal, selectedSetting)" >
+                    <i class="bx bx-x"></i>
+                    <span class="d-none d-sm-inline">Close RD</span>
+                </button>
+            </div>
         </div>
         <div class="col-xl-12">
             <div class="row">
@@ -150,6 +174,122 @@
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
                                         <i class="bx bxs-message-square-dots"></i>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RD Closure Details Section -->
+    <div class="row" *ngIf="selectedSetting && (selectedSetting.status === 'Close-Requested' || selectedSetting.status === 'Completed')">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title mb-0 flex-grow-1">
+                            <i class="mdi mdi-information-outline me-2"></i>
+                            RD Closure Details
+                        </h5>
+                        <span class="badge" 
+                              [ngClass]="{
+                                'badge-soft-danger': selectedSetting.status === 'Close-Requested',
+                                'badge-soft-success': selectedSetting.status === 'Completed'
+                              }">
+                            {{ selectedSetting.status === 'Close-Requested' ? 'Closure Requested' : 'Account Closed' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Closure Request Date -->
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-primary-subtle text-primary rounded-circle font-size-20">
+                                        <i class="mdi mdi-calendar-clock"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Closure Requested</p>
+                                <h6 class="mb-0">{{ selectedSetting.closure_requested_on ? (selectedSetting.closure_requested_on | date:'mediumDate') : 'N/A' }}</h6>
+                                <small class="text-muted">{{ selectedSetting.closure_requested_on ? (selectedSetting.closure_requested_on | date:'shortTime') : '' }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Penalty Amount -->
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-warning-subtle text-warning rounded-circle font-size-20">
+                                        <i class="mdi mdi-cash-minus"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Penalty Amount</p>
+                                <h6 class="mb-0 text-warning">₹{{ selectedSetting.penalty_amount || 0 }}</h6>
+                                <small class="text-muted">Early closure fee</small>
+                            </div>
+                        </div>
+
+                        <!-- Final Settlement Amount -->
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-success-subtle text-success rounded-circle font-size-20">
+                                        <i class="mdi mdi-cash-check"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Final Settlement</p>
+                                <h6 class="mb-0 text-success">₹{{ selectedSetting.final_amount || 0 }}</h6>
+                                <small class="text-muted">Amount to receive</small>
+                            </div>
+                        </div>
+
+                        <!-- Completion Date (if completed) -->
+                        <div class="col-md-3" *ngIf="selectedSetting.status === 'Completed'">
+                            <div class="text-center">
+                                <div class="avatar-sm mx-auto mb-3">
+                                    <div class="avatar-title bg-info-subtle text-info rounded-circle font-size-20">
+                                        <i class="mdi mdi-check-circle"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-1">Completed On</p>
+                                <h6 class="mb-0">{{ selectedSetting.completed_on ? (selectedSetting.completed_on | date:'mediumDate') : 'N/A' }}</h6>
+                                <small class="text-muted">{{ selectedSetting.completed_on ? (selectedSetting.completed_on | date:'shortTime') : '' }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Closure Notes -->
+                    <div class="row mt-4" *ngIf="selectedSetting.closure_notes">
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                <h6 class="alert-heading">
+                                    <i class="mdi mdi-note-text-outline me-2"></i>
+                                    Closure Notes
+                                </h6>
+                                <p class="mb-0">{{ selectedSetting.closure_notes }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert" 
+                                 [ngClass]="{
+                                   'alert-warning': selectedSetting.status === 'Close-Requested',
+                                   'alert-success': selectedSetting.status === 'Completed'
+                                 }" 
+                                 role="alert">
+                                <div *ngIf="selectedSetting.status === 'Close-Requested'">
+                                    <i class="mdi mdi-clock-outline me-2"></i>
+                                    <strong>Closure Request Pending:</strong> This RD closure request is pending admin approval. The member has requested to close their account.
+                                </div>
+                                <div *ngIf="selectedSetting.status === 'Completed'">
+                                    <i class="mdi mdi-check-circle me-2"></i>
+                                    <strong>Account Closed:</strong> This RD account has been successfully closed. The final settlement amount has been processed.
                                 </div>
                             </div>
                         </div>
@@ -725,6 +865,203 @@
                 (click)="modal.close('Close click')">Close</button>
             <button type="submit" class="btn btn-primary waves-effect waves-light"
                 [disabled]="editDepositFormGroup.invalid" (click)="editDeposit()" >Edit</button>
+        </div>
+    </form>
+
+</ng-template>
+
+<ng-template #closeRDModal role="document" let-modal>
+    <div class="modal-header">
+        <div class="d-flex align-items-center">
+            <h5 class="modal-title me-3" id="closeRDModalLabel">Process RD Closure</h5>
+            <span class="badge" [ngClass]="{
+                'badge-soft-danger': selectedUser.status === 'Close-Requested',
+                'badge-soft-success': selectedUser.status === 'Completed'
+            }">
+                {{ selectedUser.status }}
+            </span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="closeRDFormGroup">
+        <div class="modal-body">
+            <div class="row">
+                <!-- Account Summary -->
+                <div class="col-lg-12 mb-4">
+                    <div class="card border">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">Account Summary</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Total Paid</p>
+                                        <h5 class="text-success">₹{{depositSummary?.paid || 0}}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Total Interest</p>
+                                        <h5 class="text-primary">₹{{depositSummary?.interest || 0}}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Net Amount</p>
+                                        <h5 class="text-info">₹{{depositSummary?.total || 0}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Closure Details (if any) -->
+                <div class="col-lg-12 mb-4" *ngIf="selectedUser.closure_requested_on">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning-subtle">
+                            <h6 class="card-title mb-0">
+                                <i class="mdi mdi-information-outline me-2"></i>
+                                Existing Closure Request Details
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Requested On</p>
+                                        <h6 class="mb-0">{{ selectedUser.closure_requested_on | date:'mediumDate' }}</h6>
+                                        <small class="text-muted">{{ selectedUser.closure_requested_on | date:'shortTime' }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Penalty Amount</p>
+                                        <h6 class="mb-0 text-warning">₹{{ selectedUser.penalty_amount || 0 }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Final Amount</p>
+                                        <h6 class="mb-0 text-success">₹{{ selectedUser.final_amount || 0 }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">Status</p>
+                                        <span class="badge"
+                                              [ngClass]="{
+                                                'badge-soft-danger': selectedUser.status === 'Close-Requested',
+                                                'badge-soft-success': selectedUser.status === 'Completed'
+                                              }">
+                                            {{ selectedUser.status }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3" *ngIf="selectedUser.closure_notes">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <strong>Closure Notes:</strong> {{ selectedUser.closure_notes }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Penalty Section -->
+                <div class="col-lg-12">
+                    <div class="alert" [ngClass]="depositSummary?.paid < selectedUser.amount ? 'alert-danger' : 'alert-warning'" role="alert">
+                        <i class="mdi mdi-alert-circle-outline me-2"></i>
+                        <strong>Closure Processing:</strong>
+                        <span *ngIf="depositSummary?.paid < selectedUser.amount">
+                            This RD has an outstanding amount of ₹{{ selectedUser.pendingAmount || 0 }}.
+                            Consider applying an appropriate penalty for early closure.
+                        </span>
+                        <span *ngIf="depositSummary?.paid >= selectedUser.amount">
+                            This RD has no outstanding amounts. Review the closure request details below.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mb-3 col-lg-6">
+                    <label for="penalty-amount" class="col-form-label">Penalty Amount</label>
+                    <input type="number" class="form-control" id="penalty-amount" formControlName="penalty_amount"
+                        placeholder="Enter penalty amount" min="0" step="0.01">
+                    <div *ngIf="closeRDFormGroup.get('penalty_amount')?.touched && closeRDFormGroup.get('penalty_amount')?.invalid"
+                        class="text-danger">
+                        <small *ngIf="closeRDFormGroup.get('penalty_amount')?.errors?.['min']">Penalty amount cannot be negative</small>
+                    </div>
+                </div>
+
+                <div class="mb-3 col-lg-6">
+                    <label for="final-amount" class="col-form-label">Final Settlement Amount</label>
+                    <input type="number" class="form-control" id="final-amount" formControlName="final_amount"
+                        placeholder="Final amount" readonly>
+                    <small class="text-muted">Total Paid + Interest - Penalty</small>
+                </div>
+
+                <!-- Calculation Summary -->
+                <div class="col-lg-12 mb-3">
+                    <div class="card border-info">
+                        <div class="card-header bg-info-subtle">
+                            <h6 class="card-title mb-0">
+                                <i class="mdi mdi-calculator me-2"></i>
+                                Settlement Calculation
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="border-end">
+                                        <p class="text-muted mb-1">Total Paid</p>
+                                        <h5 class="text-success">₹{{ depositSummary?.paid || 0 }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border-end">
+                                        <p class="text-muted mb-1">+ Interest</p>
+                                        <h5 class="text-primary">₹{{ depositSummary?.interest || 0 }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div>
+                                        <p class="text-muted mb-1">- Penalty</p>
+                                        <h5 class="text-warning">-₹{{ closeRDFormGroup.get('penalty_amount')?.value || 0 }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <h4 class="text-info mb-0">
+                                        <i class="mdi mdi-equal me-2"></i>
+                                        Final Amount: ₹{{ closeRDFormGroup.get('final_amount')?.value || 0 }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3 col-lg-12">
+                    <label for="closure-notes" class="col-form-label">Closure Notes</label>
+                    <textarea class="form-control" id="closure-notes" rows="3" formControlName="notes"
+                        placeholder="Enter any notes for closure request"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+                (click)="modal.close('Close click')">Cancel</button>
+            <button type="submit" class="btn btn-danger waves-effect waves-light"
+                [disabled]="closeRDFormGroup.invalid" (click)="submitCloseRDRequest()">
+                <i class="mdi mdi-lock-check me-1"></i>Submit Closure Request
+            </button>
         </div>
     </form>
 

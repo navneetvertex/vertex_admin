@@ -22,7 +22,10 @@ export class FixedDepositComponent implements OnInit {
     pageSize: number = 10;
     searchFormGroup: FormGroup ;
     editSettingFormGroup: FormGroup;
-    statusList: any[] = ['Requested', 'Confirmed', 'Closed']
+    closeFDFormGroup: FormGroup;
+    statusList: any[] = ['Requested', 'Approved', 'Close-Requested', 'Completed']
+    selectedUser: any = null;
+    depositSummary: any = null;
   
     ngOnInit(): void {
       this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Recurring Deposit List', active: true }];
@@ -42,6 +45,16 @@ export class FixedDepositComponent implements OnInit {
         direct_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
         franchise_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       });
+      this.closeFDFormGroup = new FormGroup({
+        penalty_amount: new FormControl(0, [Validators.min(0)]),
+        final_amount: new FormControl({value: 0, disabled: true}),
+        notes: new FormControl('')
+      });
+      // Calculate final amount when penalty changes
+      this.closeFDFormGroup.get('penalty_amount')?.valueChanges.subscribe(value => {
+        this.calculateFinalAmount();
+      });
+
       this.getRecrruingDeposits();
     }
 
@@ -100,8 +113,7 @@ export class FixedDepositComponent implements OnInit {
     }
   
     openRDSettingFn(settingModal: any, user: any) {
-      this.editSettingFormGroup.patchValue(user)
-      this.editSettingFormGroup.patchValue({user: user._id})
+      this.editSettingFormGroup.patchValue(user);
       this.modalService.open(settingModal, { size: 'lg', centered: true });
     }
   
@@ -109,7 +121,7 @@ export class FixedDepositComponent implements OnInit {
       if (this.editSettingFormGroup.valid) {
         const payload = this.editSettingFormGroup.value;
         payload.maturity_amount  = (payload.amount + ((payload.amount * payload.annual_rate * payload.duration) / 100)).toFixed(2);
-        payload.status = 'Confirmed';
+        payload.status = 'Approved';
         console.log('Payload for editing deposit setting:', payload);
         this.depositService.editFDepositSettings(this.editSettingFormGroup.value).subscribe({
           next: (res) => {
@@ -131,6 +143,115 @@ export class FixedDepositComponent implements OnInit {
       }
     }
 
-  
+    openCloseFDModal(content: any, user: any) {
+      this.selectedUser = user;
+      // Fetch deposit summary for the selected user
+      this.getDepositSummary(user?.user);
+      this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
+    }
 
+    getDepositSummary(userId: string) {
+      // For fixed deposits, calculate summary based on the deposit settings
+      // Since fixed deposits are lump sum, we use the amount from settings
+      if (this.selectedUser) {
+        const totalPaid = this.selectedUser.amount || 0;
+        const annualRate = this.selectedUser.annual_rate || 0;
+        const duration = this.selectedUser.duration || 0;
+        
+        // Calculate interest: (Principal * Rate * Time) / 100
+        const totalInterest = (totalPaid * annualRate * duration) / 100;
+        
+        this.depositSummary = {
+          paid: totalPaid,
+          interest: totalInterest,
+          total: totalPaid + totalInterest
+        };
+        this.calculateFinalAmount();
+      } else {
+        this.depositSummary = { paid: 0, interest: 0, total: 0 };
+        this.calculateFinalAmount();
+      }
+    }
+
+    calculateFinalAmount() {
+      const penalty = this.closeFDFormGroup.get('penalty_amount')?.value || 0;
+      const totalPaid = this.depositSummary?.paid || 0;
+      const totalInterest = this.depositSummary?.interest || 0;
+      const finalAmount = (totalPaid + totalInterest) - penalty;
+
+      this.closeFDFormGroup.patchValue({
+        final_amount: Math.max(0, finalAmount) // Ensure final amount is not negative
+      });
+    }
+
+    submitCloseFDRequest() {
+      // Validate that FD is in Close-Requested status
+      if (this.selectedUser.status !== 'Close-Requested') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Status',
+          text: 'This FD must be in "Close-Requested" status to process closure. Please wait for member to request closure first.'
+        });
+        return;
+      }
+
+      if (this.closeFDFormGroup.valid) {
+        const formData = this.closeFDFormGroup.value;
+
+        Swal.fire({
+          title: "Confirm FD Closure",
+          text: `Are you sure you want to process this FD closure with penalty amount ₹${formData.penalty_amount}? This will mark the account as completed.`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#dc3545",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, Process Closure"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const payload = {
+              _id: this.selectedUser._id,
+              status: 'Completed',
+              penalty_amount: formData.penalty_amount,
+              final_amount: this.closeFDFormGroup.get('final_amount')?.value,
+              closure_notes: formData.notes
+            };
+
+            this.depositService.editFDepositSettings(payload).subscribe((res: any) => {
+              if (res && res.status === 'success') {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'FD Closure Processed',
+                  text: 'The FD closure has been processed successfully. The final settlement amount has been recorded.',
+                  confirmButtonText: 'OK'
+                });
+                this.closeFDFormGroup.reset();
+                this.modalService.dismissAll();
+                this.getRecrruingDeposits(); // Refresh the settings
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Failed to process FD closure'
+                });
+              }
+            }, error => {
+              console.error('Error processing FD closure:', error);
+              let errorMessage = 'Failed to process FD closure. Please try again.';
+
+              if (error.error && error.error.message) {
+                errorMessage = error.error.message;
+              }
+
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage
+              });
+            });
+          }
+        });
+      } else {
+        this.closeFDFormGroup.markAllAsTouched();
+      }
+    }
 }

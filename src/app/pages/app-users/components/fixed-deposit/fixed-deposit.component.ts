@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { DepositService } from 'src/app/core/services/deposit.service';
 import { SettingsService } from 'src/app/core/services/settings.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-fixed-deposit',
@@ -31,6 +32,7 @@ export class FixedDepositComponent implements OnInit {
   @ViewChild('editSettingModal') editSettingModal: TemplateRef<any>;
   editSettingFormGroup: FormGroup;
   addDepositFormGroup: FormGroup;
+  closeFDFormGroup: FormGroup;
   profile: any = {};
   editAddDepositFormGroup: FormGroup;
   user_id: string;
@@ -39,6 +41,8 @@ export class FixedDepositComponent implements OnInit {
   isUserRequested: boolean = false;
   depositList: any[] = [];
   fd_rate: number = 0;
+  canMakeDeposits: boolean = false;
+  canRequestClosure: boolean = false;
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Member' }, { label: 'Fixed Deposit', active: true }];
@@ -80,6 +84,17 @@ export class FixedDepositComponent implements OnInit {
       _id: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
+
+    this.closeFDFormGroup = new FormGroup({
+      penalty_amount: new FormControl(0, [Validators.min(0)]),
+      final_amount: new FormControl({value: 0, disabled: true}),
+      notes: new FormControl('')
+    });
+
+    // Calculate final amount when penalty changes
+    this.closeFDFormGroup.get('penalty_amount')?.valueChanges.subscribe(value => {
+      this.calculateFinalAmount();
+    });
 
     this.settingsService.getGeneralSettings$().subscribe(settings => {
       if (settings) {
@@ -130,6 +145,17 @@ export class FixedDepositComponent implements OnInit {
         if (this.depositSettings.length > 0) {
           this.selectedSetting = this.depositSettings[0];
           this.isUserRequested = this.selectedSetting.status === 'Requested';
+
+          // Check if user can make new deposits (only for Approved status)
+          this.canMakeDeposits = this.depositSettings.some(setting =>
+            setting.status === 'Approved'
+          );
+
+          // Check if user can request closure (only for Approved status)
+          this.canRequestClosure = this.depositSettings.some(setting =>
+            setting.status === 'Approved'
+          );
+
           if(this.isUserRequested) {
              this.editSettingFormGroup.patchValue({annual_rate: this.fd_rate});
               this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
@@ -139,7 +165,7 @@ export class FixedDepositComponent implements OnInit {
               tot_paid_amt: this.selectedSetting.amount,
               transaction_id: this.generateUniqueId()
           });
-          
+
           this.getDeposits(this.selectedSetting._id);
         } else {
           this.selectedSetting = null;
@@ -276,6 +302,134 @@ export class FixedDepositComponent implements OnInit {
       });
     } else {
       this.toast.error('Please fill all required fields correctly');
+    }
+  }
+
+  requestCloseFD() {
+    // Calculate penalty if there are outstanding amounts
+    const hasOutstanding = this.selectedSetting.amount > 0; // For FD, check if principal is still there
+
+    let warningText = "You want to close this Fixed Deposit Account!";
+    if (hasOutstanding) {
+      warningText += `\n\nNote: This account has an outstanding principal amount of ₹${this.selectedSetting.amount}. Early closure may incur penalties.`;
+    }
+    warningText += "\n\nType 'CLOSE' to confirm.";
+
+    Swal.fire({
+      title: "Request FD Closure",
+      text: warningText,
+      icon: hasOutstanding ? "warning" : "question",
+      input: "text",
+      inputPlaceholder: "Type CLOSE to confirm",
+      inputValidator: (value) => {
+        if (value !== "CLOSE") {
+          return "You need to type 'CLOSE' to confirm!";
+        }
+      },
+      showCancelButton: true,
+      confirmButtonColor: hasOutstanding ? "#ff6b35" : "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, request closure!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Prepare payload with basic closure request
+        const payload = {
+          _id: this.selectedSetting._id,
+          status: 'Close-Requested',
+          penalty_amount: 0, // Will be set by admin
+          final_amount: this.selectedSetting.maturity_amount, // Maturity amount as final
+          closure_notes: hasOutstanding ?
+            `Admin requested closure with outstanding principal: ₹${this.selectedSetting.amount}` :
+            'Admin requested closure'
+        };
+
+        this.depositService.editFDepositSettings(payload).subscribe((res: any) => {
+          if (res && res.status === 'success') {
+            Swal.fire({
+              icon: 'success',
+              title: 'FD Closure Requested',
+              text: 'The FD closure request has been submitted successfully.',
+              confirmButtonText: 'OK'
+            });
+            // Refresh the settings to update status
+            this.getDepositSettings();
+          } else {
+            this.toast.error('Failed to request FD closure', 'Error');
+          }
+        }, error => {
+          console.error('Error requesting FD closure:', error);
+          let errorMessage = 'Failed to request FD closure. Please try again.';
+
+          if (error.error && error.error.message) {
+            errorMessage = error.error.message;
+          }
+
+          this.toast.error(errorMessage, 'Error');
+        });
+      }
+    });
+  }
+
+  calculateFinalAmount() {
+    const penalty = this.closeFDFormGroup.get('penalty_amount')?.value || 0;
+    const maturityAmount = this.selectedSetting?.maturity_amount || 0;
+    const finalAmount = maturityAmount - penalty;
+
+    this.closeFDFormGroup.patchValue({
+      final_amount: Math.max(0, finalAmount) // Ensure final amount is not negative
+    });
+  }
+
+  openCloseFDModal(content: any) {
+    // Calculate final amount when opening modal
+    this.calculateFinalAmount();
+    this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
+  }
+
+  submitCloseFDRequest() {
+    if (this.closeFDFormGroup.valid) {
+      const formData = this.closeFDFormGroup.value;
+
+      Swal.fire({
+        title: "Confirm Closure Request",
+        text: `Are you sure you want to request closure with penalty amount ₹${formData.penalty_amount}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, Request Closure"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const payload = {
+            _id: this.selectedSetting._id,
+            status: 'Close-Requested',
+            penalty_amount: formData.penalty_amount,
+            final_amount: formData.final_amount,
+            closure_notes: formData.notes
+          };
+
+          this.depositService.editFDepositSettings(payload).subscribe((res: any) => {
+            if (res && res.status === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'Closure Request Submitted',
+                text: 'The FD closure request has been submitted successfully.',
+                confirmButtonText: 'OK'
+              });
+              this.closeFDFormGroup.reset();
+              this.modalService.dismissAll();
+              this.getDepositSettings(); // Refresh the settings
+            } else {
+              this.toast.error('Failed to submit closure request', 'Error');
+            }
+          }, error => {
+            console.error('Error submitting closure request:', error);
+            this.toast.error('Error submitting closure request', 'Error');
+          });
+        }
+      });
+    } else {
+      this.closeFDFormGroup.markAllAsTouched();
     }
   }
 

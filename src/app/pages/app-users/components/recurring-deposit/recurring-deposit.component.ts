@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { DepositService } from 'src/app/core/services/deposit.service';
 import { SettingsService } from 'src/app/core/services/settings.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-recurring-deposit',
@@ -33,6 +34,7 @@ export class RecurringDepositComponent implements OnInit {
   depositFormGroup: FormGroup
   editDepositFormGroup: FormGroup
   rdSettlementFormGroup: FormGroup;
+  closeRDFormGroup: FormGroup;
   canCreateSettings: boolean = true;
   rd_rate: number = 0;
 
@@ -45,6 +47,7 @@ export class RecurringDepositComponent implements OnInit {
   depositSettingsList: any = [];
   depositList: any = [];
   selectedSetting: any = null;
+  selectedUser: any = null;
   outstandingAmount: any = null;
   depositSummary: any = null;
 
@@ -124,6 +127,17 @@ export class RecurringDepositComponent implements OnInit {
       settlement_date: new FormControl('', [Validators.required]),
       notes: new FormControl('')
     })
+
+    this.closeRDFormGroup = new FormGroup({
+      penalty_amount: new FormControl(0, [Validators.min(0)]),
+      final_amount: new FormControl({value: 0, disabled: true}),
+      notes: new FormControl('')
+    });
+
+    // Calculate final amount when penalty changes
+    this.closeRDFormGroup.get('penalty_amount')?.valueChanges.subscribe(value => {
+      this.calculateFinalAmount();
+    });
 
     this.settingsService.getGeneralSettings$().subscribe(settings => {
       if (settings) {
@@ -313,7 +327,7 @@ export class RecurringDepositComponent implements OnInit {
   editSettings() {
     if (this.editDepositSettings.valid) {
       const payload = this.editDepositSettings.value;
-      payload.status = 'Confirmed';
+      payload.status = 'Approved';
       this.depositService.editRDepositSettings(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.toast.success('Deposit settings updated successfully');
@@ -327,6 +341,98 @@ export class RecurringDepositComponent implements OnInit {
       });
     } else {
       this.editDepositSettings.markAllAsTouched();
+    }
+  }
+
+  openCloseRDModal(content: any, user: any) {
+    this.selectedUser = user;
+    // Fetch deposit summary for the selected user
+    this.getDepositSummary(user?.user);
+    this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
+  }
+
+  getDepositSummary(userId: string) {
+    this.depositService.findOutstandingDepositsOfRecurring(userId).subscribe((res: any) => {
+      if (res && res.status === 'success') {
+        this.depositSummary = res.data.depositSummary;
+        this.calculateFinalAmount();
+      } else {
+        this.depositSummary = null;
+      }
+    }, error => {
+      console.error('Error fetching deposit summary:', error);
+      this.depositSummary = { paid: 0, interest: 0, total: 0 };
+      this.calculateFinalAmount();
+    });
+  }
+
+  calculateFinalAmount() {
+    const penalty = this.closeRDFormGroup.get('penalty_amount')?.value || 0;
+    const totalPaid = this.depositSummary?.paid || 0;
+    const totalInterest = this.depositSummary?.interest || 0;
+    const finalAmount = (totalPaid + totalInterest) - penalty;
+
+    this.closeRDFormGroup.patchValue({
+      final_amount: Math.max(0, finalAmount) // Ensure final amount is not negative
+    });
+  }
+
+  submitCloseRDRequest() {
+    // Validate that RD is in Close-Requested status
+    if (this.selectedUser.status !== 'Close-Requested') {
+      this.toast.error('This RD must be in "Close-Requested" status to process closure. Please wait for member to request closure first.', 'Invalid Status');
+      return;
+    }
+
+    if (this.closeRDFormGroup.valid) {
+      const formData = this.closeRDFormGroup.value;
+
+      Swal.fire({
+        title: "Confirm RD Closure",
+        text: `Are you sure you want to process this RD closure with penalty amount ₹${formData.penalty_amount}? This will mark the account as completed.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, Process Closure"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const payload = {
+            _id: this.selectedUser._id,
+            status: 'Completed',
+            penalty_amount: formData.penalty_amount,
+            final_amount: this.closeRDFormGroup.get('final_amount')?.value,
+            closure_notes: formData.notes
+          };
+
+          this.depositService.editRDepositSettings(payload).subscribe((res: any) => {
+            if (res && res.status === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'RD Closure Processed',
+                text: 'The RD closure has been processed successfully. The final settlement amount has been recorded.',
+                confirmButtonText: 'OK'
+              });
+              this.closeRDFormGroup.reset();
+              this.modalService.dismissAll();
+              this.getDepositSettings(); // Refresh the settings
+            } else {
+              this.toast.error('Failed to process RD closure', 'Error');
+            }
+          }, error => {
+            console.error('Error processing RD closure:', error);
+            let errorMessage = 'Failed to process RD closure. Please try again.';
+
+            if (error.error && error.error.message) {
+              errorMessage = error.error.message;
+            }
+
+            this.toast.error(errorMessage, 'Error');
+          });
+        }
+      });
+    } else {
+      this.closeRDFormGroup.markAllAsTouched();
     }
   }
 
