@@ -116,7 +116,8 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Principal</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.paid || 0}}</h5>
+                                    <h5 class="mb-0" *ngIf="!isLoadingAccountStatistics">₹{{depositSummary?.paid || 0}}</h5>
+                                    <h5 class="mb-0 text-muted" *ngIf="isLoadingAccountStatistics">Loading...</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -134,7 +135,8 @@
                             <div class="d-flex flex-wrap">
                                 <div class="me-3">
                                     <p class="text-muted mb-2">Total Interest</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.interest || 0}}</h5>
+                                    <h5 class="mb-0" *ngIf="!isLoadingAccountStatistics">₹{{depositSummary?.interest || 0}}</h5>
+                                    <h5 class="mb-0 text-muted" *ngIf="isLoadingAccountStatistics">Loading...</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -151,7 +153,8 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Penalty</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.penalty || 0}}</h5>
+                                    <h5 class="mb-0" *ngIf="!isLoadingAccountStatistics">₹{{depositSummary?.penalty || 0}}</h5>
+                                    <h5 class="mb-0 text-muted" *ngIf="isLoadingAccountStatistics">Loading...</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -168,7 +171,8 @@
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Net</p>
-                                    <h5 class="mb-0">₹{{depositSummary?.total || 0}}</h5>
+                                    <h5 class="mb-0" *ngIf="!isLoadingAccountStatistics">₹{{depositSummary?.total || 0}}</h5>
+                                    <h5 class="mb-0 text-muted" *ngIf="isLoadingAccountStatistics">Loading...</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
                                     <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
@@ -306,7 +310,7 @@
                     <div class="d-flex align-items-center">
                         <h5 class="mb-0 card-title flex-grow-1">Deposit History</h5>
                         <div class="flex-shrink-0 d-flex gap-1" >
-                            <a href="javascript:void(0);"  *ngIf="depositSettingsList.length > 0 && outstandingAmount?.outstanding !== 0" class="btn btn-primary" (click)="openModal(addDepositModal)" >Add Deposit</a>
+                            <a href="javascript:void(0);"  *ngIf="canSelectedAccountMakeDeposits()" class="btn btn-primary" (click)="openModal(addDepositModal)" >Add Deposit</a>
                             <a href="javascript:void(0);" *ngIf="depositList.length !== 0" class="btn btn-light"><i class="mdi mdi-refresh"></i></a>
                         </div>
                     </div>

@@ -50,28 +50,41 @@ export class RecurringDepositComponent implements OnInit {
   selectedUser: any = null;
   outstandingAmount: any = null;
   depositSummary: any = null;
+  isLoadingAccountStatistics: boolean = false;
 
   total: number = 0;
   page: number = 1;
   pageSize: number = 10;
 
-  outstanding(user: string) {
-    this.depositService.findOutstandingDepositsOfRecurring(user).subscribe((res: any) => {
+  outstanding(user: string, rd_id?: string) {
+    console.log('Loading outstanding for RD:', rd_id);
+    this.isLoadingAccountStatistics = true;
+    
+    this.depositService.findOutstandingDepositsOfRecurring(user, rd_id).subscribe((res: any) => {
       if (res && res.status === 'success') {
         const outstandingDeposits = res.data || [];
         this.outstandingAmount = outstandingDeposits;
-        this.depositSummary = res.data.depositSummary
+        this.depositSummary = res.data.depositSummary;
+        
+        console.log('Outstanding data loaded:', {
+          rd_id,
+          outstanding: this.outstandingAmount,
+          summary: this.depositSummary
+        });
+        
         if (outstandingDeposits !== 0) {
           this.depositFormGroup.patchValue({paid_amount: this.outstandingAmount.outstanding });
           this.rdSettlementFormGroup.patchValue({total_principal: this.depositSummary.paid, total_penalty: this.depositSummary.penalty, total_interest: this.depositSummary.interest, total_net: this.depositSummary.total });
-        } else {
-          this.toast.success('No outstanding compulsory deposits found.');
         }
+        
+        this.isLoadingAccountStatistics = false;
       } else {
         this.toast.error('Failed to fetch outstanding amount', 'Error');
+        this.isLoadingAccountStatistics = false;
       }
     }, error => {
       console.error('Error fetching outstanding amount:', error);
+      this.isLoadingAccountStatistics = false;
     });
   }
 
@@ -198,10 +211,14 @@ export class RecurringDepositComponent implements OnInit {
         }
 
         if(this.depositSettingsList.length > 0 && this.canCreateSettings) {
-          this.outstanding(this.user_id);
           this.getDeposits(this.depositSettingsList[0]._id);
           this.selectedSetting = this.depositSettingsList[0]
           this.editDepositSettings.patchValue(this.depositSettingsList[0])
+          
+          // Only load outstanding data for approved accounts
+          if (this.depositSettingsList[0].status === 'Approved') {
+            this.outstanding(this.user_id, this.depositSettingsList[0]._id);
+          }
 
           this.depositFormGroup.patchValue({ transanction_id: this.generateUniqueId(),  payment_interval: this.depositSettingsList[0].interval});
         }
@@ -250,8 +267,23 @@ export class RecurringDepositComponent implements OnInit {
     const selectedSetting = this.depositSettingsList.find((setting: any) => setting._id === event.target.value);
     this.selectedSetting = selectedSetting
     if (selectedSetting) {
+      console.log('Selecting RD account:', selectedSetting._id, 'Status:', selectedSetting.status);
       this.editDepositSettings.patchValue(selectedSetting)
-      this.outstanding(this.user_id);
+      
+      // Only load outstanding data for approved accounts
+      if (selectedSetting.status === 'Approved') {
+        this.outstanding(this.user_id, selectedSetting._id);
+      } else {
+        // Clear outstanding data for non-approved accounts
+        this.outstandingAmount = null;
+        this.depositSummary = {
+          interest: 0,
+          paid: 0,
+          penalty: 0,
+          total: 0
+        };
+      }
+      
       this.depositFormGroup.patchValue({
         required_amount: selectedSetting.amount,
         payment_interval: selectedSetting.interval,
@@ -270,6 +302,12 @@ export class RecurringDepositComponent implements OnInit {
 
   addDeposit() {
     if (this.depositFormGroup.valid) {
+      // Extra safety check - ensure selected account is approved
+      if (this.selectedSetting?.status !== 'Approved') {
+        this.toast.error('Deposits can only be made to approved RD accounts', 'Error');
+        return;
+      }
+
       const payload = this.depositFormGroup.value;
 
       if(payload.paid_amount > this.selectedSetting.amount) {
@@ -287,7 +325,7 @@ export class RecurringDepositComponent implements OnInit {
           this.toast.success('Deposit created successfully');
           this.depositFormGroup.reset();
           this.modalService.dismissAll();
-          this.outstanding(this.user_id);
+          this.outstanding(this.user_id, this.selectedSetting._id);
           this.getDeposits(payload.r_deposit_settings);
         }
       }, error => {
@@ -346,13 +384,13 @@ export class RecurringDepositComponent implements OnInit {
 
   openCloseRDModal(content: any, user: any) {
     this.selectedUser = user;
-    // Fetch deposit summary for the selected user
-    this.getDepositSummary(user?.user);
+    // Fetch deposit summary for the selected user and specific RD
+    this.getDepositSummary(user?.user, this.selectedSetting?._id);
     this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
   }
 
-  getDepositSummary(userId: string) {
-    this.depositService.findOutstandingDepositsOfRecurring(userId).subscribe((res: any) => {
+  getDepositSummary(userId: string, rd_id?: string) {
+    this.depositService.findOutstandingDepositsOfRecurring(userId, rd_id).subscribe((res: any) => {
       if (res && res.status === 'success') {
         this.depositSummary = res.data.depositSummary;
         this.calculateFinalAmount();
@@ -375,6 +413,16 @@ export class RecurringDepositComponent implements OnInit {
     this.closeRDFormGroup.patchValue({
       final_amount: Math.max(0, finalAmount) // Ensure final amount is not negative
     });
+  }
+
+  // Helper method to check if current selected RD can accept deposits
+  canSelectedAccountMakeDeposits(): boolean {
+    return this.selectedSetting?.status === 'Approved' && this.outstandingAmount?.outstanding > 0;
+  }
+
+  // Helper method to check if current selected RD can request closure
+  canSelectedAccountRequestClosure(): boolean {
+    return this.selectedSetting?.status === 'Approved';
   }
 
   submitCloseRDRequest() {

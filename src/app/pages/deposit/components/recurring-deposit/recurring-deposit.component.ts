@@ -116,15 +116,17 @@ export class RecurringDepositComponent implements OnInit {
 
   openCloseRDModal(content: any, user: any) {
     this.selectedUser = user;
-    // Fetch deposit summary for the selected user
-    this.getDepositSummary(user?.user?._id);
+    // Fetch deposit summary for the selected user and specific RD
+    this.getDepositSummary(user?.user?._id, user?._id);
     this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
   }
 
-  getDepositSummary(userId: string) {
-    this.depositService.findOutstandingDepositsOfRecurring(userId).subscribe((res: any) => {
+  getDepositSummary(userId: string, rdId?: string) {
+    console.log('Getting deposit summary for userId:', userId, 'rdId:', rdId);
+    this.depositService.findOutstandingDepositsOfRecurring(userId, rdId).subscribe((res: any) => {
       if (res && res.status === 'success') {
         this.depositSummary = res.data.depositSummary;
+        console.log('Deposit summary updated:', this.depositSummary);
         this.calculateFinalAmount();
       } else {
         this.depositSummary = null;
@@ -198,6 +200,11 @@ export class RecurringDepositComponent implements OnInit {
 
     if (this.closeRDFormGroup.valid) {
       const formData = this.closeRDFormGroup.value;
+
+      
+      formData.final_amount = this.closeRDFormGroup.get('final_amount')?.value;
+
+
 
       Swal.fire({
         title: "Confirm RD Closure",
