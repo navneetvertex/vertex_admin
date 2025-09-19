@@ -25,6 +25,9 @@
                               <option *ngFor="let status of statusList" [ngValue]="status">{{status}}</option>
                             </select>
                           </div>
+                           <div class="col-lg-2">
+                            <input type="text" class="form-control" formControlName="dateRange" id="dateRangePicker" placeholder="Select Date Range..." readonly>
+                          </div>
                           <div class="col-lg-1 d-grid">
                             <button type="button" (click)="search()" class="btn btn-soft-secondary">
                               <i class="mdi mdi-filter-outline align-middle"></i> Filter

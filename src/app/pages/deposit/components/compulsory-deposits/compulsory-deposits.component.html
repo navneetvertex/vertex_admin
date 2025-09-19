@@ -9,10 +9,10 @@
                     <div class="card-body border-bottom">
                       <form [formGroup]="searchFormGroup">
                         <div class="row">
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-3">
                                 <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
                             </div>
                             <div class="col-lg-2">
@@ -22,7 +22,12 @@
                                     <option *ngFor="let status of statusList" [value]="status" >{{status}}</option>
                                 </select>
                             </div>
-
+                            <div class="col-lg-3">
+                                <select class="form-control select2" formControlName="monthYear">
+                                    <option value="">Select Month & Year</option>
+                                    <option *ngFor="let item of monthYearList" [value]="item.value">{{item.display}}</option>
+                                </select>
+                            </div>
                             <div class="col-lg-1">
                                 <button type="button" (click)="getRecrruingDeposits()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
                             </div>

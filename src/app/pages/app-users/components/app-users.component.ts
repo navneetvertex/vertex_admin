@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { UserProfileService } from 'src/app/core/services/user.service';
+import flatpickr from 'flatpickr';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -10,7 +11,7 @@ import Swal from 'sweetalert2';
   templateUrl: './app-users.component.html',
   styleUrls: ['./app-users.component.scss']
 })
-export class AppUsersComponent implements OnInit {
+export class AppUsersComponent implements OnInit, AfterViewInit {
 
   constructor(private userService: UserProfileService,
     private modalService: NgbModal,
@@ -28,7 +29,26 @@ export class AppUsersComponent implements OnInit {
   total: number = 0;
   page: number = 1;
   pageSize: number = 10;
-  searchFormGroup: FormGroup ;
+  searchFormGroup: FormGroup;
+
+  // Date range picker configuration
+  dateRangeOptions: any = {
+    mode: 'range',
+    dateFormat: 'Y-m-d',
+    defaultDate: [],
+    placeholder: 'Select date range',
+    allowInput: true,
+    onChange: (selectedDates: any, dateStr: any, instance: any) => {
+      if (selectedDates.length === 2) {
+        const startDate = selectedDates[0];
+        const endDate = selectedDates[1];
+        this.searchFormGroup.patchValue({
+          startDate: this.formatDate(startDate),
+          endDate: this.formatDate(endDate)
+        });
+      }
+    }
+  };
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'User List' }, { label: 'User', active: true }];
@@ -41,8 +61,18 @@ export class AppUsersComponent implements OnInit {
       user_id: new FormControl(''),
       account_number: new FormControl(''),
       status: new FormControl(''),
+      startDate: new FormControl(''),
+      endDate: new FormControl(''),
+      dateRange: new FormControl('')
     });
     this.getAllUsers();
+  }
+
+  ngAfterViewInit() {
+    // Initialize date range picker after view is ready
+    setTimeout(() => {
+      this.initializeDateRangePicker();
+    }, 100);
   }
 
   search() {
@@ -53,7 +83,31 @@ export class AppUsersComponent implements OnInit {
   reset() {
     this.page = 1
     this.searchFormGroup.reset()
+    // Clear date range picker
+    if (this.dateRangePicker) {
+      this.dateRangePicker.clear();
+    }
     this.getAllUsers()
+  }
+
+  // Format date to YYYY-MM-DD
+  formatDate(date: Date): string {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Date range picker instance
+  dateRangePicker: any;
+
+  // Initialize date range picker
+  initializeDateRangePicker() {
+    const dateRangeElement = document.getElementById('dateRangePicker');
+    if (dateRangeElement) {
+      this.dateRangePicker = flatpickr(dateRangeElement, this.dateRangeOptions);
+    }
   }
 
   pageChange(page: number) {
@@ -66,8 +120,12 @@ export class AppUsersComponent implements OnInit {
     const queryParamArray = [];
 
     Object.keys(searchParams).forEach(key => {
-      if (searchParams[key] !== null && searchParams[key] !== '') {
-      queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+      if (searchParams[key] !== null && searchParams[key] !== '' && searchParams[key] !== undefined) {
+        if (key === 'startDate' || key === 'endDate') {
+          queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+        } else if (key !== 'dateRange') {
+          queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+        }
       }
     });
 
@@ -126,24 +184,23 @@ export class AppUsersComponent implements OnInit {
   }
 
   sendMessage() {
-    if (this.notificationFormGroup.invalid) {
-      this.toast.error('Please fill all required fields');
-      return;
-    }
-    const { title, message } = this.notificationFormGroup.value;
-    this.userService.sendNotification(this.currUserId, title, message).subscribe((res: any) => {
-      if (res && res.status === 'success') {
-        this.toast.success('Notification sent successfully');
-        this.modalService.dismissAll();
-        this.notificationFormGroup.reset();
-      } else {
-        this.toast.error('Failed to send notification');
-      }
-    }, (err: any) => {
-      console.error('Error sending notification:', err);
-      this.toast.error('Failed to send notification');
-    });
+    const title = this.notificationFormGroup.get('title')?.value;
+    const message = this.notificationFormGroup.get('message')?.value;
 
+    if (title && message) {
+      this.userService.sendNotification(this.currUserId, title, message).subscribe((res: any) => {
+        if (res && res.status === 'success') {
+          this.toast.success('Notification sent successfully');
+          this.modalService.dismissAll();
+          this.notificationFormGroup.reset();
+        } else {
+          this.toast.error('Failed to send notification');
+        }
+      }, (err: any) => {
+        console.error('Error sending notification:', err);
+        this.toast.error('Failed to send notification');
+      });
+    }
   }
 
   changeStatusAccount(user: any, content: any) {

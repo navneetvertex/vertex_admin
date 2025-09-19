@@ -24,15 +24,21 @@ export class FixedDepositComponent implements OnInit {
     editSettingFormGroup: FormGroup;
     closeFDFormGroup: FormGroup;
     statusList: any[] = ['Requested', 'Approved', 'Close-Requested', 'Completed']
+    monthYearList: any[] = [];
     selectedUser: any = null;
     depositSummary: any = null;
   
     ngOnInit(): void {
-      this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Recurring Deposit List', active: true }];
+      this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Fixed Deposit List', active: true }];
+      
+      // Generate combined month-year list from current month back to 2 years ago
+      this.generateMonthYearList();
+      
       this.searchFormGroup = new FormGroup({
         name:new FormControl(''),
         user_id: new FormControl(''),
-        status: new FormControl('All'),  
+        status: new FormControl('All'),
+        monthYear: new FormControl('')
       });
       this.editSettingFormGroup = new FormGroup({
         _id: new FormControl('', [Validators.required]),
@@ -58,6 +64,43 @@ export class FixedDepositComponent implements OnInit {
       this.getRecrruingDeposits();
     }
 
+    generateMonthYearList() {
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                     'July', 'August', 'September', 'October', 'November', 'December'];
+      
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth(); // 0-based
+      
+      // Generate from current month back to 2 years ago
+      for (let yearOffset = 0; yearOffset <= 2; yearOffset++) {
+        const year = currentYear - yearOffset;
+        
+        // For current year, start from current month
+        // For previous years, start from December
+        const startMonth = (yearOffset === 0) ? currentMonth : 11;
+        const endMonth = (yearOffset === 2) ? 0 : 0; // For 2 years ago, start from January
+        
+        for (let month = startMonth; month >= endMonth; month--) {
+          const monthName = months[month];
+          const monthValue = (month + 1).toString().padStart(2, '0'); // 01-12 format
+          const displayText = `${monthName} ${year}`;
+          const value = `${year}-${monthValue}`; // YYYY-MM format
+          
+          this.monthYearList.push({
+            display: displayText,
+            value: value
+          });
+        }
+      }
+    }
+
+    getMonthName(monthIndex: number): string {
+      const date = new Date();
+      date.setMonth(monthIndex);
+      return date.toLocaleString('default', { month: 'short' });
+    }
+
     calculateMaturityAmount() {
       const amount = this.editSettingFormGroup.get('amount')?.value;
       const duration = this.editSettingFormGroup.get('duration')?.value;
@@ -80,8 +123,15 @@ export class FixedDepositComponent implements OnInit {
       const queryParamArray = [];
   
       Object.keys(searchParams).forEach(key => {
-        if (searchParams[key] !== null && searchParams[key] !== '') {
-        queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+        if (searchParams[key] !== null && searchParams[key] !== '' && searchParams[key] !== undefined) {
+          if (key === 'monthYear') {
+            // Split the combined value into separate month and year parameters
+            const [year, month] = searchParams[key].split('-');
+            queryParamArray.push(`month=${encodeURIComponent(month)}`);
+            queryParamArray.push(`year=${encodeURIComponent(year)}`);
+          } else {
+            queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+          }
         }
       });
   
