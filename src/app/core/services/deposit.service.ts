@@ -102,6 +102,20 @@ getAllCompulsoryDeposits(page: number = 0, limit: number = 10, queryParams: stri
   return this.http.get(`${environment.api_url}deposit/all_compulsory_deposits?page=${page}&limit=${limit}&${queryParams}`);
 }
 
+getCompulsoryDepositUserIds(queryParams: string = '') {
+  return this.http.get(`${environment.api_url}deposit/compulsory_deposit_user_ids?${queryParams}`);
+}
 
+sendBulkNotification(payload: any) {
+  return this.http.post(`${environment.api_url}notifications/bulk`, payload);
+}
+
+sendSingleNotification(payload: any) {
+  return this.http.post(`${environment.api_url}notifications/single`, payload);
+}
+
+getNotificationStats() {
+  return this.http.get(`${environment.api_url}notifications/stats`);
+}
 
 }
