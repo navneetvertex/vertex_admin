@@ -20,14 +20,20 @@
                                     <option value="">Select Status</option>
                                     <option value="All">All</option>
                                     <option *ngFor="let status of statusList" [value]="status" >{{status}}</option>
+                                    <option value="expiry-in-1-month">Expiry in 1 Month</option>
+                                    <option value="expired-not-completed">Expired Not Completed</option>
+                                    <option value="expiring-soon">Expiring Soon</option>
+                                    <option value="not-paid">Not Paid</option>
+                                    <option value="mature">Matured</option>
+                                    <option value="close-requested">Close Requested</option>
                                 </select>
                             </div>
-                            <div class="col-lg-2">
+                            <!-- <div class="col-lg-2">
                                 <select class="form-control select2" formControlName="monthYear">
                                     <option value="">Select Month & Year</option>
                                     <option *ngFor="let item of monthYearList" [value]="item.value">{{item.display}}</option>
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="col-lg-1">
                                 <button type="button" (click)="getRecrruingDeposits()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
                             </div>
