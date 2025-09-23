@@ -1,0 +1,545 @@
+<div class="container-fluid">
+  <!-- Page Header -->
+  <app-page-title title="Loan Reports" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <!-- Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+      <div class="card mini-stats-wid">
+        <div class="card-body">
+          <div class="d-flex">
+            <div class="flex-grow-1">
+              <p class="text-muted fw-medium">Total Loans</p>
+              <h4 class="mb-0">{{ summary.totalLoans || 0 | number }}</h4>
+            </div>
+            <div class="flex-shrink-0 align-self-center">
+              <div class="mini-stat-icon avatar-sm rounded-circle bg-primary">
+                <span class="avatar-title">
+                  <i class="bx bx-file text-white font-size-16"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card mini-stats-wid">
+        <div class="card-body">
+          <div class="d-flex">
+            <div class="flex-grow-1">
+              <p class="text-muted fw-medium">Total Disbursed</p>
+              <h4 class="mb-0">{{ formatCurrency(summary.totalDisbursedAmount) }}</h4>
+            </div>
+            <div class="flex-shrink-0 align-self-center">
+              <div class="mini-stat-icon avatar-sm rounded-circle bg-info">
+                <span class="avatar-title">
+                  <i class="bx bx-money text-white font-size-16"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card mini-stats-wid">
+        <div class="card-body">
+          <div class="d-flex">
+            <div class="flex-grow-1">
+              <p class="text-muted fw-medium">Total Outstanding</p>
+              <h4 class="mb-0">{{ formatCurrency(summary.totalOutstandingAmount) }}</h4>
+            </div>
+            <div class="flex-shrink-0 align-self-center">
+              <div class="mini-stat-icon avatar-sm rounded-circle bg-warning">
+                <span class="avatar-title">
+                  <i class="bx bx-error-circle text-white font-size-16"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="card mini-stats-wid">
+        <div class="card-body">
+          <div class="d-flex">
+            <div class="flex-grow-1">
+              <p class="text-muted fw-medium">Total Paid</p>
+              <h4 class="mb-0">{{ formatCurrency(summary.totalPaidAmount) }}</h4>
+            </div>
+            <div class="flex-shrink-0 align-self-center">
+              <div class="mini-stat-icon avatar-sm rounded-circle bg-success">
+                <span class="avatar-title">
+                  <i class="bx bx-check-circle text-white font-size-16"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-4 col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <span class="text-muted">Active Loans</span>
+              <h5 class="mb-0">{{ summary.activeLoans || 0 }}</h5>
+            </div>
+            <div class="flex-shrink-0">
+              <span class="badge badge-soft-success font-size-12">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <span class="text-muted">Pending Loans</span>
+              <h5 class="mb-0">{{ summary.pendingLoans || 0 }}</h5>
+            </div>
+            <div class="flex-shrink-0">
+              <span class="badge badge-soft-warning font-size-12">Pending</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <span class="text-muted">Rejected Loans</span>
+              <h5 class="mb-0">{{ summary.rejectedLoans || 0 }}</h5>
+            </div>
+            <div class="flex-shrink-0">
+              <span class="badge badge-soft-danger font-size-12">Rejected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col">
+              <h4 class="card-title">Loan Reports</h4>
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-success btn-sm" (click)="exportToCSV()" [disabled]="isExporting">
+                <i class="bx bx-download me-1"></i>
+                <span *ngIf="!isExporting">Export CSV</span>
+                <span *ngIf="isExporting">Exporting...</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Filter Section -->
+          <div class="row mb-3">
+            <div class="col-xl-3 col-md-6 mb-2">
+              <label class="form-label">Search</label>
+              <input type="text" class="form-control" placeholder="Search by name, email, loan ID..." 
+                     [(ngModel)]="filters.search" (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="col-xl-2 col-md-6 mb-2">
+              <label class="form-label">Status</label>
+              <select class="form-select" [(ngModel)]="filters.status" (ngModelChange)="onFilterChange()">
+                <option value="">All Status</option>
+                <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+              </select>
+            </div>
+
+            <div class="col-xl-2 col-md-6 mb-2">
+              <label class="form-label">Loan Type</label>
+              <select class="form-select" [(ngModel)]="filters.loan_type" (ngModelChange)="onFilterChange()">
+                <option value="">All Types</option>
+                <option *ngFor="let type of loanTypeOptions" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+
+            <div class="col-xl-2 col-md-6 mb-2">
+              <label class="form-label">Min Outstanding</label>
+              <input type="number" class="form-control" placeholder="Min amount" 
+                     [(ngModel)]="filters.min_outstanding" (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="col-xl-2 col-md-6 mb-2">
+              <label class="form-label">Max Outstanding</label>
+              <input type="number" class="form-control" placeholder="Max amount" 
+                     [(ngModel)]="filters.max_outstanding" (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="col-xl-1 col-md-6 mb-2 d-flex align-items-end">
+              <button class="btn btn-outline-secondary btn-sm" (click)="clearFilters()">
+                <i class="bx bx-refresh"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Date Range Filters -->
+          <div class="row mb-3">
+            <div class="col-xl-3 col-md-6 mb-2">
+              <label class="form-label">Start Date</label>
+              <input type="date" class="form-control" 
+                     [(ngModel)]="filters.start_date" (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-2">
+              <label class="form-label">End Date</label>
+              <input type="date" class="form-control" 
+                     [(ngModel)]="filters.end_date" (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-2">
+              <label class="form-label">Sort By</label>
+              <select class="form-select" [(ngModel)]="filters.sortBy" (ngModelChange)="onFilterChange()">
+                <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-2">
+              <label class="form-label">Sort Order</label>
+              <select class="form-select" [(ngModel)]="filters.sortOrder" (ngModelChange)="onFilterChange()">
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div *ngIf="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading loan reports...</p>
+          </div>
+
+          <!-- Loan Reports Table -->
+          <div *ngIf="!loading" class="table-responsive">
+            <table class="table table-nowrap table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Loan Details</th>
+                  <th>User Information</th>
+                  <th>Financial Summary</th>
+                  <th>Payment Progress</th>
+                  <th>Risk Level</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let loan of loanReports; let i = index">
+                  <!-- Loan Details -->
+                  <td>
+                    <div class="d-flex flex-column">
+                      <span class="fw-medium">{{ loan.loan_id }}</span>
+                      <small class="text-muted">{{ loan.loan_type }}</small>
+                      <span class="badge font-size-11" [ngClass]="getStatusClass(loan.status)">
+                        {{ loan.status }}
+                      </span>
+                      <small class="text-muted mt-1">
+                        {{ formatCurrency(loan.approved_loan_amount) }}
+                      </small>
+                    </div>
+                  </td>
+
+                  <!-- User Information -->
+                  <td>
+                    <div class="d-flex flex-column">
+                      <span class="fw-medium">{{ loan.user.name }}</span>
+                      <small class="text-muted">{{ loan.user.user_id }}</small>
+                      <small class="text-muted">{{ loan.user.email }}</small>
+                      <small class="text-muted">{{ loan.user.phone }}</small>
+                    </div>
+                  </td>
+
+                  <!-- Financial Summary -->
+                  <td>
+                    <div class="d-flex flex-column">
+                      <span class="text-success">Disbursed: {{ formatCurrency(loan.totalDisbursed) }}</span>
+                      <span class="text-info">Paid: {{ formatCurrency(loan.totalPaid) }}</span>
+                      <span class="text-warning">Outstanding: {{ formatCurrency(loan.totalOutstanding) }}</span>
+                      <small class="text-muted">Interest: {{ formatCurrency(loan.totalInterest) }}</small>
+                    </div>
+                  </td>
+
+                  <!-- Payment Progress -->
+                  <td>
+                    <div class="d-flex flex-column">
+                      <div class="progress mb-1" style="height: 6px;">
+                        <div class="progress-bar" 
+                             [style.width.%]="loan.paymentPercentage" 
+                             [ngClass]="{'bg-success': loan.paymentPercentage >= 100, 'bg-warning': loan.paymentPercentage < 100}">
+                        </div>
+                      </div>
+                      <small class="text-muted">{{ formatPercentage(loan.paymentPercentage) }} completed</small>
+                      <small class="text-muted">{{ loan.paymentTransactions }} payments</small>
+                      <small class="text-muted" *ngIf="loan.lastTransactionDate">
+                        Last: {{ loan.lastTransactionDate | date:'shortDate' }}
+                      </small>
+                    </div>
+                  </td>
+
+                  <!-- Risk Level -->
+                  <td>
+                    <span class="badge badge-danger font-size-11" [ngClass]="getRiskLevelClass(getRiskLevel(loan))">
+                      {{ getRiskLevel(loan) }}
+                    </span>
+                    <div class="mt-1" *ngIf="loan.daysSinceLastPayment > 0">
+                      <small class="text-muted">{{ loan.daysSinceLastPayment | number: '1.0-0' }} days since last payment</small>
+                    </div>
+                  </td>
+
+                  <!-- Actions -->
+                  <td>
+                    <button class="btn btn-outline-primary btn-sm" 
+                            (click)="viewLoanDetails(loan._id, detailModal)"
+                            [disabled]="loadingDetail">
+                      <i class="bx bx-show me-1"></i>
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- No Data -->
+          <div *ngIf="!loading && loanReports.length === 0" class="text-center py-4">
+            <i class="bx bx-file-blank display-4 text-muted"></i>
+            <p class="mt-2 text-muted">No loan reports found</p>
+          </div>
+
+          <!-- Pagination -->
+          <div *ngIf="!loading && loanReports.length > 0" class="row align-items-center mt-3">
+            <div class="col-sm-6">
+              <div class="dataTables_info">
+                Showing {{ ((currentPage - 1) * limit) + 1 }} to {{ Math.min(currentPage * limit, totalRecords) }} 
+                of {{ totalRecords }} entries
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="dataTables_paginate paging_simple_numbers float-end">
+                <ngb-pagination 
+                  [(page)]="currentPage" 
+                  [pageSize]="limit" 
+                  [collectionSize]="totalRecords"
+                  [maxSize]="5" 
+                  [rotate]="true"
+                  (pageChange)="onPageChange($event)">
+                </ngb-pagination>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loan Detail Modal -->
+<ng-template #detailModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Loan Comprehensive Report</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
+    <div *ngIf="loadingDetail" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading loan details...</p>
+    </div>
+
+    <div *ngIf="selectedLoanReport && !loadingDetail">
+      <!-- Loan Basic Information -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Loan Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Loan ID:</strong> {{ selectedLoanReport.loan.loan_id }}</p>
+              <p><strong>Type:</strong> {{ selectedLoanReport.loan.loan_type }}</p>
+              <p><strong>Status:</strong> 
+                <span class="badge" [ngClass]="getStatusClass(selectedLoanReport.loan.status)">
+                  {{ selectedLoanReport.loan.status }}
+                </span>
+              </p>
+              <p><strong>Purpose:</strong> {{ selectedLoanReport.loan.purpose }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Requested Amount:</strong> {{ formatCurrency(selectedLoanReport.loan.requested_loan_amount) }}</p>
+              <p><strong>Approved Amount:</strong> {{ formatCurrency(selectedLoanReport.loan.approved_loan_amount) }}</p>
+              <p><strong>Interest Rate:</strong> {{ selectedLoanReport.loan.interest_rate }}%</p>
+              <p><strong>Duration:</strong> {{ selectedLoanReport.loan.duration }} {{ selectedLoanReport.loan.interval }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Information -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">User Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> {{ selectedLoanReport.loan.user.name }}</p>
+              <p><strong>User ID:</strong> {{ selectedLoanReport.loan.user.user_id }}</p>
+              <p><strong>Email:</strong> {{ selectedLoanReport.loan.user.email }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Phone:</strong> {{ selectedLoanReport.loan.user.phone }}</p>
+              <p *ngIf="selectedLoanReport.loan.user.address"><strong>Address:</strong> {{ selectedLoanReport.loan.user.address }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Summary -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Financial Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-success">{{ formatCurrency(selectedLoanReport.financial_summary.totalDisbursed) }}</h4>
+                <p class="text-muted mb-0">Total Disbursed</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-info">{{ formatCurrency(selectedLoanReport.financial_summary.totalPaid) }}</h4>
+                <p class="text-muted mb-0">Total Paid</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-warning">{{ formatCurrency(selectedLoanReport.financial_summary.totalOutstanding) }}</h4>
+                <p class="text-muted mb-0">Total Outstanding</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-primary">{{ formatPercentage(selectedLoanReport.performance_metrics.paymentPercentage) }}</h4>
+                <p class="text-muted mb-0">Payment Progress</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Outstanding Breakdown -->
+          <div class="row mt-3">
+            <div class="col-12">
+              <h6>Outstanding Breakdown</h6>
+              <div class="row">
+                <div class="col-3">
+                  <p><strong>Principal:</strong> {{ formatCurrency(selectedLoanReport.financial_summary.outstandingBreakdown.principal) }}</p>
+                </div>
+                <div class="col-3">
+                  <p><strong>Interest:</strong> {{ formatCurrency(selectedLoanReport.financial_summary.outstandingBreakdown.interest) }}</p>
+                </div>
+                <div class="col-3">
+                  <p><strong>Penalties:</strong> {{ formatCurrency(selectedLoanReport.financial_summary.outstandingBreakdown.penalties) }}</p>
+                </div>
+                <div class="col-3">
+                  <p><strong>Fees:</strong> {{ formatCurrency(selectedLoanReport.financial_summary.outstandingBreakdown.fees) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction Metrics -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Transaction Metrics</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <p><strong>Total Transactions:</strong> {{ selectedLoanReport.transaction_metrics.totalTransactions }}</p>
+              <p><strong>Payment Transactions:</strong> {{ selectedLoanReport.transaction_metrics.paymentTransactions }}</p>
+            </div>
+            <div class="col-md-4">
+              <p><strong>Average Payment:</strong> {{ formatCurrency(selectedLoanReport.transaction_metrics.averagePayment) }}</p>
+              <p><strong>Payment Frequency:</strong> {{ selectedLoanReport.transaction_metrics.paymentFrequency }}</p>
+            </div>
+            <div class="col-md-4">
+              <p><strong>Loan Age:</strong> {{ selectedLoanReport.timeline_analysis.loanAge }} days</p>
+              <p><strong>Last Payment:</strong> {{ selectedLoanReport.timeline_analysis.daysSinceLastTransaction }} days ago</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Recent Transactions (Last 10)</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Description</th>
+                  <th>Payment Method</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaction of selectedLoanReport.recent_transactions">
+                  <td>{{ transaction.transaction_date | date:'short' }}</td>
+                  <td>
+                    <span class="badge badge-soft-{{ transaction.transaction_type === 'credit' ? 'success' : transaction.transaction_type === 'debit' ? 'info' : 'warning' }}">
+                      {{ transaction.transaction_type }}
+                    </span>
+                  </td>
+                  <td>{{ formatCurrency(transaction.amount) }}</td>
+                  <td>{{ transaction.description || '-' }}</td>
+                  <td>{{ transaction.payment_method || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+  </div>
+</ng-template>

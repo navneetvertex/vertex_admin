@@ -4,12 +4,14 @@ import { LoanRequestedComponent } from './components/loan-requested/loan-request
 import { LoanTransanctionComponent } from './components/loan-transanction/loan-transanction.component';
 import { AdminLoanTransanctionComponent } from './components/admin-loan-transanction/admin-loan-transanction.component';
 import { PayLoanComponent } from './components/pay-loan/pay-loan.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 const routes: Routes = [
   { path: 'loans/:type', component: LoanRequestedComponent },
   { path: 'pay-loan', component: PayLoanComponent },
   { path: 'user-transanction',component: LoanTransanctionComponent },
-  { path: 'admin-transanction', component: AdminLoanTransanctionComponent }
+  { path: 'admin-transanction', component: AdminLoanTransanctionComponent },
+  { path: 'reports', component: ReportsComponent },
 ];
 
 @NgModule({

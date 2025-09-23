@@ -6,13 +6,15 @@ import { AddPinsComponent } from './components/add-pins/add-pins.component';
 import { AssignedPinsComponent } from './components/assigned-pins/assigned-pins.component';
 import { UIModule } from 'src/app/shared/ui/ui.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbPaginationModule, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { FundPinComponent } from './components/fund-pin/fund-pin.component';
 
 
 @NgModule({
   declarations: [
     AddPinsComponent,
-    AssignedPinsComponent
+    AssignedPinsComponent,
+    FundPinComponent
   ],
   imports: [
     CommonModule,
@@ -20,6 +22,7 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
     ReactiveFormsModule,
     FormsModule,
     NgbPaginationModule,
+    NgbModalModule,
     PinManagementRoutingModule
   ]
 })

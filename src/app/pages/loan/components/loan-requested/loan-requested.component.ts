@@ -161,8 +161,10 @@ export class LoanRequestedComponent implements OnInit {
     }
 
     const loanData = {
-      ...this.statusFormGroup.value
+      ...this.statusFormGroup.value,
+      cheque_proof: this.uploadedChequeProof || this.statusFormGroup.value.cheque_proof || null
     };
+
 
     this.loanService.updateLoanStatus(loanData._id, loanData).subscribe({
       next: (res) => {

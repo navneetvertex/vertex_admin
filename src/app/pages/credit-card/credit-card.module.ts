@@ -8,10 +8,11 @@ import { UserAmountComponent } from './components/user-amount/user-amount.compon
 import { PaybleAmountComponent } from './components/payble-amount/payble-amount.component';
 import { AllTransanctionComponent } from './components/all-transanction/all-transanction.component';
 import { UIModule } from 'src/app/shared/ui/ui.module';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbPaginationModule, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CardListComponent } from './components/card-list/card-list.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { CardListComponent } from './components/card-list/card-list.component';
     UserAmountComponent,
     PaybleAmountComponent,
     AllTransanctionComponent,
-    CardListComponent
+    CardListComponent,
+    ReportsComponent
   ],
   imports: [
     CommonModule,
@@ -30,7 +32,8 @@ import { CardListComponent } from './components/card-list/card-list.component';
     NgSelectModule,
     CreditCardRoutingModule,
     ReactiveFormsModule,
-    NgbPaginationModule
+    NgbPaginationModule,
+    NgbModalModule
   ]
 })
 export class CreditCardModule { }

@@ -66,20 +66,42 @@
                                                         <span class="badge bg-{{cc.status === 'Active' ? 'success' : cc.status === 'Requested' ? 'warning' : 'danger'}}">
                                                             {{cc.status}}
                                                         </span>
+                                                        <br *ngIf="hasPenaltyRequest(cc)">
+                                                        <span *ngIf="hasPenaltyRequest(cc)" 
+                                                              class="badge bg-warning mt-1">
+                                                            Penalty Request Pending
+                                                        </span>
                                                     </td>
                                                     <td>
 
                                                         <ul class="list-inline font-size-20 contact-links mb-0" >
                                                             <li data-bs-toggle="modal" data-bs-target="#myModal" (click)="rejectCreditCardModal(RejectFormModal, cc)" class="list-inline-item px-2">
-                                                                <a href="javascript:void(0);" tooltip="Message">
+                                                                <a href="javascript:void(0);" tooltip="Reject Card">
                                                                 <i class="bx bx-x"></i>
                                                                 </a>
                                                             </li>
                                                             <li class="list-inline-item px-2" (click)="increaseCCLimit(cardLimitModal, cc)" >
-                                                                <a href="javascript:void(0);" tooltip="Message">
+                                                                <a href="javascript:void(0);" tooltip="Increase Limit">
                                                                 <i class="bx bx-up-arrow"></i>
                                                                 </a>
                                                             </li>
+                                                            <li class="list-inline-item px-2" (click)="showCreditLimitHistory(creditLimitHistoryModal, cc)" >
+                                                                <a href="javascript:void(0);" tooltip="Limit History">
+                                                                <i class="bx bx-history"></i>
+                                                                </a>
+                                                            </li>
+                                                            <ng-container *ngIf="hasPenaltyRequest(cc)">
+                                                                <li class="list-inline-item px-2" (click)="approvePenaltyRequest(approvePenaltyModal, cc)" >
+                                                                    <a href="javascript:void(0);" tooltip="Approve Penalty Request">
+                                                                    <i class="bx bx-check text-success"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-inline-item px-2" (click)="rejectPenaltyRequest(rejectPenaltyModal, cc)" >
+                                                                    <a href="javascript:void(0);" tooltip="Reject Penalty Request">
+                                                                    <i class="bx bx-x text-danger"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ng-container>
                                                         </ul>
                                                     </td>
                                                 </tr>
@@ -196,4 +218,190 @@
       </div>
 
     </form>
+</ng-template>
+
+<ng-template #approvePenaltyModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="approvePenaltyModalLabel">Approve Penalty Removal Request</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <form [formGroup]="penaltyActionFormGroup" novalidate>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="mb-3">
+                    <label for="penalty_removed" class="form-label">Penalty Amount to Remove (₹)</label>
+                    <input
+                        type="number"
+                        id="penalty_removed"
+                        class="form-control"
+                        formControlName="penalty_removed"
+                        min="0"
+                        step="0.01"
+                        required
+                        [class.is-invalid]="penaltyActionFormGroup.get('penalty_removed')?.invalid && (penaltyActionFormGroup.get('penalty_removed')?.touched || penaltyActionFormGroup.get('penalty_removed')?.dirty)"
+                    />
+                    <div class="invalid-feedback" *ngIf="penaltyActionFormGroup.get('penalty_removed')?.errors?.['required']">
+                        Penalty amount is required.
+                    </div>
+                    <div class="invalid-feedback" *ngIf="penaltyActionFormGroup.get('penalty_removed')?.errors?.['min']">
+                        Penalty amount must be 0 or greater.
+                    </div>
+                </div>
+                <div class="mb-3" *ngIf="cc_selected">
+                    <label class="form-label">Request Details</label>
+                    <div class="border p-3 bg-light">
+                        <p class="mb-1"><strong>User:</strong> {{ cc_selected?.user?.name }} ({{ cc_selected?.user?.user_id }})</p>
+                        <p class="mb-1"><strong>Card:</strong> {{ cc_selected?.card_number }}</p>
+                        <p class="mb-1"><strong>Current Penalty:</strong> ₹{{ cc_selected?.penalty || 0 }}</p>
+                        <p class="mb-1" *ngIf="getPenaltyRequestForCard(cc_selected)"><strong>Reason:</strong> {{ getPenaltyRequestForCard(cc_selected)?.reason }}</p>
+                        <p class="mb-1" *ngIf="getPenaltyRequestForCard(cc_selected)"><strong>Requested On:</strong> {{ getPenaltyRequestForCard(cc_selected)?.request_date | date }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Cancel</button>
+        <button type="button" class="btn btn-success waves-effect waves-light" [disabled]="!penaltyActionFormGroup.get('penalty_removed')?.valid" (click)="approvePenaltyRemovalRequest()">Approve Request</button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #rejectPenaltyModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="rejectPenaltyModalLabel">Reject Penalty Removal Request</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <form [formGroup]="penaltyActionFormGroup" novalidate>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="mb-3">
+                    <label for="admin_response" class="form-label">Reason for Rejection</label>
+                    <textarea
+                        id="admin_response"
+                        class="form-control"
+                        formControlName="admin_response"
+                        rows="3"
+                        required
+                        minlength="10"
+                        [class.is-invalid]="penaltyActionFormGroup.get('admin_response')?.invalid && (penaltyActionFormGroup.get('admin_response')?.touched || penaltyActionFormGroup.get('admin_response')?.dirty)"
+                    ></textarea>
+                    <div class="invalid-feedback" *ngIf="penaltyActionFormGroup.get('admin_response')?.errors?.['required']">
+                        Reason for rejection is required.
+                    </div>
+                    <div class="invalid-feedback" *ngIf="penaltyActionFormGroup.get('admin_response')?.errors?.['minlength']">
+                        Reason must be at least 10 characters.
+                    </div>
+                </div>
+                <div class="mb-3" *ngIf="cc_selected">
+                    <label class="form-label">Request Details</label>
+                    <div class="border p-3 bg-light">
+                        <p class="mb-1"><strong>User:</strong> {{ cc_selected?.user?.name }} ({{ cc_selected?.user?.user_id }})</p>
+                        <p class="mb-1"><strong>Card:</strong> {{ cc_selected?.card_number }}</p>
+                        <p class="mb-1"><strong>Current Penalty:</strong> ₹{{ cc_selected?.penalty || 0 }}</p>
+                        <p class="mb-1" *ngIf="getPenaltyRequestForCard(cc_selected)"><strong>Reason:</strong> {{ getPenaltyRequestForCard(cc_selected)?.reason }}</p>
+                        <p class="mb-1" *ngIf="getPenaltyRequestForCard(cc_selected)"><strong>Requested On:</strong> {{ getPenaltyRequestForCard(cc_selected)?.request_date | date }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Cancel</button>
+        <button type="button" class="btn btn-danger waves-effect waves-light" [disabled]="!penaltyActionFormGroup.get('admin_response')?.valid" (click)="rejectPenaltyRemovalRequest()">Reject Request</button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #creditLimitHistoryModal role="document" let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="creditLimitHistoryModalLabel">Credit Limit History</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+      <div class="row mb-3" *ngIf="cc_selected">
+          <div class="col-md-12">
+              <div class="card border">
+                  <div class="card-body">
+                      <h6 class="card-title">Card Details</h6>
+                      <div class="row">
+                          <div class="col-md-6">
+                              <p class="mb-1"><strong>Card Number:</strong> {{ cc_selected?.card_number }}</p>
+                              <p class="mb-1"><strong>User:</strong> {{ cc_selected?.user?.name }} ({{ cc_selected?.user?.user_id }})</p>
+                          </div>
+                          <div class="col-md-6">
+                              <p class="mb-1"><strong>Current Limit:</strong> ₹{{ cc_selected?.approved_credit_limit }}</p>
+                              <p class="mb-1"><strong>Status:</strong> {{ cc_selected?.status }}</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="row">
+          <div class="col-md-12">
+              <div *ngIf="limitHistoryLoading" class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <p class="mt-2">Loading limit history...</p>
+              </div>
+
+              <div *ngIf="!limitHistoryLoading && limitHistory.length === 0" class="text-center py-4">
+                  <img src="assets/img/not-found.png" width="100px" alt="" class="mb-3">
+                  <p class="text-muted">No limit history found for this card.</p>
+              </div>
+
+              <div *ngIf="!limitHistoryLoading && limitHistory.length > 0" class="timeline">
+                  <div class="timeline-item" *ngFor="let history of limitHistory; let i = index">
+                      <div class="timeline-marker">
+                          <i [class]="getChangeTypeIcon(history.change_type)"></i>
+                      </div>
+                      <div class="timeline-content">
+                          <div class="d-flex justify-content-between align-items-start">
+                              <div>
+                                  <h6 class="mb-1">
+                                      <span class="badge" [class]="history.change_type === 'Increase' ? 'bg-success' : 'bg-danger'">
+                                          {{ history.change_type }}
+                                      </span>
+                                      ₹{{ history.amount_changed | number }}
+                                  </h6>
+                                  <p class="mb-1 text-muted small">
+                                      {{ history.created_date | date:'medium' }}
+                                  </p>
+                                  <p class="mb-1">
+                                      <strong>Old Limit:</strong> ₹{{ history.old_limit | number }} →
+                                      <strong>New Limit:</strong> ₹{{ history.new_limit | number }}
+                                  </p>
+                                  <p class="mb-1" *ngIf="history.reason">
+                                      <strong>Reason:</strong> {{ history.reason }}
+                                  </p>
+                                  <p class="mb-1" *ngIf="history.reason_details">
+                                      <strong>Details:</strong> {{ history.reason_details }}
+                                  </p>
+                                  <p class="mb-1" *ngIf="history.updated_by_details">
+                                      <strong>Updated by:</strong> {{ history.updated_by_details.name }} ({{ history.updated_by_details.user_id }})
+                                      <span class="badge bg-secondary ms-1">{{ history.updated_by_role }}</span>
+                                  </p>
+                                  <p class="mb-1" *ngIf="history.approval_required">
+                                      <strong>Status:</strong>
+                                      <span class="badge" [class]="history.status === 'Approved' ? 'bg-success' : history.status === 'Rejected' ? 'bg-danger' : 'bg-warning'">
+                                          {{ history.status }}
+                                      </span>
+                                      <span *ngIf="history.approval_date"> on {{ history.approval_date | date:'medium' }}</span>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+  </div>
 </ng-template>

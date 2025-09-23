@@ -1,0 +1,237 @@
+<div class="container-fluid">
+    <app-page-title title="Fund Pins" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body border-bottom">
+                    <div class="row align-items-center mb-0">
+                        <!-- Search Box -->
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="search-box">
+                                <div class="position-relative">
+                                    <input type="text"
+                                           (keydown.enter)="onSearch($event)"
+                                           autocomplete="off"
+                                           id="searchTableList"
+                                           placeholder="Search PIN or description..."
+                                           class="form-control">
+                                    <i class="bx bx-search-alt search-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <select class="form-select"
+                                    (change)="onStatusChange($event)">
+                                <option value="">All Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Assigned">Assigned</option>
+                                <option value="Used">Used</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Hold">Hold</option>
+                                <option value="Expired">Expired</option>
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="col-lg-5 col-md-12 mb-3">
+                            <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                <button type="button"
+                                        (click)="openModal(createFundPinModal)"
+                                        class="btn btn-success btn-rounded">
+                                    <i class="mdi mdi-plus me-1"></i>
+                                    Create Fund PIN
+                                </button>
+                                <button type="button"
+                                        [disabled]="selectedPins.length == 0"
+                                        (click)="openModal(assignModal)"
+                                        class="btn btn-light btn-rounded">
+                                    <i class="bx bx-user me-1"></i>
+                                    Assign Selected ({{selectedPins.length}})
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 150px;" *ngIf="!fundPinList || fundPinList.length === 0">
+                            <img src="assets/img/not-found.png" width="300px" alt="">
+                            <p class="text-mutes mt-2">No fund pins found.</p>
+                        </div>
+                        <div class="table-responsive" *ngIf="fundPinList.length !== 0">
+                            <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="form-check font-size-16">
+                                                <input type="checkbox" class="form-check-input" id="selectAll">
+                                                <label class="form-check-label" for="selectAll"></label>
+                                            </div>
+                                        </th>
+                                        <th>S.No.</th>
+                                        <th>PIN</th>
+                                        <th>Amount</th>
+                                        <th>Assigned To</th>
+                                        <th>Assigned On</th>
+                                        <th>Used By</th>
+                                        <th>Used On</th>
+                                        <th>Status</th>
+                                        <th>Created On</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let pin of fundPinList; let i = index">
+                                        <tr>
+                                            <td>
+                                                <div class="form-check font-size-16" *ngIf="pin.assigned_user[0]?.name == null && !pin.used_by && pin.status !== 'Used'">
+                                                    <input type="checkbox" class="form-check-input" [value]="pin._id" (change)="pinSelected($event, pin)">
+                                                    <label class="form-check-label"></label>
+                                                </div>
+                                            </td>
+                                            <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                                            <td>
+                                                <span class="font-monospace">{{ pin.pin }}</span>
+                                                <br>
+                                                <small class="text-muted" *ngIf="pin.description">{{ pin.description }}</small>
+                                            </td>
+                                            <td><strong>₹ {{ pin.amount }}</strong></td>
+                                            <td>
+                                                <span *ngIf="pin.assigned_user[0]?.name">{{ pin.assigned_user[0]?.name }}<br>({{pin.assigned_user[0]?.user_id}})</span>
+                                                <span *ngIf="!pin.assigned_user[0]?.name">-</span>
+                                            </td>
+                                            <td>{{ pin.assigned_on ? (pin.assigned_on | date) : '-' }}</td>
+                                            <td>
+                                                <span *ngIf="pin.used_by_user[0]?.name">{{ pin.used_by_user[0]?.name }}<br>({{pin.used_by_user[0]?.user_id}})</span>
+                                                <span *ngIf="!pin.used_by_user[0]?.name">-</span>
+                                            </td>
+                                            <td>{{ pin.used_on ? (pin.used_on | date) : '-' }}</td>
+                                            <td>
+                                                <span class="badge" [ngClass]="getStatusBadgeClass(pin.status)">{{ pin.status }}</span>
+                                                <br *ngIf="pin.expiry_date">
+                                                <small *ngIf="pin.expiry_date" class="text-muted">Expires: {{ pin.expiry_date | date }}</small>
+                                            </td>
+                                            <td>{{ pin.created_date | date }}</td>
+                                            <td>
+                                                <ul class="list-inline font-size-20 contact-links mb-0">
+                                                    <li *ngIf="!pin.used_by && pin.status !== 'Used'" (click)="deleteFundPin(pin)" class="list-inline-item px-2">
+                                                        <a href="javascript:void(0);" tooltip="Delete">
+                                                            <i class="bx bx-trash text-danger"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </tbody>
+                            </table>
+                            <div class="row justify-content-md-between align-items-md-center mt-2">
+                                <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+                                        Showing <b>{{ (page - 1) * pageSize + 1 }}</b> to {{ findPageShowing() }} of {{ total }} entries
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-5">
+                                    <div class="text-md-right float-md-end pagination-rounded">
+                                        <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                                        </ngb-pagination>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Fund PIN Modal -->
+<ng-template #createFundPinModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Create Fund PIN</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="createFundPinForm">
+        <div class="modal-body">
+            <!-- Amount -->
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="amount" formControlName="amount" placeholder="Enter amount" min="1" step="0.01">
+                <div class="text-danger mt-1" *ngIf="createFundPinForm.get('amount')?.touched && createFundPinForm.get('amount')?.hasError('required')">
+                    Amount is required.
+                </div>
+                <div class="text-danger mt-1" *ngIf="createFundPinForm.get('amount')?.touched && createFundPinForm.get('amount')?.hasError('min')">
+                    Amount must be greater than 0.
+                </div>
+            </div>
+
+            <!-- Assign To (Optional) -->
+            <div class="mb-3">
+                <label for="assignTo" class="form-label">Assign To (Optional)</label>
+                <input type="text" class="form-control" id="assignTo" formControlName="assign_to" placeholder="Enter User ID to assign immediately" (blur)="getCreateUserDetails()" [(ngModel)]="createUserIDText">
+                <div *ngIf="createUserDetails" class="mt-1">
+                    <small><strong>Name:</strong> {{ createUserDetails.name }}</small><br>
+                    <small><strong>User ID:</strong> {{ createUserDetails.user_id }}</small>
+                </div>
+                <div *ngIf="createFundPinForm.get('assign_to')?.touched && createFundPinForm.get('assign_to')?.errors?.['userNotFound']" class="text-danger mt-1">
+                    User not found. Please enter a valid User ID.
+                </div>
+                <small class="text-muted">Leave empty to create unassigned PIN</small>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Description (Optional)</label>
+                <input type="text" class="form-control" id="description" formControlName="description" placeholder="Enter description">
+            </div>
+
+            <!-- Expiry Date -->
+            <div class="mb-3">
+                <label for="expiryDate" class="form-label">Expiry Date (Optional)</label>
+                <input type="date" class="form-control" id="expiryDate" formControlName="expiry_date">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+            <button type="submit" class="btn btn-primary waves-effect waves-light" [disabled]="createFundPinForm.invalid" (click)="createFundPin()">Create PIN</button>
+        </div>
+    </form>
+</ng-template>
+
+<!-- Assign Fund PIN Modal -->
+<ng-template #assignModal role="document" let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Assign Fund PINs ({{selectedPins.length}} selected)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <form [formGroup]="assignFundPinForm">
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="assignToUser" class="form-label">Assign To</label>
+                <input type="text" class="form-control" id="assignToUser" (blur)="getUserDetails()" formControlName="assign_to" placeholder="Enter User ID" [(ngModel)]="userIDText" required>
+                <div *ngIf="userDetails" class="mt-1">
+                    <small><strong>Name:</strong> {{ userDetails.name }}</small><br>
+                    <small><strong>User ID:</strong> {{ userDetails.user_id }}</small>
+                </div>
+
+                <div *ngIf="assignFundPinForm.get('assign_to')?.touched && assignFundPinForm.get('assign_to')?.errors?.['required']" class="text-danger mt-1">
+                    Assigned To is required.
+                </div>
+                <div *ngIf="assignFundPinForm.get('assign_to')?.touched && assignFundPinForm.get('assign_to')?.errors?.['userNotFound']" class="text-danger mt-1">
+                    User not found. Please enter a valid User ID.
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" (click)="modal.close('Close click')">Close</button>
+            <button type="submit" class="btn btn-primary waves-effect waves-light" [disabled]="assignFundPinForm.invalid" (click)="assignFundPins()">Assign PINs</button>
+        </div>
+    </form>
+</ng-template>

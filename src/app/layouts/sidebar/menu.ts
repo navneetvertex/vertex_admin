@@ -94,6 +94,12 @@ export const MENU: MenuItem[] = [
                 parentId: 3,
                 label: 'Assigned Pins',
                 link: '/pin-management/list'
+            },
+            {
+                id: 6,
+                parentId: 3,
+                label: 'Fund Pins',
+                link: '/pin-management/fund-pins'
             }
         ]
     },
@@ -143,6 +149,12 @@ export const MENU: MenuItem[] = [
                 parentId: 5,
                 label: 'Transactions',
                 link: '/credit-management/all-transanction'
+            },
+            {
+                id: 12,
+                parentId: 5,
+                label: 'Reports',
+                link: '/credit-management/reports'
             }
         ]
     },
@@ -211,6 +223,12 @@ export const MENU: MenuItem[] = [
                 parentId: 7,
                 label: 'Admin Transactions',
                 link: '/loan-management/admin-transanction'
+            },
+            {
+                id: 20,
+                parentId: 7,
+                label: 'Loan Reports',
+                link: '/loan-management/reports'
             }
         ]
     },

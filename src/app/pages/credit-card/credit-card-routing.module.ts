@@ -6,6 +6,7 @@ import { UserAmountComponent } from './components/user-amount/user-amount.compon
 import { PaybleAmountComponent } from './components/payble-amount/payble-amount.component';
 import { AllTransanctionComponent } from './components/all-transanction/all-transanction.component';
 import { CardListComponent } from './components/card-list/card-list.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 const routes: Routes = [
   { path: 'list', component: CardListComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'request-amount', component: UserAmountComponent },
   { path: 'payable-amount', component: PaybleAmountComponent },
   { path: 'all-transanction', component: AllTransanctionComponent },
+  { path: 'reports', component: ReportsComponent },
 ];
 
 @NgModule({

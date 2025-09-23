@@ -45,4 +45,30 @@ getPersonalLoanSchedule(loanId: string) {
   return this.http.get<any>(`${environment.api_url}loans/personal/schedule/${loanId}`);
 }
 
+// ============================================================================
+// COMPREHENSIVE LOAN REPORTING METHODS
+// ============================================================================
+
+/**
+ * Get all users loan report with filtering and pagination
+ */
+getAllUsersLoanReport(filters: any = {}) {
+  let queryParams = new URLSearchParams();
+  
+  Object.keys(filters).forEach(key => {
+    if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
+      queryParams.append(key, filters[key].toString());
+    }
+  });
+
+  return this.http.get<any>(`${environment.api_url}loans/reports/all-users?${queryParams.toString()}`);
+}
+
+/**
+ * Get comprehensive loan report for specific loan
+ */
+getLoanComprehensiveReport(loanId: string) {
+  return this.http.get<any>(`${environment.api_url}loans/reports/comprehensive/${loanId}`);
+}
+
 }

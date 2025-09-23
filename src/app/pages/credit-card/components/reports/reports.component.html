@@ -1,0 +1,552 @@
+<div class="container-fluid">
+    <app-page-title title="Sahyog Card Reports" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+    
+    <!-- Summary Cards -->
+    <div class="row" *ngIf="summary.totalCards">
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Total Credit Cards</p>
+                            <h4 class="mb-0">{{ summary.totalCards | number }}</h4>
+                        </div>
+                        <div class="text-primary">
+                            <i class="ri-bank-card-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Total Credit Limit</p>
+                            <h4 class="mb-0">{{ formatCurrency(summary.totalCreditLimit) }}</h4>
+                        </div>
+                        <div class="text-success">
+                            <i class="ri-money-rupee-circle-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Total Outstanding</p>
+                            <h4 class="mb-0">{{ formatCurrency(summary.totalOutstandingAmount) }}</h4>
+                        </div>
+                        <div class="text-warning">
+                            <i class="ri-alert-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Overall Utilization</p>
+                            <h4 class="mb-0">{{ summary.overallUtilizationRate }}%</h4>
+                        </div>
+                        <div class="text-info">
+                            <i class="ri-pie-chart-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Analysis Cards -->
+    <div class="row" *ngIf="summary.totalCards">
+        <div class="col-xl-4 col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">High Risk Cards</p>
+                            <h4 class="mb-0 text-danger">{{ summary.highRiskCards | number }}</h4>
+                        </div>
+                        <div class="text-danger">
+                            <i class="ri-error-warning-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Cards with Outstanding</p>
+                            <h4 class="mb-0 text-warning">{{ summary.cardsWithOutstanding | number }}</h4>
+                        </div>
+                        <div class="text-warning">
+                            <i class="ri-time-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Cards with Penalty</p>
+                            <h4 class="mb-0 text-danger">{{ summary.cardsWithPenalty | number }}</h4>
+                        </div>
+                        <div class="text-danger">
+                            <i class="ri-close-circle-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title mb-0 flex-grow-1">Credit Card Reports</h4>
+                        <div class="flex-shrink-0">
+                            <button type="button" class="btn btn-primary btn-sm" (click)="exportReport()" [disabled]="isExporting">
+                                <i class="ri-download-line me-1"></i>
+                                <span *ngIf="!isExporting">Export CSV</span>
+                                <span *ngIf="isExporting">Exporting...</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Filter Section -->
+                    <div class="row mb-3">
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label class="form-label">Search</label>
+                            <input type="text" class="form-control" [(ngModel)]="filters.search" 
+                                   (ngModelChange)="onFilterChange()" placeholder="Name, Email, Card Number...">
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Card Status</label>
+                            <select class="form-select" [(ngModel)]="filters.status" (ngModelChange)="onFilterChange()">
+                                <option value="">All Status</option>
+                                <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Risk Level</label>
+                            <select class="form-select" [(ngModel)]="filters.riskLevel" (ngModelChange)="onFilterChange()">
+                                <option value="">All Risk Levels</option>
+                                <option *ngFor="let risk of riskLevelOptions" [value]="risk">{{ risk }}</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">User Status</label>
+                            <select class="form-select" [(ngModel)]="filters.userStatus" (ngModelChange)="onFilterChange()">
+                                <option value="">All Users</option>
+                                <option *ngFor="let status of userStatusOptions" [value]="status">{{ status }}</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-2">
+                            <label class="form-label">Sort By</label>
+                            <div class="d-flex gap-2">
+                                <select class="form-select" [(ngModel)]="filters.sortBy" (ngModelChange)="onFilterChange()">
+                                    <option *ngFor="let sort of sortOptions" [value]="sort.value">{{ sort.label }}</option>
+                                </select>
+                                <select class="form-select" [(ngModel)]="filters.sortOrder" (ngModelChange)="onFilterChange()">
+                                    <option value="desc">Desc</option>
+                                    <option value="asc">Asc</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Filters -->
+                    <div class="row mb-3">
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Min Credit Limit</label>
+                            <input type="number" class="form-control" [(ngModel)]="filters.creditLimitMin" 
+                                   (ngModelChange)="onFilterChange()" placeholder="Min Amount">
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Max Credit Limit</label>
+                            <input type="number" class="form-control" [(ngModel)]="filters.creditLimitMax" 
+                                   (ngModelChange)="onFilterChange()" placeholder="Max Amount">
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Min Outstanding</label>
+                            <input type="number" class="form-control" [(ngModel)]="filters.outstandingMin" 
+                                   (ngModelChange)="onFilterChange()" placeholder="Min Outstanding">
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Max Outstanding</label>
+                            <input type="number" class="form-control" [(ngModel)]="filters.outstandingMax" 
+                                   (ngModelChange)="onFilterChange()" placeholder="Max Outstanding">
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Has Outstanding</label>
+                            <select class="form-select" [(ngModel)]="filters.hasOutstanding" (ngModelChange)="onFilterChange()">
+                                <option value="">All</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-xl-2 col-lg-3 col-md-6 mb-2">
+                            <label class="form-label">Has Penalty</label>
+                            <select class="form-select" [(ngModel)]="filters.hasPenalty" (ngModelChange)="onFilterChange()">
+                                <option value="">All</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilters()">
+                                <i class="ri-refresh-line me-1"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div *ngIf="loading" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading reports...</p>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div *ngIf="!loading" class="table-responsive">
+                        <table class="table table-nowrap table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User Details</th>
+                                    <th>Card Info</th>
+                                    <th>Credit Details</th>
+                                    <th>Outstanding</th>
+                                    <th>Risk & Status</th>
+                                    <th>Activity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let report of creditCardReports">
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">{{ report.userName }}</h6>
+                                            <p class="text-muted mb-0 font-size-12">ID: {{ report.userIdDisplay }}</p>
+                                            <p class="text-muted mb-0 font-size-12">{{ report.userEmail }}</p>
+                                            <span [ngClass]="getStatusClass(report.userStatus)">{{ report.userStatus }}</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">{{ report.cardNumber }}</h6>
+                                            <p class="text-muted mb-0 font-size-12">Limit: {{ formatCurrency(report.approvedLimit) }}</p>
+                                            <p class="text-muted mb-0 font-size-12">Rate: {{ report.interestRate }}%</p>
+                                            <span [ngClass]="getStatusClass(report.cardStatus)">{{ report.cardStatus }}</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div>
+                                            <p class="mb-1"><strong>Used:</strong> {{ formatCurrency(report.totalCredit) }}</p>
+                                            <p class="mb-1"><strong>Available:</strong> {{ formatCurrency(report.availableCredit) }}</p>
+                                            <p class="mb-0"><strong>Utilization:</strong> {{ report.creditUtilization }}%</p>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div>
+                                            <p class="mb-1"><strong>Total:</strong> {{ formatCurrency(report.totalOutstanding) }}</p>
+                                            <p class="mb-1 font-size-12">Principal: {{ formatCurrency(report.outstandingPrincipal) }}</p>
+                                            <p class="mb-1 font-size-12" *ngIf="report.outstandingInterest > 0">
+                                                Interest: <span class="text-warning">{{ formatCurrency(report.outstandingInterest) }}</span>
+                                            </p>
+                                            <p class="mb-0 font-size-12" *ngIf="report.outstandingPenalty > 0">
+                                                Penalty: <span class="text-danger">{{ formatCurrency(report.outstandingPenalty) }}</span>
+                                            </p>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div>
+                                            <span [ngClass]="getRiskLevelClass(report.riskLevel)" class="mb-2">{{ report.riskLevel }} Risk</span>
+                                            <div class="mt-1">
+                                                <small class="text-success" *ngIf="!report.hasOutstandingAmount">✓ No Outstanding</small>
+                                                <small class="text-warning" *ngIf="report.hasOutstandingAmount && !report.hasOverdueAmount">⚠ Has Outstanding</small>
+                                                <small class="text-danger" *ngIf="report.hasOverdueAmount">⚠ Overdue</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div>
+                                            <p class="mb-1 font-size-12">Transactions: {{ report.totalTransactions }}</p>
+                                            <p class="mb-1 font-size-12">Age: {{ report.accountAge }} days</p>
+                                            <p class="mb-0 font-size-12">Last Activity: {{ formatDate(report.lastTransactionDate) }}</p>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                (click)="viewUserDetails(report.userId, report.cardId, userDetailModal)"
+                                                [disabled]="loadingDetail">
+                                            <i class="ri-eye-line me-1"></i> View Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <tr *ngIf="creditCardReports.length === 0">
+                                    <td colspan="7" class="text-center py-4">
+                                        <i class="ri-inbox-line font-size-48 text-muted"></i>
+                                        <p class="mt-2 text-muted">No credit card reports found</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="row mt-3" *ngIf="totalPages > 1">
+                        <div class="col-sm-6">
+                            <div>
+                                <p class="mb-sm-0">
+                                    Showing {{ paginationStartIndex }} to {{ paginationEndIndex }} 
+                                    of {{ totalRecords }} entries
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="float-sm-end">
+                                <ngb-pagination
+                                    [(page)]="currentPage"
+                                    [pageSize]="limit"
+                                    [collectionSize]="totalRecords"
+                                    [maxSize]="5"
+                                    [rotate]="true"
+                                    [boundaryLinks]="true"
+                                    (pageChange)="onPageChange($event)">
+                                </ngb-pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Detail Modal -->
+<ng-template #userDetailModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Comprehensive Credit Card Report</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    
+    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+        <!-- Loading -->
+        <div *ngIf="loadingDetail" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Loading detailed report...</p>
+        </div>
+        
+        <!-- Content -->
+        <div *ngIf="selectedUserReport && !loadingDetail">
+            <!-- User and Card Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">User Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless table-sm">
+                                <tr><td><strong>Name:</strong></td><td>{{ selectedUserReport.userInfo.name }}</td></tr>
+                                <tr><td><strong>User ID:</strong></td><td>{{ selectedUserReport.userInfo.userIdDisplay }}</td></tr>
+                                <tr><td><strong>Email:</strong></td><td>{{ selectedUserReport.userInfo.email }}</td></tr>
+                                <tr><td><strong>Phone:</strong></td><td>{{ selectedUserReport.userInfo.phone }}</td></tr>
+                                <tr><td><strong>Status:</strong></td><td><span [ngClass]="getStatusClass(selectedUserReport.userInfo.userStatus)">{{ selectedUserReport.userInfo.userStatus }}</span></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Card Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless table-sm">
+                                <tr><td><strong>Card Number:</strong></td><td>{{ selectedUserReport.cardInfo.cardNumber }}</td></tr>
+                                <tr><td><strong>Status:</strong></td><td><span [ngClass]="getStatusClass(selectedUserReport.cardInfo.status)">{{ selectedUserReport.cardInfo.status }}</span></td></tr>
+                                <tr><td><strong>Credit Limit:</strong></td><td>{{ formatCurrency(selectedUserReport.cardInfo.approvedLimit) }}</td></tr>
+                                <tr><td><strong>Interest Rate:</strong></td><td>{{ selectedUserReport.cardInfo.interestRate }}%</td></tr>
+                                <tr><td><strong>Start Date:</strong></td><td>{{ formatDate(selectedUserReport.cardInfo.startDate) }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Financial Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Financial Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Credit Usage</h6>
+                            <table class="table table-borderless table-sm">
+                                <tr><td>Credit Limit:</td><td><strong>{{ formatCurrency(selectedUserReport.financialSummary.creditLimit) }}</strong></td></tr>
+                                <tr><td>Credit Used:</td><td><strong>{{ formatCurrency(selectedUserReport.financialSummary.totalCreditUsed) }}</strong></td></tr>
+                                <tr><td>Available Credit:</td><td><strong>{{ formatCurrency(selectedUserReport.financialSummary.availableCredit) }}</strong></td></tr>
+                                <tr><td>Utilization:</td><td><strong>{{ selectedUserReport.financialSummary.creditUtilization }}</strong></td></tr>
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h6>Outstanding Amounts</h6>
+                            <table class="table table-borderless table-sm">
+                                <tr><td>Total Outstanding:</td><td><strong class="text-primary">{{ formatCurrency(selectedUserReport.financialSummary.totalOutstanding) }}</strong></td></tr>
+                                <tr><td>Principal:</td><td>{{ formatCurrency(selectedUserReport.financialSummary.outstandingPrincipal) }}</td></tr>
+                                <tr><td>Interest:</td><td><span class="text-warning">{{ formatCurrency(selectedUserReport.financialSummary.outstandingInterest) }}</span></td></tr>
+                                <tr><td>Penalty:</td><td><span class="text-danger">{{ formatCurrency(selectedUserReport.financialSummary.outstandingPenalty) }}</span></td></tr>
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h6>Payment History</h6>
+                            <table class="table table-borderless table-sm">
+                                <tr><td>Total Payments:</td><td><strong>{{ formatCurrency(selectedUserReport.financialSummary.totalPaymentsMade) }}</strong></td></tr>
+                                <tr><td>Payment Ratio:</td><td>{{ selectedUserReport.financialSummary.paymentToDebtRatio }}</td></tr>
+                                <tr><td>Interest Paid:</td><td>{{ formatCurrency(selectedUserReport.financialSummary.totalInterestPaid) }}</td></tr>
+                                <tr><td>Penalty Paid:</td><td>{{ formatCurrency(selectedUserReport.financialSummary.totalPenaltyPaid) }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Health & Risk -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Account Health</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Risk Level: </strong>
+                                <span [ngClass]="getRiskLevelClass(selectedUserReport.accountHealth.riskLevel)">
+                                    {{ selectedUserReport.accountHealth.riskLevel }}
+                                </span>
+                            </div>
+                            <table class="table table-borderless table-sm">
+                                <tr><td>Account Active:</td><td><span class="badge" [ngClass]="selectedUserReport.accountHealth.isActive ? 'bg-success' : 'bg-danger'">{{ selectedUserReport.accountHealth.isActive ? 'Yes' : 'No' }}</span></td></tr>
+                                <tr><td>Has Outstanding:</td><td><span class="badge" [ngClass]="selectedUserReport.accountHealth.hasOutstanding ? 'bg-warning' : 'bg-success'">{{ selectedUserReport.accountHealth.hasOutstanding ? 'Yes' : 'No' }}</span></td></tr>
+                                <tr><td>Has Overdue:</td><td><span class="badge" [ngClass]="selectedUserReport.accountHealth.hasOverdue ? 'bg-danger' : 'bg-success'">{{ selectedUserReport.accountHealth.hasOverdue ? 'Yes' : 'No' }}</span></td></tr>
+                                <tr><td>Account Age:</td><td>{{ selectedUserReport.accountHealth.accountAge }} days</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Transaction Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless table-sm">
+                                <tr><td>Total Transactions:</td><td><strong>{{ selectedUserReport.transactionStats.totalTransactions }}</strong></td></tr>
+                                <tr><td>Credit Transactions:</td><td>{{ selectedUserReport.transactionStats.creditTransactions }}</td></tr>
+                                <tr><td>Payment Transactions:</td><td>{{ selectedUserReport.transactionStats.paymentTransactions }}</td></tr>
+                                <tr><td>Interest Transactions:</td><td>{{ selectedUserReport.transactionStats.interestTransactions }}</td></tr>
+                                <tr><td>Penalty Transactions:</td><td>{{ selectedUserReport.transactionStats.penaltyTransactions }}</td></tr>
+                                <tr><td>First Transaction:</td><td>{{ formatDate(selectedUserReport.transactionStats.firstTransactionDate) }}</td></tr>
+                                <tr><td>Last Transaction:</td><td>{{ formatDate(selectedUserReport.transactionStats.lastTransactionDate) }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Transactions (Last 10)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let txn of selectedUserReport.recentActivity.recentTransactions">
+                                    <td>{{ formatDate(txn.created_date) }}</td>
+                                    <td>
+                                        <span class="badge" 
+                                              [ngClass]="txn.transaction_type === 'credit' ? 'bg-info' : 
+                                                         txn.transaction_type === 'payment' ? 'bg-success' : 
+                                                         txn.transaction_type === 'interest' ? 'bg-warning' : 
+                                                         txn.transaction_type === 'penalty' ? 'bg-danger' : 'bg-secondary'">
+                                            {{ txn.transaction_type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ formatCurrency(txn.amount) }}</td>
+                                    <td>{{ txn.description || 'N/A' }}</td>
+                                </tr>
+                                <tr *ngIf="selectedUserReport.recentActivity.recentTransactions?.length === 0">
+                                    <td colspan="4" class="text-center text-muted">No recent transactions</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    </div>
+</ng-template>
