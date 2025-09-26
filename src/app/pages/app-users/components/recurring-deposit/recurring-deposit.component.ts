@@ -28,6 +28,37 @@ export class RecurringDepositComponent implements OnInit {
     this.getDepositSettings();
   }
 
+  // Custom validator for amount based on interval
+  amountValidator(control: FormControl) {
+    const formGroup = control.parent as FormGroup;
+    if (!formGroup) return null;
+
+    const interval = formGroup.get('interval')?.value;
+    const amount = control.value;
+
+    if (!amount || !interval) return null;
+
+    const numAmount = parseFloat(amount);
+
+    if (interval === 'daily') {
+      if (numAmount < 10) {
+        return { minAmount: { required: 10, actual: numAmount } };
+      }
+      if (numAmount > 5000) {
+        return { maxAmount: { required: 5000, actual: numAmount } };
+      }
+    } else if (interval === 'monthly') {
+      if (numAmount < 100) {
+        return { minAmount: { required: 100, actual: numAmount } };
+      }
+      if (numAmount > 10000) {
+        return { maxAmount: { required: 10000, actual: numAmount } };
+      }
+    }
+
+    return null;
+  }
+
   breadCrumbItems: Array<{}>;
   saveDepositSettings : FormGroup
   editDepositSettings : FormGroup
@@ -52,40 +83,90 @@ export class RecurringDepositComponent implements OnInit {
   depositSummary: any = null;
   isLoadingAccountStatistics: boolean = false;
 
+  // Additional properties for enhanced UI
+  rdOutstandingAmounts: { [key: string]: any } = {}; // Store outstanding amounts for multiple RDs
+  isRDOpened: boolean = false;
+  canMakeDeposits: boolean = false;
+  canRequestClosure: boolean = false;
+  totalRDAccounts: number = 0;
+  activeRDAccounts: number = 0;
+  completedRDAccounts: number = 0;
+  pendingRDAccounts: number = 0;
+  totalOutstandingAmount: number = 0;
+
   total: number = 0;
   page: number = 1;
   pageSize: number = 10;
 
-  outstanding(user: string, rd_id?: string) {
-    console.log('Loading outstanding for RD:', rd_id);
-    this.isLoadingAccountStatistics = true;
-    
-    this.depositService.findOutstandingDepositsOfRecurring(user, rd_id).subscribe((res: any) => {
+  // Checkbox selection properties
+  selectAll: boolean = false;
+  selectedUsers: any[] = [];
+  selectedUserIds: string[] = [];
+  globalSelections: Map<string, boolean> = new Map(); // Track selections across all pages
+  totalSelectedCount: number = 0;
+  previousFilterState: string = ''; // Track filter changes
+
+  // Notification modal properties
+  notificationForm: FormGroup;
+  isSendingNotification: boolean = false;
+
+  outstanding(user_id: any, setting_id: any) {
+    this.depositService.findOutstandingDepositsOfRecurring(user_id, setting_id).subscribe((res: any) => {
       if (res && res.status === 'success') {
-        const outstandingDeposits = res.data || [];
-        this.outstandingAmount = outstandingDeposits;
-        this.depositSummary = res.data.depositSummary;
-        
-        console.log('Outstanding data loaded:', {
-          rd_id,
-          outstanding: this.outstandingAmount,
-          summary: this.depositSummary
-        });
-        
-        if (outstandingDeposits !== 0) {
-          this.depositFormGroup.patchValue({paid_amount: this.outstandingAmount.outstanding });
-          this.rdSettlementFormGroup.patchValue({total_principal: this.depositSummary.paid, total_penalty: this.depositSummary.penalty, total_interest: this.depositSummary.interest, total_net: this.depositSummary.total });
-        }
-        
-        this.isLoadingAccountStatistics = false;
+        this.outstandingAmount = res.data;
+        console.log('Outstanding amount:', this.outstandingAmount);
       } else {
         this.toast.error('Failed to fetch outstanding amount', 'Error');
-        this.isLoadingAccountStatistics = false;
       }
     }, error => {
       console.error('Error fetching outstanding amount:', error);
-      this.isLoadingAccountStatistics = false;
+      this.toast.error('Error fetching outstanding amount', 'Error');
     });
+  }
+
+  selectRDAccount(account: any) {
+    this.selectedSetting = account;
+    this.getDeposits(account._id);
+    this.depositFormGroup.patchValue({ payment_interval: account.interval, transanction_id: this.generateUniqueId() });
+    
+    // Load outstanding amount for selected account
+    if (account.status === 'Approved') {
+      this.outstanding(this.user_id, account._id);
+    }
+  }
+
+  loadOutstandingAmountsForAllAccounts() {
+    this.depositSettingsList.forEach(account => {
+      if (account.status === 'Approved') {
+        this.depositService.findOutstandingDepositsOfRecurring(this.user_id, account._id).subscribe((res: any) => {
+          if (res && res.status === 'success') {
+            this.rdOutstandingAmounts[account._id] = res.data;
+          }
+        }, error => {
+          console.error('Error loading outstanding amount for account:', account._id, error);
+        });
+      }
+    });
+  }
+
+  refreshStatistics() {
+    // Calculate statistics based on current data
+    this.totalRDAccounts = this.depositSettingsList.length;
+    this.activeRDAccounts = this.depositSettingsList.filter(account => account.status === 'Approved').length;
+    this.completedRDAccounts = this.depositSettingsList.filter(account => account.status === 'Completed').length;
+    this.pendingRDAccounts = this.depositSettingsList.filter(account => account.status === 'Requested').length;
+    
+    // Calculate total outstanding amount across all approved accounts
+    this.totalOutstandingAmount = 0;
+    Object.values(this.rdOutstandingAmounts).forEach((outstanding: any) => {
+      if (outstanding && outstanding.outstanding) {
+        this.totalOutstandingAmount += parseFloat(outstanding.outstanding);
+      }
+    });
+  }
+
+  trackBySettingId(index: number, setting: any): string {
+    return setting._id;
   }
 
   ngOnInit(): void {
@@ -95,8 +176,12 @@ export class RecurringDepositComponent implements OnInit {
         annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
         interval: new FormControl('', [Validators.required]),
         duration: new FormControl('', [Validators.required]),
-        amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-        penality_rate: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+        amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$'), this.amountValidator.bind(this)]),
+    });
+
+    // Revalidate amount when interval changes
+    this.saveDepositSettings.get('interval')?.valueChanges.subscribe(() => {
+      this.saveDepositSettings.get('amount')?.updateValueAndValidity();
     });
 
     this.editDepositSettings = new FormGroup({
@@ -104,8 +189,12 @@ export class RecurringDepositComponent implements OnInit {
         annual_rate: new FormControl('' , [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
         interval: new FormControl('', [Validators.required]),
         duration: new FormControl('', [Validators.required]),
-        amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-        penality_rate: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+        amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$'), this.amountValidator.bind(this)]),
+    });
+
+    // Revalidate amount when interval changes for edit form
+    this.editDepositSettings.get('interval')?.valueChanges.subscribe(() => {
+      this.editDepositSettings.get('amount')?.updateValueAndValidity();
     });
 
     this.depositFormGroup = new FormGroup({
@@ -150,6 +239,13 @@ export class RecurringDepositComponent implements OnInit {
     // Calculate final amount when penalty changes
     this.closeRDFormGroup.get('penalty_amount')?.valueChanges.subscribe(value => {
       this.calculateFinalAmount();
+    });
+
+    // Initialize notification form
+    this.notificationForm = new FormGroup({
+      title: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      body: new FormControl('', [Validators.required, Validators.minLength(10)]),
+      sendSMS: new FormControl(false)
     });
 
     this.settingsService.getGeneralSettings$().subscribe(settings => {
@@ -202,6 +298,33 @@ export class RecurringDepositComponent implements OnInit {
     this.depositService.getRDepositSettings(this.user_id).subscribe((res: any) => {
       if (res && res.status === 'success') {
         this.depositSettingsList = res.data.settings;
+
+        // Sort to prioritize approved accounts first
+        this.depositSettingsList.sort((a: any, b: any) => {
+          if (a.status === 'Approved' && b.status !== 'Approved') return -1;
+          if (a.status !== 'Approved' && b.status === 'Approved') return 1;
+          return 0;
+        });
+
+        console.log('Deposit settings:', this.depositSettingsList);
+
+        // Check if RD account exists and is in an active state
+        this.isRDOpened = this.depositSettingsList.some(setting => 
+          setting.status === 'Approved' || 
+          setting.status === 'Completed' || 
+          setting.status === 'Close-Requested'
+        );
+        
+        // Check if user can make new deposits (only for Approved status)
+        this.canMakeDeposits = this.depositSettingsList.some(setting => 
+          setting.status === 'Approved'
+        );
+        
+        // Check if user can request closure (only for Approved status)
+        this.canRequestClosure = this.depositSettingsList.some(setting => 
+          setting.status === 'Approved'
+        );
+
         this.canCreateSettings = this.depositSettingsList.some(setting => setting.status !== 'Requested');
 
         if(!this.canCreateSettings) {
@@ -210,17 +333,29 @@ export class RecurringDepositComponent implements OnInit {
            this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
         }
 
-        if(this.depositSettingsList.length > 0 && this.canCreateSettings) {
-          this.getDeposits(this.depositSettingsList[0]._id);
-          this.selectedSetting = this.depositSettingsList[0]
-          this.editDepositSettings.patchValue(this.depositSettingsList[0])
+        if(this.isRDOpened && this.depositSettingsList.some(setting => setting.status === 'Approved')) {
+          // Load outstanding amounts for all RD accounts to display in overview cards
+          this.loadOutstandingAmountsForAllAccounts();
+        }
+        
+        // Refresh statistics after a short delay to ensure data is loaded
+        setTimeout(() => {
+          this.refreshStatistics();
+        }, 500);
+        
+        if(this.depositSettingsList.length > 0 && this.isRDOpened) {
+          // Prioritize approved accounts for selection
+          const approvedAccount = this.depositSettingsList.find(setting => setting.status === 'Approved');
+          const defaultAccount = approvedAccount || this.depositSettingsList[0];
           
-          // Only load outstanding data for approved accounts
-          if (this.depositSettingsList[0].status === 'Approved') {
-            this.outstanding(this.user_id, this.depositSettingsList[0]._id);
-          }
-
-          this.depositFormGroup.patchValue({ transanction_id: this.generateUniqueId(),  payment_interval: this.depositSettingsList[0].interval});
+          this.getDeposits(defaultAccount._id);
+          this.depositFormGroup.patchValue({  payment_interval: defaultAccount.interval, transanction_id: this.generateUniqueId()});
+          
+          // Auto-select first approved account if available, otherwise first account
+          this.selectedSetting = defaultAccount;
+          this.selectRDAccount(defaultAccount);
+        } else {
+          this.depositFormGroup.patchValue({ payment_interval: '' });
         }
       } else {
         this.toast.error('Failed to fetch deposit settings', 'Error');
@@ -484,4 +619,194 @@ export class RecurringDepositComponent implements OnInit {
     }
   }
 
-}
+  // Checkbox selection methods
+  onUserSelectionChange(user: any, event: any) {
+    user.selected = event.target.checked;
+    const userIdStr = String(user.user._id);
+    this.globalSelections.set(userIdStr, user.selected);
+
+    // Update select all state for current page
+    this.updateSelectAllState();
+    this.updateSelectedUsers();
+  }
+
+  onSelectAllChange(event: any) {
+    this.selectAll = event.target.checked;
+    this.toggleSelectAll();
+  }
+
+  toggleSelectAll() {
+    // If selectAll is true, select all users on current page
+    // If selectAll is false, deselect all users on current page
+    this.depositList.forEach(deposit => {
+      deposit.selected = this.selectAll;
+      const userIdStr = String(deposit.user._id);
+      this.globalSelections.set(userIdStr, this.selectAll);
+    });
+
+    this.updateSelectedUsers();
+  }
+
+  updateSelectAllState() {
+    // Check if all deposits on current page are selected
+    this.selectAll = this.depositList.length > 0 && this.depositList.every(deposit => deposit.selected);
+  }
+
+  updateSelectedUsers() {
+    // Get all selected users from global selections
+    this.selectedUsers = [];
+    this.selectedUserIds = [];
+
+    this.globalSelections.forEach((selected, userId) => {
+      if (selected) {
+        // Find the user object from current page or we need to store user objects globally
+        const deposit = this.depositList.find(d => String(d.user._id) === userId);
+        if (deposit) {
+          this.selectedUsers.push(deposit);
+          this.selectedUserIds.push(userId);
+        } else {
+          // For users not on current page, we need to store their info
+          this.selectedUserIds.push(userId);
+        }
+      }
+    });
+
+    this.totalSelectedCount = this.selectedUserIds.length;
+  }
+
+  clearSelection() {
+    this.selectAll = false;
+    this.globalSelections.clear();
+    this.depositList.forEach(deposit => {
+      deposit.selected = false;
+    });
+
+    this.updateSelectedUsers();
+  }
+
+  // Select all users matching current filter
+  selectAllMatchingFilter() {
+    const searchParams = this.searchFormGroup.value;
+    const queryParamArray = [];
+
+    Object.keys(searchParams).forEach(key => {
+      if (searchParams[key] !== null && searchParams[key] !== '' && searchParams[key] !== undefined) {
+        queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
+      }
+    });
+
+    const queryParams = queryParamArray.join('&');
+
+    this.depositService.getCompulsoryDepositUserIds(queryParams).subscribe((res: any) => {
+      console.log('User IDs matching filter:', res);
+      if (res.status && res.data && res.data.userIds) {
+        // Clear current selections first
+        this.clearSelection();
+
+        // Select all users matching the filter
+        res.data.userIds.forEach((userId: string) => {
+          this.globalSelections.set(userId, true);
+        });
+
+        // Update selections for current page with proper type handling
+        this.depositList.forEach(deposit => {
+          // Ensure we're comparing strings
+          const userIdStr = String(deposit.user._id);
+          const isSelected = this.globalSelections.has(userIdStr);
+          deposit.selected = isSelected;
+        });
+
+        this.updateSelectAllState();
+        this.updateSelectedUsers();
+
+        this.toast.success(`Selected ${res.data.userIds.length} users matching current filter`, 'Bulk Selection Complete');
+      } else {
+        this.toast.error('Failed to retrieve user IDs for bulk selection', 'Error');
+      }
+    }, err => {
+      console.error('Error selecting all matching filter:', err);
+      this.toast.error('Failed to select all users matching filter', 'Error');
+    });
+  }
+
+  // Notification modal methods
+  openNotificationModal(content: any) {
+    if (this.totalSelectedCount === 0) {
+      this.toast.warning('Please select users first', 'No Selection');
+      return;
+    }
+
+    // Reset form when opening modal
+    this.notificationForm.reset({
+      title: '',
+      body: '',
+      sendSMS: false
+    });
+
+    this.modalService.open(content, {
+      size: 'lg',
+      centered: true,
+      backdrop: 'static',
+      keyboard: false
+    });
+  }
+
+    sendNotification() {
+      if (this.notificationForm.invalid) {
+        this.notificationForm.markAllAsTouched();
+        this.toast.error('Please fill in all required fields correctly', 'Validation Error');
+        return;
+      }
+
+      if (this.totalSelectedCount === 0) {
+        this.toast.warning('No deposits selected', 'Selection Required');
+        return;
+      }
+
+      this.isSendingNotification = true;
+      const notificationData = this.notificationForm.value;
+
+      console.log('Sending notification:', {
+        title: notificationData.title,
+        body: notificationData.body,
+        sendSMS: notificationData.sendSMS,
+        userId: this.user_id,
+        totalSelectedDeposits: this.totalSelectedCount
+      });
+
+      // Call the notification API - send to current user
+      const payload = {
+        title: notificationData.title,
+        body: notificationData.body,
+        sendSMS: notificationData.sendSMS,
+        userIds: [this.user_id] // Send to current user
+      };
+
+      this.depositService.sendBulkNotification(payload).subscribe((res: any) => {
+        this.isSendingNotification = false;
+        if (res.status) {
+          this.modalService.dismissAll();
+          this.toast.success(
+            `Notification sent successfully to ${this.profile?.name}!`,
+            'Notification Sent',
+            { timeOut: 5000 }
+          );
+
+          // Clear selections after successful send (optional)
+          // this.clearSelection();
+
+          // Reset form
+          this.notificationForm.reset({
+            title: '',
+            body: '',
+            sendSMS: false
+          });
+        } else {
+          this.toast.error('Failed to send notification', 'Error');
+        }
+      }, err => {
+        this.isSendingNotification = false;
+        console.error('Error sending notification:', err);
+        this.toast.error('Failed to send notification', 'Error');
+      });
+    }}

@@ -31,6 +31,16 @@ export class RecurringDepositComponent implements OnInit {
   selectedUser: any = null;
   depositSummary: any = null;
 
+  // Selection properties
+  selectAll: boolean = false;
+  selectedUsers: any[] = [];
+  selectedUserIds: string[] = [];
+  globalSelections: Map<string, boolean> = new Map(); // Track selections across all pages
+  totalSelectedCount: number = 0;
+  previousFilterState: string = ''; // Track filter changes
+  notificationForm: FormGroup;
+  isSendingNotification: boolean = false;
+
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Recurring Deposit List', active: true }];
     
@@ -55,6 +65,12 @@ export class RecurringDepositComponent implements OnInit {
       penalty_amount: new FormControl(0, [Validators.min(0)]),
       final_amount: new FormControl({value: 0, disabled: true}),
       notes: new FormControl('')
+    });
+
+    this.notificationForm = new FormGroup({
+      title: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      body: new FormControl('', [Validators.required, Validators.minLength(10)]),
+      sendSMS: new FormControl(false)
     });
 
     // Calculate final amount when penalty changes
@@ -121,11 +137,29 @@ export class RecurringDepositComponent implements OnInit {
     });
 
     const queryParams = queryParamArray.join('&');
+    const currentFilterState = queryParams;
 
     this.depositService.getAllRecurringDeposits(this.page, this.pageSize,queryParams).subscribe((res: any) => {
       if (res.status) {
         this.userList = res.data.deposits;
         this.total = res.data.total;
+        
+        // Check if filters have changed
+        if (this.previousFilterState !== currentFilterState && this.previousFilterState !== '') {
+          this.clearSelection();
+        }
+        this.previousFilterState = currentFilterState;
+        
+        // Restore selections for users on this page
+        this.userList.forEach(user => {
+          const userIdStr = String(user.user._id);
+          user.selected = this.globalSelections.get(userIdStr) || false;
+        });
+        
+        console.log(this.userList);
+        // Update select all state based on current page
+        this.updateSelectAllState();
+        this.updateSelectedUsers();
       }
     }, err => {
       console.error(err);
@@ -135,6 +169,8 @@ export class RecurringDepositComponent implements OnInit {
   reset() {
     this.searchFormGroup.reset();
     this.page = 1;
+    this.previousFilterState = '';
+    this.clearSelection();
     this.getRecrruingDeposits();
   }
 
@@ -307,6 +343,151 @@ export class RecurringDepositComponent implements OnInit {
     } else {
       this.closeRDFormGroup.markAllAsTouched();
     }
+  }
+
+  // Selection methods
+  onUserSelectionChange(user: any, event: any) {
+    user.selected = event.target.checked;
+    const userIdStr = String(user.user._id);
+    this.globalSelections.set(userIdStr, user.selected);
+    
+    // Update select all state for current page
+    this.updateSelectAllState();
+    this.updateSelectedUsers();
+  }
+
+  onSelectAllChange(checked: boolean) {
+    this.selectAll = checked;
+    this.toggleSelectAll();
+  }
+
+  // Selection methods
+  toggleSelectAll() {
+    // If selectAll is true, select all users on current page
+    // If selectAll is false, deselect all users on current page
+    console.log(this.userList);
+    this.userList.forEach(user => {
+      user.selected = this.selectAll;
+      const userIdStr = String(user.user._id);
+      this.globalSelections.set(userIdStr, this.selectAll);
+    });
+    
+    this.updateSelectedUsers();
+  }
+
+  updateSelectedUsers() {
+    // Get all selected users from global selections
+    this.selectedUsers = [];
+    this.selectedUserIds = [];
+    console.log(this.globalSelections);
+    this.globalSelections.forEach((selected, userId) => {
+      if (selected) {
+        // Find the user object from current page - use user.user._id for RD component
+        const user = this.userList.find(u => String(u.user._id) === userId);
+        if (user) {
+          this.selectedUsers.push(user);
+          this.selectedUserIds.push(userId);
+        } else {
+          // For users not on current page, we need to store their info
+          this.selectedUserIds.push(userId);
+        }
+      }
+    });
+    
+    this.totalSelectedCount = this.selectedUserIds.length;
+  }
+
+  updateSelectAllState() {
+    // Check if all users on current page are selected
+    this.selectAll = this.userList.length > 0 && this.userList.every(user => user.selected);
+  }
+
+  clearSelection() {
+    this.selectAll = false;
+    this.globalSelections.clear();
+    this.userList.forEach(user => {
+      user.selected = false;
+    });
+    
+    this.updateSelectedUsers();
+  }
+
+  selectAllMatchingFilter() {
+    // For RD, since we don't have a separate API to get all user IDs,
+    // we'll select all users from the current filtered list
+    this.userList.forEach(user => {
+      const userIdStr = String(user.user._id);
+      this.globalSelections.set(userIdStr, true);
+      user.selected = true;
+    });
+    
+    this.updateSelectAllState();
+    this.updateSelectedUsers();
+    
+    // Show success message
+    console.log(`Selected ${this.userList.length} users from current page`);
+  }
+
+  openNotificationModal(notificationModal: any) {
+    if (this.totalSelectedCount === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Selection',
+        text: 'Please select at least one user to send notification.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    this.notificationForm.reset();
+    this.modalService.open(notificationModal, { size: 'lg', centered: true });
+  }
+
+  sendNotification() {
+    if (this.notificationForm.invalid) {
+      this.notificationForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSendingNotification = true;
+    const formValue = this.notificationForm.value;
+
+    const notificationData = {
+      userIds: this.selectedUserIds,
+      title: formValue.title,
+      body: formValue.body,
+      sendSMS: formValue.sendSMS
+    };
+
+    this.depositService.sendBulkNotification(notificationData).subscribe((res: any) => {
+      this.isSendingNotification = false;
+      if (res.status) {
+        this.modalService.dismissAll();
+        this.clearSelection();
+        Swal.fire({
+          icon: 'success',
+          title: 'Notification Sent',
+          text: 'Notification has been sent successfully to selected users.',
+          confirmButtonText: 'OK'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to Send',
+          text: res.message || 'Failed to send notification. Please try again.',
+          confirmButtonText: 'OK'
+        });
+      }
+    }, err => {
+      this.isSendingNotification = false;
+      console.error('Error sending notification:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while sending notification. Please try again.',
+        confirmButtonText: 'OK'
+      });
+    });
   }
 
 }
