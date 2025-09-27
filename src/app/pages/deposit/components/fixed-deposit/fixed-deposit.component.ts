@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DepositService } from 'src/app/core/services/deposit.service';
@@ -13,6 +13,7 @@ export class FixedDepositComponent implements OnInit {
 
   constructor(private depositService: DepositService,
       private modalService: NgbModal,
+      private cdr: ChangeDetectorRef
     ) { }
     breadCrumbItems: Array<{}>;
   
@@ -27,6 +28,7 @@ export class FixedDepositComponent implements OnInit {
     monthYearList: any[] = [];
     selectedUser: any = null;
     depositSummary: any = null;
+    isFormInitializing: boolean = false;
   
     ngOnInit(): void {
       this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Fixed Deposit List', active: true }];
@@ -42,11 +44,13 @@ export class FixedDepositComponent implements OnInit {
       });
       this.editSettingFormGroup = new FormGroup({
         _id: new FormControl('', [Validators.required]),
-        amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+        amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$'), Validators.min(10000), Validators.max(200000)]),
         duration: new FormControl('', [Validators.required]),
         maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
         annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
+        compounding_frequency: new FormControl('1', [Validators.required]), // Default to annual (1)
         user: new FormControl('', [Validators.required]),
+        isMIS: new FormControl(false),
         indirect_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
         direct_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
         franchise_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
@@ -59,6 +63,24 @@ export class FixedDepositComponent implements OnInit {
       // Calculate final amount when penalty changes
       this.closeFDFormGroup.get('penalty_amount')?.valueChanges.subscribe(value => {
         this.calculateFinalAmount();
+      });
+
+      // Handle MIS checkbox changes
+      this.editSettingFormGroup.get('isMIS')?.valueChanges.subscribe(isMIS => {
+        // Skip if we're initializing the form
+        if (this.isFormInitializing) {
+          return;
+        }
+        
+        if (isMIS) {
+          // If MIS is selected, limit duration to max 2 years
+          const currentDuration = this.editSettingFormGroup.get('duration')?.value;
+          const durationNum = parseFloat(currentDuration);
+          if (currentDuration && durationNum > 2) {
+            this.editSettingFormGroup.get('duration')?.setValue('2');
+          }
+        }
+        // Note: When MIS is unchecked, all duration options become available, so no need to change current value
       });
 
       this.getRecrruingDeposits();
@@ -105,12 +127,18 @@ export class FixedDepositComponent implements OnInit {
       const amount = this.editSettingFormGroup.get('amount')?.value;
       const duration = this.editSettingFormGroup.get('duration')?.value;
       const annualRate = this.editSettingFormGroup.get('annual_rate')?.value;
+      const compoundingFrequency = this.editSettingFormGroup.get('compounding_frequency')?.value;
 
-      console.log('Calculating maturity amount with:', { amount, duration, annualRate });
+      console.log('Calculating maturity amount with:', { amount, duration, annualRate, compoundingFrequency });
 
-      if (amount && duration && annualRate) {
-        const simpleInterest = (amount * annualRate * duration) / 100;
-        const maturityAmount = amount + simpleInterest;
+      if (amount && duration && annualRate && compoundingFrequency) {
+        // Compound Interest formula: A = P * (1 + r/n)^(n*t)
+        const principal = parseFloat(amount);
+        const rate = parseFloat(annualRate) / 100; // Convert percentage to decimal
+        const time = parseFloat(duration);
+        const n = parseInt(compoundingFrequency); // Compounding frequency
+        
+        const maturityAmount = principal * Math.pow((1 + rate / n), n * time);
         this.editSettingFormGroup.patchValue({ maturity_amount: maturityAmount.toFixed(2) });
       } else {
         this.editSettingFormGroup.patchValue({ maturity_amount: '' });
@@ -163,17 +191,50 @@ export class FixedDepositComponent implements OnInit {
     }
   
     openRDSettingFn(settingModal: any, user: any) {
-      this.editSettingFormGroup.patchValue(user);
+      console.log('Editing deposit setting for user:', user);
+      console.log('User duration type:', typeof user.duration, 'value:', user.duration);
+      // Ensure duration is a string for proper select option matching
+      const formData = { ...user };
+      if (formData.duration !== undefined && formData.duration !== null) {
+        formData.duration = formData.duration.toString();
+      }
+      console.log('Form data duration after conversion:', typeof formData.duration, 'value:', formData.duration);
+      console.log('Form data isMIS:', formData.isMIS);
+      
+      this.isFormInitializing = true;
+      this.editSettingFormGroup.patchValue(formData);
+      console.log('Form control duration value after patch:', this.editSettingFormGroup.get('duration')?.value);
+      console.log('Form control isMIS value after patch:', this.editSettingFormGroup.get('isMIS')?.value);
+      
+      // Force change detection to ensure UI updates
+      this.cdr.detectChanges();
+      
       this.modalService.open(settingModal, { size: 'lg', centered: true });
+      
+      // Reset the flag after a short delay
+      setTimeout(() => {
+        this.isFormInitializing = false;
+      }, 500);
     }
+
+
   
-     editSetting() {
+    editSetting() {
       if (this.editSettingFormGroup.valid) {
         const payload = this.editSettingFormGroup.value;
-        payload.maturity_amount  = (payload.amount + ((payload.amount * payload.annual_rate * payload.duration) / 100)).toFixed(2);
+        // Ensure duration is a number for calculation
+        const duration = parseFloat(payload.duration);
+        
+        // Compound Interest formula: A = P * (1 + r/n)^(n*t)
+        const principal = payload.amount;
+        const rate = payload.annual_rate / 100; // Convert percentage to decimal
+        const time = duration;
+        const n = parseInt(payload.compounding_frequency); // Compounding frequency
+        
+        payload.maturity_amount = (principal * Math.pow((1 + rate / n), n * time)).toFixed(2);
         payload.status = 'Approved';
         console.log('Payload for editing deposit setting:', payload);
-        this.depositService.editFDepositSettings(this.editSettingFormGroup.value).subscribe({
+        this.depositService.editFDepositSettings(payload).subscribe({
           next: (res) => {
             Swal.fire({
               icon: 'success',

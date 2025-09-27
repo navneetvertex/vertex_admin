@@ -436,12 +436,7 @@
                     <label for="duration" class="form-label">Duration</label>
                     <select type="text" id="duration" class="form-control" formControlName="duration"  (blur)="calculateMaturityAmount()">
                         <option value="" disabled selected>Select duration</option>
-                        <option value="5">5 Years</option>
-                        <option value="6">6 Years</option>
-                        <option value="7">7 Years</option>
-                        <option value="8">8 Years</option>
-                        <option value="9">9 Years</option>
-                        <option value="10">10 Years</option>
+                        <option *ngFor="let option of durationOptions" [value]="option.value">{{option.label}}</option>
                     </select>
                     <div *ngIf="settingFormGroup.get('duration')?.touched && settingFormGroup.get('duration')?.invalid"
                         class="text-danger">
@@ -511,6 +506,21 @@
                             0%.</small>
                         <small *ngIf="settingFormGroup.get('direct_refer_per')?.errors?.['max']">Must be 100% or
                             less.</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIS Checkbox -->
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="isMIS" formControlName="isMIS" (change)="onMISChange()">
+                        <label class="form-check-label" for="isMIS">
+                            <strong>MIS (Monthly Income Scheme)</strong>
+                        </label>
+                        <small class="form-text text-muted d-block">
+                            When MIS is selected, duration will be limited to 1 year, 1.5 years, and 2 years.
+                        </small>
                     </div>
                 </div>
             </div>

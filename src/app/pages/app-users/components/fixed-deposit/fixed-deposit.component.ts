@@ -44,6 +44,16 @@ export class FixedDepositComponent implements OnInit {
   canMakeDeposits: boolean = false;
   canRequestClosure: boolean = false;
 
+  // Duration options based on MIS selection
+  durationOptions: { value: string, label: string }[] = [
+    { value: '5', label: '5 Years' },
+    { value: '6', label: '6 Years' },
+    { value: '7', label: '7 Years' },
+    { value: '8', label: '8 Years' },
+    { value: '9', label: '9 Years' },
+    { value: '10', label: '10 Years' }
+  ];
+
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Member' }, { label: 'Fixed Deposit', active: true }];
     this.settingFormGroup = new FormGroup({
@@ -51,6 +61,7 @@ export class FixedDepositComponent implements OnInit {
       duration: new FormControl('', [Validators.required]),
       maturity_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       annual_rate: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
+      isMIS: new FormControl(false)
       // indirect_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]),
       // direct_refer_per: new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)])
     });
@@ -103,6 +114,33 @@ export class FixedDepositComponent implements OnInit {
         this.settingFormGroup.patchValue({annual_rate: this.fd_rate});
       }
     });
+  }
+
+  onMISChange() {
+    const isMIS = this.settingFormGroup.get('isMIS')?.value;
+    if (isMIS) {
+      // When MIS is selected, limit duration options to 1, 1.5, and 2 years
+      this.durationOptions = [
+        { value: '1', label: '1 Year' },
+        { value: '1.5', label: '1.5 Years' },
+        { value: '2', label: '2 Years' }
+      ];
+      // Reset duration if current value is not in MIS options
+      const currentDuration = this.settingFormGroup.get('duration')?.value;
+      if (currentDuration && !['1', '1.5', '2'].includes(currentDuration)) {
+        this.settingFormGroup.patchValue({ duration: '' });
+      }
+    } else {
+      // When MIS is not selected, show all duration options
+      this.durationOptions = [
+        { value: '5', label: '5 Years' },
+        { value: '6', label: '6 Years' },
+        { value: '7', label: '7 Years' },
+        { value: '8', label: '8 Years' },
+        { value: '9', label: '9 Years' },
+        { value: '10', label: '10 Years' }
+      ];
+    }
   }
 
   calculateMaturityAmount() {
