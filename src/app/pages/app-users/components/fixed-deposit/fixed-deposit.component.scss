@@ -1,0 +1,190 @@
+/* FD Account Cards Styling */
+.fd-card {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-radius: 8px;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    &.border-primary {
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.2);
+    }
+    
+    &.border-success {
+        box-shadow: 0 2px 8px rgba(25, 135, 84, 0.1);
+    }
+}
+
+/* Compact Info Grid */
+.fd-info-grid {
+    .col-6 {
+        margin-bottom: 4px;
+    }
+}
+
+/* Small Text Utilities */
+.fs-10 {
+    font-size: 0.65rem !important;
+}
+
+.fs-12 {
+    font-size: 0.75rem !important;
+}
+
+.fs-14 {
+    font-size: 0.875rem !important;
+}
+
+/* Account Status Colors */
+.badge-soft-warning {
+    color: #f1b44c;
+    background-color: rgba(241, 180, 76, 0.18);
+}
+
+.badge-soft-success {
+    color: #34c38f;
+    background-color: rgba(52, 195, 143, 0.18);
+}
+
+.badge-soft-primary {
+    color: #556ee6;
+    background-color: rgba(85, 110, 230, 0.18);
+}
+
+.badge-soft-danger {
+    color: #f46a6a;
+    background-color: rgba(244, 106, 106, 0.18);
+}
+
+/* Button Sizing */
+.btn-xs {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    border-radius: 0.2rem;
+}
+
+/* Card Hover Effects */
+.card:hover {
+    transition: all 0.3s ease;
+}
+
+/* Loading Spinner */
+.bx-spin {
+    animation: bx-spin 1s linear infinite;
+}
+
+@keyframes bx-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Statistics Overview Cards */
+.card.border.bg-light {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .avatar-sm {
+        width: 2.5rem;
+        height: 2.5rem;
+        
+        .avatar-title {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+    }
+}
+
+/* Alert Styling */
+.alert {
+    border-radius: 6px;
+    
+    &.alert-warning {
+        background-color: rgba(241, 180, 76, 0.1);
+        border-color: rgba(241, 180, 76, 0.2);
+        color: #856404;
+    }
+    
+    &.alert-success {
+        background-color: rgba(52, 195, 143, 0.1);
+        border-color: rgba(52, 195, 143, 0.2);
+        color: #155724;
+    }
+    
+    &.alert-info {
+        background-color: rgba(13, 110, 253, 0.1);
+        border-color: rgba(13, 110, 253, 0.2);
+        color: #0c5460;
+    }
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        
+        &:hover {
+            background-color: #f8f9fa;
+        }
+        
+        &.active {
+            background-color: #556ee6;
+            color: white;
+        }
+    }
+}
+
+/* Admin specific styles */
+.admin-fd-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px 8px 0 0;
+}
+
+.user-profile-section {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .fd-card {
+        margin-bottom: 1rem;
+    }
+    
+    .col-lg-3.col-md-4.col-sm-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .fd-info-grid .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 2px;
+    }
+    
+    .btn-xs {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.3rem;
+    }
+}

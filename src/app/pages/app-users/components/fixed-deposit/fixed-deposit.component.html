@@ -4,27 +4,29 @@
     <div role="alert" *ngIf="isUserRequested" class="alert alert-warning ng-star-inserted">
         <div class="d-flex align-items-center">
             <div class="flex-grow-1">
-                <strong>User Request:</strong> User have requested for opening a Fixed Deposit Account.
+                <strong>User Request:</strong> User has requested for opening a Fixed Deposit Account.
             </div>
             <span class="badge badge-soft-warning ms-2">Requested</span>
         </div>
     </div>
 
-    <div  class="row" *ngIf="profile">
-        <div  class="col-lg-12">
-            <div  class="card">
-                <div  class="card-body">
-                    <div  class="row">
-                        <div  class="col-lg-4">
-                            <div  class="d-flex">
-                                <div  class="flex-shrink-0 me-3"><img
-                                         src="{{profile.profile_image || 'assets/images/users/user_placeholder.png'}}" alt="profile-image"
-                                        class="avatar-md rounded-circle img-thumbnail"></div>
-                                <div  class="flex-grow-1 align-self-center">
-                                    <div  class="text-muted">
-                                        <p  class="mb-2">Welcome to Fixed Deposit</p>
-                                        <h5  class="mb-1">{{profile.name}}</h5>
-                                        <p  class="mb-0">{{profile.account_number}}</p>
+    <!-- Admin User Profile Section -->
+    <div class="row" *ngIf="profile">
+        <div class="col-lg-12">
+            <div class="card user-profile-section">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <img src="{{profile.profile_image || 'assets/images/users/user_placeholder.png'}}" 
+                                         alt="profile-image" class="avatar-md rounded-circle img-thumbnail">
+                                </div>
+                                <div class="flex-grow-1 align-self-center">
+                                    <div class="text-muted">
+                                        <p class="mb-2">Admin Managing Fixed Deposit</p>
+                                        <h5 class="mb-1">{{profile.name}}</h5>
+                                        <p class="mb-0">{{profile.account_number}}</p>
                                         <span *ngIf="selectedSetting" class="badge badge-pill mt-2" 
                                               [ngClass]="{
                                                 'badge-soft-warning': selectedSetting.status === 'Requested',
@@ -38,39 +40,39 @@
                                 </div>
                             </div>
                         </div>
-                        <div  class="col-lg-4 align-self-center">
-                            <div  class="text-lg-center mt-4 mt-lg-0">
-                                <div  class="row">
-                                    <div  class="col-4">
-                                        <div >
-                                            <p  class="text-muted text-truncate mb-2">User Id</p>
-                                            <h5  class="mb-0">{{profile.user_id}}</h5>
+                        <div class="col-lg-4 align-self-center">
+                            <div class="text-lg-center mt-4 mt-lg-0">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div>
+                                            <p class="text-muted text-truncate mb-2">User ID</p>
+                                            <h5 class="mb-0">{{profile.user_id}}</h5>
                                         </div>
                                     </div>
-                                    <div  class="col-4">
-                                        <div >
-                                            <p  class="text-muted text-truncate mb-2">Mobile No</p>
-                                            <h5  class="mb-0"><a href="tel:{{profile.mobile_number}}">{{profile.mobile_number}}</a></h5>
+                                    <div class="col-4">
+                                        <div>
+                                            <p class="text-muted text-truncate mb-2">Mobile No</p>
+                                            <h5 class="mb-0"><a href="tel:{{profile.mobile_number}}">{{profile.mobile_number}}</a></h5>
                                         </div>
                                     </div>
-                                    <div  class="col-4">
-                                        <div >
-                                            <p  class="text-muted text-truncate mb-2">Approved On </p>
-                                            <h5  class="mb-0">
-                                                 {{ profile.approved_date ? (profile.approved_date | date) : 'Not Approved' }}
+                                    <div class="col-4">
+                                        <div>
+                                            <p class="text-muted text-truncate mb-2">Approved On</p>
+                                            <h5 class="mb-0">
+                                                {{ profile.approved_date ? (profile.approved_date | date) : 'Not Approved' }}
                                             </h5>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div  class="col-lg-4 d-none d-lg-block" >
-                            <div  class="clearfix mt-4 mt-lg-0">
-                                <div class="dropdown float-end ms-2"  *ngIf="depositSettings.length > 0">
+                        <div class="col-lg-4 d-none d-lg-block">
+                            <div class="clearfix mt-4 mt-lg-0">
+                                <div class="dropdown float-end ms-2" *ngIf="depositSettings.length > 0">
                                     <button type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
                                         class="btn btn-secondary dropdown-toggle">
-                                        <i class="mdi mdi-account-cash-outline align-middle me-1"></i> Settlement
+                                        <i class="mdi mdi-account-cash-outline align-middle me-1"></i> Actions
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-end">
                                         <a class="dropdown-item" href="javascript:void(0);" *ngIf="canRequestClosure" (click)="requestCloseFD()">
@@ -94,11 +96,10 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div  (click)="openModal(settingModal)" class="dropdown float-end"><button
-                                         type="button" data-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false" dropdowntoggle=""
-                                        class="btn btn-primary dropdown-toggle"><i 
-                                            class="bx bxs-cog align-middle me-1"></i> Create new FD </button>
+                                <div (click)="openModal(settingModal)" class="dropdown float-end">
+                                    <button type="button" class="btn btn-primary dropdown-toggle">
+                                        <i class="bx bxs-cog align-middle me-1"></i> Create New FD
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -108,83 +109,322 @@
         </div>
     </div>
 
-    <div class="row" *ngIf="depositSettings.length > 0">
-        <div class="col-lg-2 mb-3 ms-auto d-flex justify-content-end align-items-center gap-2">
-            <select class="form-control w-auto" (change)="settingsChanged($event)">
-                <option *ngFor="let setting of depositSettings" [attr.value]="setting._id">
-                    {{setting.id}} - {{setting.amount}} / {{setting.duration}} Years ({{setting.annual_rate}}%)
-                </option>
-            </select>
-            <button class="btn btn-primary" *ngIf="depositList.length == 0" (click)="openModal(editSettingModal)" >
-                <i class="bx bx-edit-alt"></i>
-            </button>
+    <!-- No FD Accounts - First time user -->
+    <div class="row" *ngIf="depositSettings.length === 0">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body border-bottom">
+                    <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 150px;">
+                        <img src="assets/images/open_account.png" width="300px" alt="">
+                        <p class="text-mutes mt-2 text-center">No Fixed Deposit Account found.<br>Create a new account for this user.</p>
+                        <button class="btn btn-primary mt-3 mb-3" (click)="openModal(settingModal)">Create New Fixed Deposit</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-xl-12">
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="card mini-stats-wid">
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap">
-                                <div class="mr-3">
-                                    <p class="text-muted mb-2">Total Principal</p>
-                                    <h5 class="mb-0">₹{{selectedSetting?.amount}}</h5>
-                                </div>
-                                <div class="avatar-sm ms-auto">
-                                    <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
-                                        <i class="bx bxs-book-bookmark"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    </div>
 
-                <div class="col-lg-3">
-                    <div class="card blog-stats-wid">
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap">
-                                <div class="me-3">
-                                    <p class="text-muted mb-2">Maturity Amount</p>
-                                    <h5 class="mb-0">₹{{selectedSetting?.maturity_amount - selectedSetting?.amount}}</h5>
+    <!-- Multiple FD Accounts Overview -->
+    <div class="row" *ngIf="depositSettings.length >= 1">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">
+                        <span *ngIf="depositSettings.length === 1">Fixed Deposit Account</span>
+                        <span *ngIf="depositSettings.length > 1">Fixed Deposit Accounts ({{depositSettings.length}})</span>
+                    </h4>
+                    <div class="d-flex gap-2">
+                        <select class="form-control w-auto" (change)="settingsChanged($event)" *ngIf="depositSettings.length > 1">
+                            <option *ngFor="let setting of depositSettings" [attr.value]="setting._id" [selected]="setting._id === selectedSetting?._id">
+                                FD #{{setting.id}} - ₹{{setting.amount}} / {{setting.duration}} Years ({{setting.annual_rate}}%)
+                            </option>
+                        </select>
+                        <button class="btn btn-primary btn-sm" (click)="openModal(settingModal)">
+                            <i class="bx bx-plus me-1"></i>New FD Account
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Summary section for multiple accounts -->
+                    <div class="row mb-4" *ngIf="depositSettings.length > 1">
+                        <div class="col-lg-12">
+                            <div class="alert alert-info">
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <h6 class="mb-1">Total Accounts</h6>
+                                        <span class="fw-bold">{{depositSettings.length}}</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="mb-1">Active Accounts</h6>
+                                        <span class="fw-bold" *ngIf="!isLoadingStatistics">{{getActiveAccountsCount()}}</span>
+                                        <span class="fw-bold text-muted" *ngIf="isLoadingStatistics">Loading...</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="mb-1">Total Principal</h6>
+                                        <span class="fw-bold" *ngIf="!isLoadingStatistics">₹{{getTotalPrincipal() | number:'1.2-2'}}</span>
+                                        <span class="fw-bold text-muted" *ngIf="isLoadingStatistics">Loading...</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="mb-1">Total Outstanding</h6>
+                                        <span class="fw-bold text-danger" *ngIf="!isLoadingStatistics">₹{{getTotalOutstanding() | number:'1.2-2'}}</span>
+                                        <span class="fw-bold text-muted" *ngIf="isLoadingStatistics">Loading...</span>
+                                    </div>
                                 </div>
-                                <div class="avatar-sm ms-auto">
-                                    <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
-                                        <i class="bx bxs-note"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FD Account Cards -->
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3" *ngFor="let setting of depositSettings; trackBy: trackBySettingId">
+                            <div class="card fd-card border" [class.border-primary]="selectedSetting?._id === setting._id" [class.border-success]="setting.status === 'Approved' && selectedSetting?._id !== setting._id">
+                                <div class="card-body p-2" style="min-height: 140px;">
+                                    <!-- Header with status and select button -->
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <h6 class="mb-0 me-2 fs-14 fw-bold">FD #{{setting.id}}</h6>
+                                            <span class="badge badge-sm" 
+                                                  [ngClass]="{
+                                                    'badge-soft-warning': setting.status === 'Requested',
+                                                    'badge-soft-success': setting.status === 'Approved',
+                                                    'badge-soft-primary': setting.status === 'Completed',
+                                                    'badge-soft-danger': setting.status === 'Close-Requested'
+                                                  }">
+                                                {{ setting.status }}
+                                            </span>
+                                        </div>
+                                        <button class="btn btn-xs py-1 px-2" 
+                                                [ngClass]="{
+                                                    'btn-success': selectedSetting?._id === setting._id,
+                                                    'btn-outline-primary': selectedSetting?._id !== setting._id
+                                                }"
+                                                (click)="selectFDAccount(setting)"
+                                                [disabled]="selectedSetting?._id === setting._id">
+                                            <i class="bx bx-check fs-12" *ngIf="selectedSetting?._id === setting._id"></i>
+                                            <i class="bx bx-hand-up fs-12" *ngIf="selectedSetting?._id !== setting._id"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Compact Info Grid -->
+                                    <div class="row g-1 fd-info-grid">
+                                        <div class="col-6">
+                                            <div class="text-center p-1 bg-light rounded">
+                                                <div class="fs-10 text-muted">Principal</div>
+                                                <div class="fs-12 fw-bold">₹{{setting.amount | number:'1.0-0'}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-center p-1 bg-light rounded">
+                                                <div class="fs-10 text-muted">Rate</div>
+                                                <div class="fs-12 fw-bold">{{setting.annual_rate}}%</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-center p-1 bg-light rounded">
+                                                <div class="fs-10 text-muted">Duration</div>
+                                                <div class="fs-12 fw-bold">{{setting.duration}}Y</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-center p-1 bg-light rounded">
+                                                <div class="fs-10 text-muted">Maturity</div>
+                                                <div class="fs-12 fw-bold">₹{{setting.maturity_amount | number:'1.0-0'}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Outstanding amount for approved accounts -->
+                                    <div class="mt-2" *ngIf="setting.status === 'Approved' && fdOutstandingAmounts[setting._id]">
+                                        <div class="alert alert-warning py-1" *ngIf="fdOutstandingAmounts[setting._id].outstanding > 0">
+                                            <small class="fs-10">
+                                                <i class="bx bx-info-circle me-1"></i>
+                                                Outstanding: ₹{{fdOutstandingAmounts[setting._id].outstanding | number:'1.0-0'}}
+                                            </small>
+                                        </div>
+                                        <div class="alert alert-success py-1" *ngIf="fdOutstandingAmounts[setting._id].outstanding <= 0">
+                                            <small class="fs-10">
+                                                <i class="bx bx-check-circle me-1"></i>
+                                                Account Up to Date
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action buttons based on status -->
+                                    <div class="mt-2 d-flex gap-1" *ngIf="setting.status === 'Approved'">
+                                        <button class="btn btn-xs btn-success flex-fill py-1" 
+                                                style="font-size: 10px;"
+                                                (click)="selectFDAccount(setting); openAddDepositModal()"
+                                                [disabled]="!canSelectedAccountMakeDeposits() || setting._id !== selectedSetting?._id">
+                                            <i class="bx bx-plus fs-10"></i> Deposit
+                                        </button>
+                                        <button class="btn btn-xs btn-danger flex-fill py-1" 
+                                                style="font-size: 10px;"
+                                                (click)="selectFDAccount(setting); requestCloseFD()"
+                                                [disabled]="setting._id !== selectedSetting?._id">
+                                            <i class="bx bx-x fs-10"></i> Close
+                                        </button>
+                                    </div>
+
+                                    <!-- Admin approval button for requested accounts -->
+                                    <div class="mt-2" *ngIf="setting.status === 'Requested'">
+                                        <button class="btn btn-xs btn-primary w-100 py-1" 
+                                                style="font-size: 10px;"
+                                                (click)="selectFDAccount(setting); openModal(editSettingModal)">
+                                            <i class="bx bx-check fs-10"></i> Approve FD
+                                        </button>
+                                    </div>
+
+                                    <!-- Closure status for closed accounts -->
+                                    <div class="mt-2" *ngIf="setting.status === 'Close-Requested' || setting.status === 'Completed'">
+                                        <div class="alert py-1" [ngClass]="setting.status === 'Completed' ? 'alert-success' : 'alert-warning'">
+                                            <small class="fs-10">
+                                                <i class="bx" [ngClass]="setting.status === 'Completed' ? 'bx-check-circle' : 'bx-time-five'"></i>
+                                                {{ setting.status === 'Completed' ? 'Account Closed' : 'Closure Pending' }}
+                                            </small>
+                                        </div>
+                                        <button class="btn btn-xs btn-warning w-100 py-1" 
+                                                style="font-size: 10px;"
+                                                *ngIf="setting.status === 'Close-Requested'"
+                                                (click)="selectFDAccount(setting); openCloseFDModal(closeFDModal)">
+                                            <i class="bx bx-check-circle fs-10"></i> Process Closure
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
-                    <div class="card blog-stats-wid">
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap">
-                                <div class="mr-3">
-                                    <p class="text-muted mb-2">Total Interest</p>
-                                    <h5 class="mb-0">{{selectedSetting.annual_rate}}%</h5>
-                                </div>
-                                <div class="avatar-sm ms-auto">
-                                    <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
-                                        <i class="bx bxs-message-square-dots"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selected FD Account Details -->
+    <div class="row" *ngIf="selectedSetting && depositSettings.length > 0" id="fd-details-section">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">
+                        <i class="bx bx-bookmark me-2"></i>
+                        Fixed Deposit Account #{{selectedSetting.id}}
+                        <span class="badge ms-2" 
+                              [ngClass]="{
+                                'badge-soft-warning': selectedSetting.status === 'Requested',
+                                'badge-soft-success': selectedSetting.status === 'Approved',
+                                'badge-soft-primary': selectedSetting.status === 'Completed',
+                                'badge-soft-danger': selectedSetting.status === 'Close-Requested'
+                              }">
+                            {{ selectedSetting.status }}
+                        </span>
+                    </h4>
+                    <div class="d-flex gap-2 align-items-center">
+                        <!-- Action Buttons -->
+                        <div class="btn-group" role="group" *ngIf="selectedSetting.status === 'Approved'">
+                            <button class="btn btn-success btn-sm" 
+                                    (click)="openAddDepositModal()"
+                                    [disabled]="!canSelectedAccountMakeDeposits()">
+                                <i class="bx bx-plus me-1"></i>Add Deposit
+                            </button>
+                            <button class="btn btn-warning btn-sm" (click)="refreshAllData()">
+                                <i class="bx bx-refresh me-1"></i>Refresh
+                            </button>
+                            <button class="btn btn-danger btn-sm" (click)="requestCloseFD()">
+                                <i class="bx bx-x me-1"></i>Close Account
+                            </button>
+                        </div>
+                        <!-- Approval button for requested accounts -->
+                        <div *ngIf="selectedSetting.status === 'Requested'">
+                            <button class="btn btn-primary btn-sm" (click)="openModal(editSettingModal)">
+                                <i class="bx bx-check me-1"></i>Approve FD
+                            </button>
+                        </div>
+                        <!-- Process closure button -->
+                        <div *ngIf="selectedSetting.status === 'Close-Requested'">
+                            <button class="btn btn-warning btn-sm" (click)="openCloseFDModal(closeFDModal)">
+                                <i class="bx bx-check-circle me-1"></i>Process Closure
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Account Overview Statistics -->
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border bg-light">
+                                <div class="card-body text-center py-3">
+                                    <div class="avatar-sm mx-auto mb-2">
+                                        <div class="avatar-title bg-primary rounded-circle">
+                                            <i class="bx bx-money text-white"></i>
+                                        </div>
                                     </div>
+                                    <h6 class="text-muted mb-1">Principal Amount</h6>
+                                    <h4 class="mb-0">₹{{selectedSetting.amount | number:'1.2-2'}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border bg-light">
+                                <div class="card-body text-center py-3">
+                                    <div class="avatar-sm mx-auto mb-2">
+                                        <div class="avatar-title bg-success rounded-circle">
+                                            <i class="bx bx-trending-up text-white"></i>
+                                        </div>
+                                    </div>
+                                    <h6 class="text-muted mb-1">Interest Rate</h6>
+                                    <h4 class="mb-0">{{selectedSetting.annual_rate}}% <small class="text-muted">p.a.</small></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border bg-light">
+                                <div class="card-body text-center py-3">
+                                    <div class="avatar-sm mx-auto mb-2">
+                                        <div class="avatar-title bg-info rounded-circle">
+                                            <i class="bx bx-time text-white"></i>
+                                        </div>
+                                    </div>
+                                    <h6 class="text-muted mb-1">Duration</h6>
+                                    <h4 class="mb-0">{{selectedSetting.duration}} <small class="text-muted">Years</small></h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border bg-light">
+                                <div class="card-body text-center py-3">
+                                    <div class="avatar-sm mx-auto mb-2">
+                                        <div class="avatar-title bg-warning rounded-circle">
+                                            <i class="bx bx-gift text-white"></i>
+                                        </div>
+                                    </div>
+                                    <h6 class="text-muted mb-1">Maturity Amount</h6>
+                                    <h4 class="mb-0">₹{{selectedSetting.maturity_amount | number:'1.2-2'}}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="card blog-stats-wid">
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap">
-                                <div class="mr-3">
-                                    <p class="text-muted mb-2">Total Amount</p>
-                                    <h5 class="mb-0">₹{{selectedSetting?.maturity_amount}}</h5>
-                                </div>
-                                <div class="avatar-sm ms-auto">
-                                    <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
-                                        <i class="bx bxs-message-square-dots"></i>
+
+                    <!-- Outstanding Amount Alert -->
+                    <div class="row mb-3" *ngIf="selectedSetting.status === 'Approved' && fdOutstandingAmounts[selectedSetting._id]">
+                        <div class="col-lg-12">
+                            <div class="alert" [ngClass]="fdOutstandingAmounts[selectedSetting._id].outstanding > 0 ? 'alert-warning' : 'alert-success'">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="alert-heading mb-1">
+                                            <i class="bx" [ngClass]="fdOutstandingAmounts[selectedSetting._id].outstanding > 0 ? 'bx-info-circle' : 'bx-check-circle'"></i>
+                                            Account Status
+                                        </h6>
+                                        <p class="mb-0" *ngIf="fdOutstandingAmounts[selectedSetting._id].outstanding > 0">
+                                            Outstanding Amount: <strong>₹{{fdOutstandingAmounts[selectedSetting._id].outstanding | number:'1.2-2'}}</strong>
+                                        </p>
+                                        <p class="mb-0" *ngIf="fdOutstandingAmounts[selectedSetting._id].outstanding <= 0">
+                                            The account is up to date. No outstanding payments required.
+                                        </p>
                                     </div>
+                                    <button class="btn btn-sm" 
+                                            [ngClass]="fdOutstandingAmounts[selectedSetting._id].outstanding > 0 ? 'btn-warning' : 'btn-success'"
+                                            (click)="refreshStatistics()" 
+                                            [disabled]="isLoadingAccountStatistics">
+                                        <i class="bx bx-refresh" [class.bx-spin]="isLoadingAccountStatistics"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
