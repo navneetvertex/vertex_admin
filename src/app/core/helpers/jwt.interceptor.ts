@@ -49,7 +49,7 @@ export class JwtInterceptor implements HttpInterceptor {
           this.toast.error('An unexpected error occurred. Please try again later.', 'Server Error');
         } else {
           console.log('Error occurred:', error.error.message || error.message || error);
-          this.toast.error(error.error.message || error.message || error, 'Error');
+          // this.toast.error(error.error.message || error.message || error, 'Error');
         }
         return throwError(() => error);
       })
