@@ -9,6 +9,7 @@ import { FixedDepositComponent } from './components/fixed-deposit/fixed-deposit.
 import { KycRequestComponent } from './components/kyc-request/kyc-request.component';
 import { EditFormComponent } from './components/edit-form/edit-form.component';
 import { NotificationsListsComponent } from './components/notifications-lists/notifications-lists.component';
+import { AccountClosureRequestComponent } from './components/account-closure-request/account-closure-request.component';
 
 const routes: Routes = [
   { path: 'all', component: AppUsersComponent },
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'recurring-deposits/:user', component: RecurringDepositComponent },
   { path: 'fixed-deposits/:user', component: FixedDepositComponent },
   { path: 'notification-list', component: NotificationsListsComponent },
+  { path: 'account-closure-requests', component: AccountClosureRequestComponent },
 ];
 
 @NgModule({

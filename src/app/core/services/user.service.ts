@@ -14,6 +14,10 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users?page=${page}&limit=${limit}&${queryParams}`);
     }
 
+    getAccountClosureRequests(queryParams: string = '') {
+        return this.http.get(`${environment.api_url}users/account-closure-requests?${queryParams}`);
+    }
+
     getAllAdvisors(page: number = 0, limit: number = 10, queryParams: string) {
         return this.http.get(`${environment.api_url}users/advisors?page=${page}&limit=${limit}&${queryParams}`);
     }

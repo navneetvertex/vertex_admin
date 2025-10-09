@@ -25,6 +25,12 @@ export const MENU: MenuItem[] = [
                 label: 'Member List',
                 link: '/members/all'
             },
+            {
+                id: 1,
+                parentId: 2,
+                label: 'Account Closure Requests',
+                link: '/members/account-closure-requests'
+            }
         ]
     },
     {

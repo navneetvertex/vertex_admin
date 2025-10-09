@@ -1,0 +1,149 @@
+<div class="container-fluid">
+
+    <app-page-title title="Account Closure Requests" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                  <div class="card-body border-bottom">
+                      <form [formGroup]="searchFormGroup">
+                        <div class="row align-items-end g-2">
+                          <div class="col-lg-4">
+                            <input type="search" class="form-control" formControlName="search" placeholder="Search by name, user ID, account number...">
+                          </div>
+                          <div class="col-lg-3">
+                            <select class="form-control select2" formControlName="status">
+                              <option value="">All Status</option>
+                              <option *ngFor="let status of statusList" [ngValue]="status">{{status | titlecase}}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-2 d-grid">
+                            <button type="button" (click)="search()" class="btn btn-soft-secondary">
+                              <i class="mdi mdi-filter-outline align-middle"></i> Filter
+                            </button>
+                          </div>
+                          <div class="col-lg-2 d-grid">
+                            <button (click)="reset()" type="button" class="btn btn-soft-secondary">
+                              <i class="mdi mdi-refresh"></i> Reset
+                            </button>
+                          </div>
+                          <div class="col-lg-1 d-grid">
+                            <span class="badge bg-info fs-6">{{ total }} Requests</span>
+                          </div>
+                        </div>
+                      </form>
+                  </div>
+
+                  <!-- Loading State -->
+                  <div *ngIf="loading" class="text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5 class="text-muted">Loading account closure requests...</h5>
+                  </div>
+
+                  <!-- Table -->
+                  <div *ngIf="!loading" class="table-responsive">
+                      <table class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+                        <thead >
+                          <tr>
+                            <th>Sr No</th>
+                            <th>User Details</th>
+                            <th>Account Info</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let request of closureRequests; let i = index">
+                            <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                            <td>
+                              <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-3">
+                                  <img [src]="request.profile_image || 'assets/images/users/user_placeholder.png'"
+                                       alt="User" class="avatar-sm rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                </div>
+                                <div>
+                                  <h6 class="mb-0">{{ request.name }}</h6>
+                                  <small class="text-muted">User ID: {{ request.user_id }}</small><br/>
+                                  <small class="text-muted" *ngIf="request.email_id">{{ request.email_id }}</small>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div>
+                                <strong>{{ request.account_number || 'N/A' }}</strong><br/>
+                                <small class="text-muted">Mobile: {{ request.mobile_number || 'N/A' }}</small><br/>
+                                <small class="text-muted">Joined: {{ request.created_date | date:'shortDate' }}</small>
+                              </div>
+                            </td>
+                            <td>
+                              <div>
+                                <strong>{{ request.account_closure_requested_date | date:'mediumDate' }}</strong><br/>
+                                <small class="text-muted">{{ request.account_closure_requested_date | date:'shortTime' }}</small>
+                              </div>
+                            </td>
+                            <td>
+                              <span class="badge"
+                                    [ngClass]="{
+                                      'bg-success': request.status === 'Active',
+                                      'bg-warning': request.status === 'Inactive',
+                                      'bg-secondary': request.status !== 'Active' && request.status !== 'Inactive'
+                                    }">
+                                {{ request.status || 'Unknown' }}
+                              </span>
+                            </td>
+                            <td>
+                              <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary"
+                                        (click)="viewUserProfile(request._id)"
+                                        tooltip="View Profile">
+                                  <i class="bx bx-user-circle"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success"
+                                        (click)="approveClosureRequest(request)"
+                                        tooltip="Approve Closure">
+                                  <i class="bx bx-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger"
+                                        (click)="rejectClosureRequest(request)"
+                                        tooltip="Reject Request">
+                                  <i class="bx bx-x"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr *ngIf="closureRequests.length === 0">
+                            <td colspan="6" class="text-center py-4">
+                              <div class="text-muted">
+                                <i class="bx bx-info-circle display-4 mb-3"></i>
+                                <h5>No Account Closure Requests Found</h5>
+                                <p>There are currently no pending account closure requests.</p>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                  </div>
+
+                  <!-- Pagination -->
+                  <div class="row" *ngIf="!loading && closureRequests.length > 0">
+                    <div class="col-sm-12 col-md-5">
+                      <div class="dataTables_info" role="status" aria-live="polite">
+                        Showing {{ (page - 1) * pageSize + 1 }} to {{ Math.min(page * pageSize, total) }} of {{ total }} entries
+                      </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                      <div class="text-md-right float-md-end pagination-rounded">
+                        <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize" (pageChange)="pageChange($event)">
+                        </ngb-pagination>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
