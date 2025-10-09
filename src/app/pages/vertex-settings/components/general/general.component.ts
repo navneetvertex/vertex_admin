@@ -54,6 +54,11 @@ export class GeneralComponent implements OnInit {
       g_loan_update_for: new FormControl('future'),
       g_loan_penalty: new FormControl('', [Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.min(0), Validators.max(100)]),
 
+      // Member Payment Settings
+      payment_online_enabled: new FormControl(true),
+      payment_wallet_enabled: new FormControl(true),
+      payment_pin_enabled: new FormControl(true),
+
     });
     this.getGeneralSettings();
   }
