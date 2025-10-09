@@ -69,6 +69,10 @@ getCreditCardNumberList(page: number = 0, limit: number = 10, searchText: string
   return this.http.get(`${environment.api_url}credit-cards/getCreditCardNumberList?page=${page}&limit=${limit}`);
 }
 
+exportCardList(startDate: string, endDate: string) {
+  return this.http.get(`${environment.api_url}credit-cards/export-card-list?startDate=${startDate}&endDate=${endDate}`, { responseType: 'blob' });
+}
+
 getLatest5CreditCardNumbers() {
   return this.http.get(`${environment.api_url}credit-cards/getLatest5CreditCardNumbers`);
 }

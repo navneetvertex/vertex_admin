@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -6,13 +6,14 @@ import { CreditCardService } from 'src/app/core/services/credit-card.service';
 import { PinsService } from 'src/app/core/services/pins.service';
 import { UserProfileService } from 'src/app/core/services/user.service';
 import Swal from 'sweetalert2';
+import flatpickr from 'flatpickr';
 
 @Component({
   selector: 'app-card-list',
   templateUrl: './card-list.component.html',
   styleUrls: ['./card-list.component.scss']
 })
-export class CardListComponent implements OnInit {
+export class CardListComponent implements OnInit, AfterViewInit {
 
   constructor(private modalService: NgbModal,
       private toast: ToastrService,
@@ -34,20 +35,44 @@ export class CardListComponent implements OnInit {
     pageSize: number = 10;
   
     userList: any[] = [];
+
+    // Date range picker configuration
+    dateRangeOptions: any = {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      maxDate: new Date(),
+      defaultDate: [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date()], // Last 30 days
+      placeholder: 'Select date range for export',
+      allowInput: true,
+      onChange: (selectedDates: any, dateStr: any, instance: any) => {
+        if (selectedDates.length === 2) {
+          this.selectedDateRange = selectedDates;
+        }
+      }
+    };
+    selectedDateRange: Date[] = [];
+    dateRangePicker: any;
+    exportLoading: boolean = false;
   
     ngOnInit(): void {
       this.breadCrumbItems = [{ label: 'Card List Management' }, { label: 'Manage', active: true }];
       this.addPinFormGroup = new FormGroup({
         no_of_pins: new FormControl('', Validators.required),
       });
-  
+
       this.assignFormGroup = new FormGroup({
         assign_to: new FormControl('' , Validators.required),
       });
       this.getPins();
     }
-  
-    getUserDetails() {
+
+    ngAfterViewInit() {
+      // Initialize date range picker after view is initialized
+      const dateRangeElement = document.getElementById('dateRangePicker');
+      if (dateRangeElement) {
+        this.dateRangePicker = flatpickr(dateRangeElement, this.dateRangeOptions);
+      }
+    }    getUserDetails() {
       if (!this.userIDText) {
         this.userDetails = null;
         return;
@@ -112,6 +137,42 @@ export class CardListComponent implements OnInit {
     pageChange(page: number) {
       this.page = page;
       this.getPins();
+    }
+
+    exportCardList() {
+      if (this.selectedDateRange.length !== 2) {
+        this.toast.error('Please select a valid date range for export');
+        return;
+      }
+
+      this.exportLoading = true;
+      const startDate = this.formatDate(this.selectedDateRange[0]);
+      const endDate = this.formatDate(this.selectedDateRange[1]);
+
+      this.creditCardService.exportCardList(startDate, endDate).subscribe((res: any) => {
+        const blob = new Blob([res], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `card_list_${startDate}_to_${endDate}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.toast.success('Card list exported successfully');
+        this.exportLoading = false;
+      }, (err: any) => {
+        console.error('Error exporting card list:', err);
+        this.toast.error('Failed to export card list');
+        this.exportLoading = false;
+      });
+    }
+
+    private formatDate(date: Date): string {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
   
     createPins() {
