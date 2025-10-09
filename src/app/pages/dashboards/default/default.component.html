@@ -1,343 +1,367 @@
 <!-- <app-loader></app-loader> -->
-<div class="container-fluid" *ngIf="data" >
+<div class="container-fluid" *ngIf="data">
 
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="mb-0 font-size-18">Admin Dashboard</h4>
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item active">Welcome to Dashboard</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
+    <app-page-title title="Admin Dashboard" [breadcrumbItems]="[{ label: 'Dashboards' }, { label: 'Admin Dashboard', active: true }]"></app-page-title>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-lg-4">
-                            <div class="media d-flex align-items-center">
-                                <div class="me-3">
-                                    <img src="assets/images/users/user_placeholder.png" alt=""class="avatar-md rounded-circle img-thumbnail">
-                                </div>
-                                <div class="media-body align-self-center">
-                                    <div class="text-muted">
-                                        <p class="mb-2">Welcome back</p>
-                                        <h5 class="mb-1">Vertex</h5>
-                                        <p class="mb-0">Administrator</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-5">
-                            <div class="text-center">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <div>
-                                            <p class="text-muted text-truncate mb mb-2">Members</p>
-                                            <h5 class="font-size-15">{{data?.activeUsers}} of {{data?.activeUsers + data?.inactiveUsers}}</h5>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div>
-                                            <p class="text-muted text-truncate mb-2">Franchise</p>
-                                            <h5 class="font-size-15">{{data?.totalFranchises}}</h5>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div>
-                                            <p class="text-muted text-truncate mb-2">Advisors</p>
-                                            <h5 class="mb-0">{{data?.agentUsers}}</h5>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div>
-                                            <p class="text-muted text-truncate mb-2">SHG Coordinators</p>
-                                            <h5 class="mb-0">{{data?.shg_coordinator}}</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3">
-                            <div class="clearfix d-flex justify-content-end">
-                                <a routerLink="/members" class="btn btn-primary btn-sm">View Members <i
-                                            class="mdi mdi-arrow-right ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Welcome Card -->
     <div class="row">
         <div class="col-xl-4">
-            <div class="card bg-primary bg-soft" style="max-height: 100px;" >
-                <div>
-                    <div class="row">
+            <div class="card overflow-hidden profile-card shadow-sm">
+                <div class="profile-header bg-gradient-primary">
+                    <div class="row align-items-center">
                         <div class="col-7">
-                            <div class="text-primary p-3">
-                                <h5 class="text-primary">Welcome Back !</h5>
-                                <p>Vertex Kalyan Coopertive Urban Thrift & Credit Society Ltd.</p>
-
-                                <!-- <ul class="ps-3 mb-0">
-                                    <li class="py-1">Deposit Management</li>
-                                    <li class="py-1">Loan Management</li>
-                                </ul>  -->
+                            <div class="text-white p-4">
+                                <h5 class="text-white mb-2 fw-bold">Welcome Back!</h5>
+                                <p class="text-white-50 mb-0 small">Vertex Kalyan Cooperative Urban Thrift & Credit Society Ltd.</p>
                             </div>
                         </div>
                         <div class="col-5 align-self-end">
-                            <img src="assets/images/profile-img.png" alt="" class="img-fluid">
+                            <img src="assets/images/profile-img.png" alt="" class="img-fluid profile-header-img">
                         </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="row">
+                        <div class="col-sm-12 text-center">
+                            <div class="avatar-container mt-n5 mb-3">
+                                <img src="assets/images/users/user_placeholder.png" alt="" class="avatar-xl rounded-circle border border-4 border-white shadow-sm">
+                            </div>
+                            <h5 class="font-size-16 fw-bold mb-1">Administrator</h5>
+                            <p class="text-muted mb-3 font-size-13">
+                                <i class="bx bx-shield me-1"></i>System Admin
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="user-info-grid mt-3">
+                        <div class="info-item">
+                            <div class="info-icon bg-soft-success">
+                                <i class="bx bx-group text-success"></i>
+                            </div>
+                            <div class="info-content">
+                                <span class="text-muted small">Active Members</span>
+                                <h6 class="mb-0 fw-bold">{{data?.activeUsers}}</h6>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon bg-soft-primary">
+                                <i class="bx bx-store text-primary"></i>
+                            </div>
+                            <div class="info-content">
+                                <span class="text-muted small">Franchises</span>
+                                <h6 class="mb-0 fw-bold">{{data?.totalFranchises}}</h6>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon bg-soft-info">
+                                <i class="bx bx-user-check text-info"></i>
+                            </div>
+                            <div class="info-content">
+                                <span class="text-muted small">Advisors</span>
+                                <h6 class="mb-0 fw-bold">{{data?.agentUsers}}</h6>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon bg-soft-warning">
+                                <i class="bx bx-sitemap text-warning"></i>
+                            </div>
+                            <div class="info-content">
+                                <span class="text-muted small">SHG Coordinators</span>
+                                <h6 class="mb-0 fw-bold">{{data?.shg_coordinator}}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a routerLink="/members" class="btn btn-primary btn-block w-100 btn-rounded">
+                            <i class="bx bx-user me-2"></i>View All Members
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+        
         <div class="col-xl-8">
-            <div class="row">
+            <div class="row g-3">
                 <div *ngFor="let stat of statIncomeData" class="col-md-6">
-                     <app-stat [title]="stat.title" [value]="'₹'+(stat.value | number)" [icon]="stat.icon"></app-stat>
-                 </div>
+                    <app-stat [title]="stat.title" [value]="'₹'+(stat.value | number)" [icon]="stat.icon"></app-stat>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div *ngFor="let stat of statData" class="col-md-4">
-            <app-stat [title]="stat.title" [value]="'₹'+(stat.value | number)" [icon]="stat.icon"></app-stat>
-        </div>
-    </div>
-
-    <!-- New Financial Metrics Section -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-4">Financial Metrics & Income Summary</h4>
-                    <div class="row g-3">
-                        <!-- First Row -->
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-money font-size-24 text-primary"></i>
-                                <h5 class="mt-2 mb-1">Total Fees Amount</h5>
-                                <p class="text-muted mb-0">₹{{data?.total_amount | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-wallet font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Shared Money</h5>
-                                <p class="text-muted mb-0">₹{{data?.shared_money | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-12">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-calculator font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Loan Interest</h5>
-                                <p class="text-muted mb-0">₹{{data?.loan_interest_details?.totalPaid + data?.loan_interest_details?.totalRemaining | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-credit-card font-size-24 text-danger"></i>
-                                <h5 class="mt-2 mb-1">Sahyog Card Interest</h5>
-                                <p class="text-muted mb-0">₹{{data?.cc_interest | number}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Second Row - Referral Income -->
-                    <div class="row mt-3">
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-trending-up font-size-24 text-primary"></i>
-                                <h5 class="mt-2 mb-1">Direct Referral Income</h5>
-                                <p class="text-muted mb-0">₹{{data?.directReferralAmount | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-sitemap font-size-24 text-success"></i>
-                                <h5 class="mt-2 mb-1">Indirect Referral Income</h5>
-                                <p class="text-muted mb-0">₹{{data?.indirectReferralAmount | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-store font-size-24 text-info"></i>
-                                <h5 class="mt-2 mb-1">Franchise Referral Income</h5>
-                                <p class="text-muted mb-0">₹{{data?.franchiseReferralAmount | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-12">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-pie-chart-alt-2 font-size-24 text-success"></i>
-                                <h5 class="mt-2 mb-1">Total Income Summary</h5>
-                                <p class="text-muted mb-0">₹{{(data?.directReferralAmount + data?.indirectReferralAmount + data?.franchiseReferralAmount + data?.loan_interest_details?.totalRemaining + data?.cc_interest + data?.loan_interest_details?.totalPaid + data?.total_amount) | number}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Third Row - Loan Interest Details -->
-                    <!-- <div class="row g-3 mt-2">
-                        <div class="col-md-4 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-calculator font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Loan Interest Paid</h5>
-                                <p class="text-muted mb-0">₹{{data?.loan_interest_details?.totalPaid | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-time-five font-size-24 text-danger"></i>
-                                <h5 class="mt-2 mb-1">Loan Interest Remaining</h5>
-                                <p class="text-muted mb-0">₹{{data?.loan_interest_details?.totalRemaining | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-money-withdraw font-size-24 text-info"></i>
-                                <h5 class="mt-2 mb-1">Total Loan Payments</h5>
-                                <p class="text-muted mb-0">₹{{data?.loan_interest_details?.totalPaymentsMade | number}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-6 col-sm-12">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-chart font-size-24 text-primary"></i>
-                                <h5 class="mt-2 mb-1">Principal Paid</h5>
-                                <p class="text-muted mb-0">₹{{data?.loan_interest_details?.totalPrincipalPaid | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-sm-12">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-pie-chart-alt-2 font-size-24 text-success"></i>
-                                <h5 class="mt-2 mb-1">Total Income Summary</h5>
-                                <p class="text-muted mb-0">₹{{(data?.directReferralAmount + data?.indirectReferralAmount + data?.franchiseReferralAmount + data?.cc_interest + data?.loan_interest_details?.totalPaid + data?.total_amount) | number}}</p>
-                            </div>
-                        </div>
-                    </div> -->
-                    
-                    
+            <div class="row g-3 mt-1">
+                <div *ngFor="let stat of statData" class="col-md-4">
+                    <app-stat [title]="stat.title" [value]="'₹'+(stat.value | number)" [icon]="stat.icon"></app-stat>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-4">Commission Summary</h4>
-                    <div class="row g-3">
-                        <!-- First Row -->
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-money font-size-24 text-primary"></i>
-                                <h5 class="mt-2 mb-1">Admin Direct Commission</h5>
-                                <p class="text-muted mb-0">₹{{totalCommission?.totalDirectCommission | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-sitemap font-size-24 text-primary"></i>
-                                <h5 class="mt-2 mb-1">Admin InDirect Commission</h5>
-                                <p class="text-muted mb-0">₹{{totalCommission?.totalIndirectCommission | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-wallet font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Admin Card Commission</h5>
-                                <p class="text-muted mb-0">₹{{totalCommission?.totalCreditCommission | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-money font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Admin Loan Commission</h5>
-                                <p class="text-muted mb-0">₹{{totalCommission?.totalLoanCommission | number}}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-user-check font-size-24 text-primary"></i>
-                                <h5 class="mt-2 mb-1">Advisor Direct Commission</h5>
-                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorDirectCommission | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-bar-chart font-size-24 text-success"></i>
-                                <h5 class="mt-2 mb-1">Advisor InDirect Commission</h5>
-                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorIndirectCommission | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-bar-chart font-size-24 text-success"></i>
-                                <h5 class="mt-2 mb-1">Advisor Loan Commission</h5>
-                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorLoanCommission | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-bar-chart font-size-24 text-success"></i>
-                                <h5 class="mt-2 mb-1">Advisor Card Commission</h5>
-                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorCreditCommission | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-sm-12">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-calculator font-size-24 text-warning"></i>
-                                <h5 class="mt-2 mb-1">Admin Grand Total</h5>
-                                <p class="text-muted mb-0">₹{{totalCommission?.grandTotal | number}}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-sm-6">
-                            <div class="text-center p-3 border rounded">
-                                <i class="bx bx-bar-chart-alt-2 font-size-24 text-success"></i>
-                                <h5 class="mt-2 mb-1">Advisor Grand Total</h5>
-                                <p class="text-muted mb-0">₹{{advisorCommission?.totalAdvisorCommission | number}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Financial Stats Cards -->
     
 
-    <div class="row" > 
-        <div class="col-xl-6" >
-            <div class="card">
+    <!-- Financial Metrics Section -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card shadow-sm modern-metrics-card">
                 <div class="card-body">
-                    <div class="d-sm-flex flex-wrap">
-                        <h4 class="card-title mb-4">Transanctions (Deposits)</h4>
-                        <div class="ms-auto">
-                            <ul class="nav nav-pills">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-box bg-soft-primary me-3">
+                            <i class="bx bx-pie-chart-alt-2 text-primary font-size-24"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title mb-0 fw-bold">Financial Metrics & Income Summary</h4>
+                            <p class="text-muted mb-0 small">Comprehensive financial overview</p>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-primary">
+                                    <i class="bx bx-money text-primary"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Total Fees Amount</p>
+                                    <h5 class="mb-0 fw-bold">₹{{data?.total_amount | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-warning">
+                                    <i class="bx bx-wallet text-warning"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Shared Money</p>
+                                    <h5 class="mb-0 fw-bold">₹{{data?.shared_money | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-info">
+                                    <i class="bx bx-calculator text-info"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Loan Interest</p>
+                                    <h5 class="mb-0 fw-bold">₹{{(data?.loan_interest_details?.totalPaid + data?.loan_interest_details?.totalRemaining) | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-danger">
+                                    <i class="bx bx-credit-card text-danger"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Sahyog Card Interest</p>
+                                    <h5 class="mb-0 fw-bold">₹{{data?.cc_interest | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-success">
+                                    <i class="bx bx-trending-up text-success"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Direct Referral Income</p>
+                                    <h5 class="mb-0 fw-bold">₹{{data?.directReferralAmount | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-success">
+                                    <i class="bx bx-sitemap text-success"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Indirect Referral Income</p>
+                                    <h5 class="mb-0 fw-bold">₹{{data?.indirectReferralAmount | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-info">
+                                    <i class="bx bx-store text-info"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Franchise Referral Income</p>
+                                    <h5 class="mb-0 fw-bold">₹{{data?.franchiseReferralAmount | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card highlight-card">
+                                <div class="metric-icon bg-soft-primary">
+                                    <i class="bx bx-pie-chart-alt-2 text-primary"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Total Income Summary</p>
+                                    <h5 class="mb-0 fw-bold text-primary">₹{{(data?.directReferralAmount + data?.indirectReferralAmount + data?.franchiseReferralAmount + data?.loan_interest_details?.totalRemaining + data?.cc_interest + data?.loan_interest_details?.totalPaid + data?.total_amount) | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commission Summary Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm modern-metrics-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-box bg-soft-success me-3">
+                            <i class="bx bx-bar-chart text-success font-size-24"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title mb-0 fw-bold">Commission Summary</h4>
+                            <p class="text-muted mb-0 small">Admin and advisor commission breakdown</p>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-primary">
+                                    <i class="bx bx-money text-primary"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Admin Direct Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{totalCommission?.totalDirectCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-info">
+                                    <i class="bx bx-sitemap text-info"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Admin Indirect Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{totalCommission?.totalIndirectCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-warning">
+                                    <i class="bx bx-wallet text-warning"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Admin Card Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{totalCommission?.totalCreditCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-danger">
+                                    <i class="bx bx-trending-up text-danger"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Admin Loan Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{totalCommission?.totalLoanCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-success">
+                                    <i class="bx bx-user-check text-success"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Advisor Direct Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{advisorCommission?.totalAdvisorDirectCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-success">
+                                    <i class="bx bx-bar-chart text-success"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Advisor Indirect Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{advisorCommission?.totalAdvisorIndirectCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-info">
+                                    <i class="bx bx-line-chart text-info"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Advisor Loan Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{advisorCommission?.totalAdvisorLoanCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="metric-card">
+                                <div class="metric-icon bg-soft-warning">
+                                    <i class="bx bx-credit-card text-warning"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Advisor Card Commission</p>
+                                    <h5 class="mb-0 fw-bold">₹{{advisorCommission?.totalAdvisorCreditCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="metric-card highlight-card">
+                                <div class="metric-icon bg-soft-primary">
+                                    <i class="bx bx-calculator text-primary"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Admin Grand Total</p>
+                                    <h5 class="mb-0 fw-bold text-primary">₹{{totalCommission?.grandTotal | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="metric-card highlight-card">
+                                <div class="metric-icon bg-soft-success">
+                                    <i class="bx bx-bar-chart-alt-2 text-success"></i>
+                                </div>
+                                <div class="metric-content">
+                                    <p class="text-muted mb-1 small">Advisor Grand Total</p>
+                                    <h5 class="mb-0 fw-bold text-success">₹{{advisorCommission?.totalAdvisorCommission | number}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Charts -->
+    <div class="row g-3 mt-1"> 
+        <div class="col-xl-6">
+            <div class="card shadow-sm chart-card">
+                <div class="card-body">
+                    <div class="d-sm-flex flex-wrap align-items-center mb-4">
+                        <div class="me-auto">
+                            <h4 class="card-title mb-1 fw-bold">Transactions (Deposits)</h4>
+                            <p class="text-muted mb-0 small">Deposit activity overview</p>
+                        </div>
+                        <div class="ms-auto mt-3 mt-sm-0">
+                            <ul class="nav nav-pills nav-pills-custom">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="javascript: void(0);" (click)="monthlyreport()"
-                                        [ngClass]="{'active': isActive === 'month'}">Month</a>
+                                    <a class="nav-link px-3" href="javascript: void(0);" (click)="monthlyreport()"
+                                        [ngClass]="{'active': isActive === 'month'}">
+                                        <i class="bx bx-calendar me-1"></i>Month
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="javascript: void(0);"
-                                        [ngClass]="{'active': isActive === 'week'}" (click)="weeklyreport()">Week</a>
+                                    <a class="nav-link px-3" href="javascript: void(0);"
+                                        [ngClass]="{'active': isActive === 'week'}" (click)="weeklyreport()">
+                                        <i class="bx bx-calendar-week me-1"></i>Week
+                                    </a>
                                 </li>
-                                
                             </ul>
                         </div>
                     </div>
@@ -350,22 +374,28 @@
                 </div>
             </div>
         </div>
-        <div  class="col-xl-6">
-            <div class="card">
+        <div class="col-xl-6">
+            <div class="card shadow-sm chart-card">
                 <div class="card-body">
-                    <div class="d-sm-flex flex-wrap">
-                        <h4 class="card-title mb-4">Transanctions (Loan & Sahyog Card)</h4>
-                        <div class="ms-auto">
-                            <ul class="nav nav-pills">
+                    <div class="d-sm-flex flex-wrap align-items-center mb-4">
+                        <div class="me-auto">
+                            <h4 class="card-title mb-1 fw-bold">Transactions (Loan & Sahyog Card)</h4>
+                            <p class="text-muted mb-0 small">Loan and credit card activity</p>
+                        </div>
+                        <div class="ms-auto mt-3 mt-sm-0">
+                            <ul class="nav nav-pills nav-pills-custom">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="javascript: void(0);" (click)="monthlyLoanCreditreport()"
-                                        [ngClass]="{'active': isActiveLoanCredit === 'month'}">Month</a>
+                                    <a class="nav-link px-3" href="javascript: void(0);" (click)="monthlyLoanCreditreport()"
+                                        [ngClass]="{'active': isActiveLoanCredit === 'month'}">
+                                        <i class="bx bx-calendar me-1"></i>Month
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="javascript: void(0);"
-                                        [ngClass]="{'active': isActiveLoanCredit === 'week'}" (click)="weeklyreport()">Week</a>
+                                    <a class="nav-link px-3" href="javascript: void(0);"
+                                        [ngClass]="{'active': isActiveLoanCredit === 'week'}" (click)="weeklyreport()">
+                                        <i class="bx bx-calendar-week me-1"></i>Week
+                                    </a>
                                 </li>
-                                
                             </ul>
                         </div>
                     </div>
@@ -375,61 +405,6 @@
                         [dataLabels]="LoanCreditBarChart.dataLabels" [xaxis]="LoanCreditBarChart.xaxis"
                         [plotOptions]="LoanCreditBarChart.plotOptions">
                     </apx-chart>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row" style="display: none;" >
-        <div class="col-lg-12">
-            <div class="card">
-                <div  class="card-body">
-                    <div  class="row">
-                        <div  class="col-lg-12">
-                            <h5  class="card-title mb-3">Deposit History</h5>
-
-                            <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;" >
-                                <img src="assets/img/not-found.png" width="300px" alt="">
-                                <p class="text-mutes mt-2">No Deposit History found.</p>
-                            </div>
-                            <!-- <div class="table-responsive">
-                                    <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
-                                        <thead>
-                                            <tr>
-                                                <th>S.No.</th>
-                                                <th>Date</th>
-                                                <th>Amount</th>
-                                                <th>Payment Method</th>
-                                                <th>Transanction</th>
-                                                <th>Rate / Day</th>
-                                                <th>Payment Interval</th>
-                                                <th>Interest Amount</th>
-                                                <th>Penalty Amount</th>
-                                                <th>Total Amount</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>2023-10-01</td>
-                                                <td>₹1000</td>
-                                                <td>Bank Transfer</td>
-                                                <td>TX123456</td>
-                                                <td>5%</td>
-                                                <td>30 Days</td>
-                                                <td>$50</td>
-                                                <td>$10</td>
-                                                <td>$1060</td>
-                                                <td><span class="badge bg-success">Active</span></td>
-                                                
-                                            </tr>
-                                            
-                                        </tbody>
-                                    </table>
-                        </div> -->
-                    </div>
                 </div>
             </div>
         </div>

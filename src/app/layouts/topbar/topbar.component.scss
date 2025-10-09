@@ -1,0 +1,94 @@
+// Modern Logo Box Styles
+.modern-logo-box {
+  position: relative;
+  overflow: hidden;
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      .logo-img {
+        transform: scale(1.05) rotate(2deg);
+      }
+      
+      .brand-text {
+        color: #667eea;
+        transform: translateX(3px);
+      }
+    }
+  }
+  
+  .logo-img {
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  
+  .brand-text {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.3s ease;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+    }
+  }
+  
+  .logo:hover .brand-text::after {
+    width: 100%;
+  }
+  
+  .logo-light .brand-text {
+    background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    
+    &::after {
+      background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+    }
+  }
+}
+
+// Logo animation on page load
+@keyframes logoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.navbar-brand-box {
+  animation: logoFadeIn 0.6s ease;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .modern-logo-box {
+    .brand-text {
+      font-size: 18px;
+    }
+    
+    .logo-img {
+      height: 32px !important;
+    }
+  }
+}
