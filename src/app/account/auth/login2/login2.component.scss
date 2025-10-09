@@ -1,0 +1,462 @@
+// Modern Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  10%, 30% {
+    transform: scale(1.2);
+  }
+  20%, 40% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+// Animation Classes
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slide-up {
+  animation: slideUp 1s ease-out forwards;
+  opacity: 0;
+}
+
+.logo-bounce {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    animation: bounce 1s ease;
+  }
+}
+
+.heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+// Background Image Overlay
+.auth-full-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  
+  .bg-overlay {
+    background: url("../../../../assets/images/bg-auth-overlay.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    opacity: 0.4;
+    filter: blur(2px);
+  }
+  
+  > .w-100 {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Feature Icons on Left Side
+.feature-icons {
+  .feature-item {
+    text-align: center;
+    
+    .icon-box {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      
+      i {
+        font-size: 2rem;
+        color: white;
+      }
+      
+      &:hover {
+        transform: translateY(-10px) scale(1.1);
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      }
+    }
+    
+    p {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+    }
+  }
+}
+
+// Modern Form Styling
+.modern-form {
+  .form-label {
+    color: #495057;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    
+    i {
+      color: #667eea;
+    }
+  }
+  
+  .input-wrapper {
+    position: relative;
+    
+    .form-control {
+      padding-left: 2.75rem;
+      border: 2px solid #e3e6f0;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      
+      &:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        transform: translateY(-2px);
+      }
+      
+      &.is-invalid {
+        border-color: #dc3545;
+        padding-right: 2.75rem;
+        animation: shake 0.5s ease;
+        
+        &:focus {
+          box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+        }
+      }
+      
+      &.is-valid {
+        border-color: #28a745;
+        padding-right: 2.75rem;
+        
+        &:focus {
+          box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+        }
+      }
+      
+      &::placeholder {
+        color: #a8b3c7;
+      }
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a8b3c7;
+      font-size: 1.25rem;
+      pointer-events: none;
+      transition: color 0.3s ease;
+    }
+    
+    .form-control:focus ~ .input-icon {
+      color: #667eea;
+    }
+  }
+  
+  .invalid-feedback {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    
+    i {
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Password Input Group
+.auth-pass-inputgroup {
+  display: flex;
+  position: relative;
+  
+  .input-wrapper {
+    flex: 1;
+    
+    .form-control {
+      border-radius: 12px 0 0 12px;
+      border-right: none;
+    }
+  }
+  
+  .password-toggle {
+    border: 2px solid #e3e6f0;
+    border-left: none;
+    border-radius: 0 12px 12px 0;
+    transition: all 0.3s ease;
+    padding: 0 1.25rem;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    
+    &:hover {
+      background-color: #f8f9fa;
+      border-color: #667eea;
+      
+      i {
+        color: #667eea;
+        transform: scale(1.1);
+      }
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    &:focus {
+      box-shadow: none;
+      outline: none;
+    }
+    
+    i {
+      font-size: 1.25rem;
+      color: #6c757d;
+      transition: all 0.2s ease;
+    }
+  }
+  
+  // When input is focused, style the button border
+  .form-control:focus + .password-toggle,
+  .input-wrapper:has(.form-control:focus) ~ .password-toggle {
+    border-color: #667eea;
+  }
+}
+
+// Checkbox Styling
+.form-check {
+  .form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:checked {
+      background-color: #667eea;
+      border-color: #667eea;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+  }
+  
+  .form-check-label {
+    cursor: pointer;
+    user-select: none;
+    margin-left: 0.5rem;
+  }
+}
+
+// Modern Button
+.modern-btn {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.875rem 2rem;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(-1px);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+  }
+}
+
+// Auth Logo
+.auth-logo {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  
+  img {
+    transition: filter 0.3s ease;
+  }
+  
+  &:hover img {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  }
+}
+
+// Auth Page Content
+.auth-full-page-content {
+  min-height: 100vh;
+  background: #ffffff;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1199.98px) {
+  .auth-full-bg {
+    display: none;
+  }
+  
+  .col-xl-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .modern-form {
+    .form-control-lg {
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+    }
+    
+    .input-wrapper .input-icon {
+      font-size: 1rem;
+      left: 0.875rem;
+    }
+  }
+  
+  .modern-btn {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .feature-icons {
+    .feature-item .icon-box {
+      width: 60px;
+      height: 60px;
+      
+      i {
+        font-size: 1.75rem;
+      }
+    }
+  }
+}
+
+// Text Utilities
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Focus Visible for Accessibility
+*:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}

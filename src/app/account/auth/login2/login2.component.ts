@@ -24,8 +24,9 @@ export class Login2Component implements OnInit {
   submitted = false;
   error = '';
   element;
-  document
-  // returnUrl: string;
+  document;
+  loading = false;
+  passwordFieldType: string = 'password';
 
   year: number = new Date().getFullYear();
 
@@ -41,8 +42,10 @@ export class Login2Component implements OnInit {
   showHidePassword(passwordField) {
     if (passwordField.type === 'password') {
       passwordField.type = 'text';
+      this.passwordFieldType = 'text';
     } else {
       passwordField.type = 'password';
+      this.passwordFieldType = 'password';
     }
   }
 
@@ -53,21 +56,33 @@ export class Login2Component implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.loginForm.invalid) {
+      // Shake animation for invalid form
       return;
     } else {
+      this.loading = true;
       this.authenticationService.login(this.f.email.value, this.f.password.value)
       .pipe(first())
       .subscribe(
         data => {
-          this.router.navigate(['/dashboard']);
+          Swal.fire({
+            icon: 'success',
+            title: 'Login Successful!',
+            text: 'Welcome back to Vertex Kalyan Cooperative',
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            this.router.navigate(['/dashboard']);
+          });
         },
         error => {
+          this.loading = false;
           this.error = error ? error : '';
-           Swal.fire({
+          Swal.fire({
             icon: 'error',
             title: 'Login Failed',
-            text: 'Invalid email or password',
-            confirmButtonText: 'OK'
+            text: 'Invalid email or password. Please try again.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#667eea'
           });
         });
     }
