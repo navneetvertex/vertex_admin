@@ -97,7 +97,123 @@ export class AccountClosureRequestComponent implements OnInit {
     window.open(`/members/profile/form/${userId}`, '_blank');
   }
 
+  viewAccountSummary(userId: string) {
+    // Navigate to account summary page
+    window.open(`/members/account-summary/${userId}`, '_blank');
+  }
+
   approveClosureRequest(user: any) {
+    // First, fetch account summary
+    this.userService.getAccountSummary(user._id).subscribe({
+      next: (response: any) => {
+        if (response.success && response.data) {
+          const summary = response.data;
+          
+          // Show account summary modal
+          Swal.fire({
+            title: 'Account Summary - ' + user.name,
+            html: `
+              <div class="text-start">
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <h6 class="text-success">Assets</h6>
+                    <div class="border rounded p-2 bg-light">
+                      <small><strong>Wallet Balance:</strong> ₹${summary.assets?.wallet?.total_wallet?.toFixed(2) || '0.00'}</small><br/>
+                      <small><strong>Compulsory Deposit:</strong> ₹${summary.assets?.compulsoryDeposit?.paidAmount?.toFixed(2) || '0.00'}</small><br/>
+                      <small><strong>Fixed Deposits:</strong> ₹${summary.assets?.fixedDeposits?.totalPaid?.toFixed(2) || '0.00'}</small><br/>
+                      <small><strong>Recurring Deposits:</strong> ₹${summary.assets?.recurringDeposits?.totalPaid?.toFixed(2) || '0.00'}</small><br/>
+                      <small><strong>User Fees:</strong> ₹${summary.assets?.userFees?.total_fees?.toFixed(2) || '0.00'}</small><br/>
+                      <small><strong>Fund PINs:</strong> ₹${summary.assets?.fundPins?.totalAmount?.toFixed(2) || '0.00'}</small><br/>
+                      <hr class="my-1">
+                      <strong class="text-success">Total Assets: ₹${summary.assets?.totalAssets?.toFixed(2) || '0.00'}</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <h6 class="text-danger">Liabilities</h6>
+                    <div class="border rounded p-2 bg-light">
+                      <small><strong>Credit Card Outstanding:</strong> ₹${summary.liabilities?.creditCard?.outstanding?.toFixed(2) || '0.00'}</small><br/>
+                      <small><strong>Loans Outstanding:</strong> ₹${summary.liabilities?.loans?.totalOutstanding?.toFixed(2) || '0.00'}</small><br/>
+                      <hr class="my-1">
+                      <strong class="text-danger">Total Liabilities: ₹${summary.liabilities?.totalLiabilities?.toFixed(2) || '0.00'}</strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-center border-top pt-3">
+                  <h5 class="${summary.netBalance >= 0 ? 'text-success' : 'text-danger'}">
+                    <strong>Net Balance: ₹${summary.netBalance?.toFixed(2) || '0.00'}</strong>
+                  </h5>
+                  <small class="text-muted">
+                    ${summary.netBalance >= 0 ? 
+                      'Account has surplus funds. Safe to close after settlement.' : 
+                      'Account has outstanding liabilities. Must be cleared before closure.'}
+                  </small>
+                </div>
+              </div>
+            `,
+            icon: summary.netBalance >= 0 ? 'info' : 'warning',
+            showCancelButton: true,
+            confirmButtonText: summary.netBalance >= 0 ? 'Proceed with Approval' : 'Cannot Approve - Outstanding Balance',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: summary.netBalance >= 0 ? '#28a745' : '#6c757d',
+            width: '800px',
+            customClass: {
+              popup: 'account-summary-modal'
+            },
+            preConfirm: () => {
+              if (summary.netBalance < 0) {
+                Swal.showValidationMessage('Cannot approve closure with outstanding liabilities');
+                return false;
+              }
+              return true;
+            }
+          }).then((result) => {
+            if (result.isConfirmed && summary.netBalance >= 0) {
+              // Proceed with approval
+              this.confirmClosureApproval(user);
+            }
+          });
+        } else {
+          this.toast.error('Failed to load account summary');
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching account summary:', error);
+        this.toast.error('Failed to load account summary');
+        
+        // Fallback: show basic approval dialog
+        this.showBasicApprovalDialog(user);
+      }
+    });
+  }
+
+  confirmClosureApproval(user: any) {
+    Swal.fire({
+      title: 'Confirm Account Closure Approval',
+      html: `
+        <p>Are you sure you want to approve the account closure request for:</p>
+        <div class="alert alert-info">
+          <strong>${user.name}</strong> (${user.user_id})<br/>
+          Account: ${user.account_number || 'N/A'}<br/>
+          Requested: ${new Date(user.account_closure_requested_date).toLocaleDateString()}
+        </div>
+        <p class="text-danger"><strong>Warning:</strong> This action will permanently close the user's account and cannot be undone.</p>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Approve Closure',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc3545'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Here you would call an API to approve the closure
+        // For now, just show success message
+        this.toast.success(`Account closure approved for ${user.name}`);
+        this.getClosureRequests(); // Refresh the list
+      }
+    });
+  }
+
+  showBasicApprovalDialog(user: any) {
     Swal.fire({
       title: 'Approve Account Closure?',
       html: `

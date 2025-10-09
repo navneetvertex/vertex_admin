@@ -1,0 +1,416 @@
+<div class="container-fluid">
+  <app-page-title title="Account Summary" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom-0">
+          <div class="d-flex align-items-center">
+            <i class="bx bx-bar-chart-alt-2 text-primary me-2" style="font-size: 1.5rem;"></i>
+            <div>
+              <h4 class="card-title mb-0">Account Summary</h4>
+              <p class="text-muted mb-0 small">Comprehensive overview of user's financial position</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="text-muted">Loading account summary...</h5>
+            <p class="text-muted small">Please wait while we fetch the financial data</p>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!loading && error" class="alert alert-warning border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+              <i class="bx bx-error-circle me-2" style="font-size: 1.2rem;"></i>
+              <div>
+                <h6 class="mb-1">Unable to Load Account Summary</h6>
+                <p class="mb-0 small">{{ error }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Summary Content -->
+          <div *ngIf="!loading && !error && accountSummary">
+            <!-- User Info & Net Balance -->
+            <div class="row mb-4">
+              <div class="col-lg-8">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="avatar-sm me-3">
+                        <div class="avatar-title bg-light rounded-circle">
+                          <i class="bx bx-user text-primary" style="font-size: 1.2rem;"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <h5 class="mb-1">{{ accountSummary.userName }}</h5>
+                        <p class="text-muted mb-0">Member Account</p>
+                      </div>
+                    </div>
+                    <div class="row g-3">
+                      <div class="col-md-4">
+                        <div class="border-start border-primary border-4 ps-3">
+                          <small class="text-muted d-block">User ID</small>
+                          <span class="fw-semibold">{{ accountSummary.userID }}</span>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="border-start border-info border-4 ps-3">
+                          <small class="text-muted d-block">Account Number</small>
+                          <span class="fw-semibold">{{ accountSummary.accountNumber }}</span>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="border-start border-success border-4 ps-3">
+                          <small class="text-muted d-block">Last Updated</small>
+                          <span class="fw-semibold small">{{ accountSummary.calculatedAt | date:'short' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100" [ngClass]="{'border-start border-4': true, 'border-success': accountSummary.netBalance >= 0, 'border-danger': accountSummary.netBalance < 0}">
+                  <div class="card-body text-center">
+                    <div class="mb-3">
+                      <i class="bx bx-wallet display-4" [ngClass]="{'text-success': accountSummary.netBalance >= 0, 'text-danger': accountSummary.netBalance < 0}"></i>
+                    </div>
+                    <h2 class="mb-2" [ngClass]="{'text-success': accountSummary.netBalance >= 0, 'text-danger': accountSummary.netBalance < 0}">
+                      ₹{{ accountSummary.netBalance | number:'1.2-2' }}
+                    </h2>
+                    <h6 class="text-muted mb-1">Net Balance</h6>
+                    <small class="text-muted">
+                      <i class="bx bx-trending-up me-1" *ngIf="accountSummary.netBalance >= 0"></i>
+                      <i class="bx bx-trending-down me-1" *ngIf="accountSummary.netBalance < 0"></i>
+                      Assets - Liabilities
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Liabilities and Assets Overview -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-light border-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center">
+                        <i class="bx bx-trending-down text-danger me-2" style="font-size: 1.3rem;"></i>
+                        <h5 class="mb-0 text-danger">Liabilities</h5>
+                      </div>
+                      <div class="text-end">
+                        <h4 class="mb-0 text-danger">₹{{ accountSummary.liabilities.totalLiabilities | number:'1.2-2' }}</h4>
+                        <small class="text-muted">Total Owed</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <!-- Credit Card -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-3" *ngIf="accountSummary.liabilities.creditCard.outstanding > 0">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-3">
+                          <div class="avatar-title bg-light rounded-circle">
+                            <i class="bx bx-credit-card text-primary"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 class="mb-1">Credit Card</h6>
+                          <small class="text-muted">Outstanding Balance</small>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <h6 class="mb-0">₹{{ accountSummary.liabilities.creditCard.outstanding | number:'1.2-2' }}</h6>
+                        <small class="text-muted">of ₹{{ accountSummary.liabilities.creditCard.limit | number:'1.2-2' }}</small>
+                      </div>
+                    </div>
+
+                    <!-- Loans -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded" *ngIf="accountSummary.liabilities.loans.totalOutstanding > 0">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-3">
+                          <div class="avatar-title bg-light rounded-circle">
+                            <i class="bx bx-money text-warning"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 class="mb-1">Loans</h6>
+                          <small class="text-muted">{{ accountSummary.liabilities.loans.loanDetails.length }} active loan{{ accountSummary.liabilities.loans.loanDetails.length > 1 ? 's' : '' }}</small>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <h6 class="mb-0">₹{{ accountSummary.liabilities.loans.totalOutstanding | number:'1.2-2' }}</h6>
+                        <small class="text-muted">Outstanding</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-light border-0">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center">
+                        <i class="bx bx-trending-up text-success me-2" style="font-size: 1.3rem;"></i>
+                        <h5 class="mb-0 text-success">Assets</h5>
+                      </div>
+                      <div class="text-end">
+                        <h4 class="mb-0 text-success">₹{{ accountSummary.assets.totalAssets | number:'1.2-2' }}</h4>
+                        <small class="text-muted">Total Value</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <!-- Compulsory Deposit -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-3" *ngIf="accountSummary.assets.compulsoryDeposit.paidAmount > 0">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-3">
+                          <div class="avatar-title bg-light rounded-circle">
+                            <i class="bx bx-check-circle text-info"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 class="mb-1">Compulsory Deposit</h6>
+                          <small class="text-muted">Monthly Savings</small>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <h6 class="mb-0">₹{{ accountSummary.assets.compulsoryDeposit.paidAmount | number:'1.2-2' }}</h6>
+                        <small class="text-muted">Paid Amount</small>
+                      </div>
+                    </div>
+
+                    <!-- Fixed Deposits -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-3" *ngIf="accountSummary.assets.fixedDeposits.totalPaid > 0">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-3">
+                          <div class="avatar-title bg-light rounded-circle">
+                            <i class="bx bx-package text-secondary"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 class="mb-1">Fixed Deposits</h6>
+                          <small class="text-muted">Long-term Savings</small>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <h6 class="mb-0">₹{{ accountSummary.assets.fixedDeposits.totalPaid | number:'1.2-2' }}</h6>
+                        <small class="text-muted">Total Invested</small>
+                      </div>
+                    </div>
+
+                    <!-- Recurring Deposits -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-3" *ngIf="accountSummary.assets.recurringDeposits.totalPaid > 0">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-3">
+                          <div class="avatar-title bg-light rounded-circle">
+                            <i class="bx bx-hourglass text-warning"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 class="mb-1">Recurring Deposits</h6>
+                          <small class="text-muted">Regular Savings</small>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <h6 class="mb-0">₹{{ accountSummary.assets.recurringDeposits.totalPaid | number:'1.2-2' }}</h6>
+                        <small class="text-muted">Total Saved</small>
+                      </div>
+                    </div>
+
+                    <!-- User Fees -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-3" *ngIf="accountSummary.assets.userFees.total_fees > 0">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-3">
+                          <div class="avatar-title bg-light rounded-circle">
+                            <i class="bx bx-receipt text-primary"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 class="mb-1">Shared Fees</h6>
+                          <small class="text-muted">{{ accountSummary.assets.userFees.payment_status }}</small>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <h6 class="mb-0">₹{{ accountSummary.assets.userFees.shared_money | number:'1.2-2' }}</h6>
+                        <small class="text-muted">Total Paid (₹{{ accountSummary.assets.userFees.total_fees | number:'1.2-2' }})</small>
+                      </div>
+                    </div>
+
+                    <!-- Fund PINs -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded" *ngIf="accountSummary.assets.fundPins.totalAmount > 0">
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-3">
+                          <div class="avatar-title bg-light rounded-circle">
+                            <i class="bx bx-pin text-danger"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 class="mb-1">Fund PINs</h6>
+                          <small class="text-muted">{{ accountSummary.assets.fundPins.activeCount }} active</small>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <h6 class="mb-0">₹{{ accountSummary.assets.fundPins.totalAmount | number:'1.2-2' }}</h6>
+                        <small class="text-muted">Total Value</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detailed Breakdown -->
+            <div class="row">
+              <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-light border-0">
+                    <h6 class="card-title mb-0">
+                      <i class="bx bx-detail me-2"></i>
+                      Detailed Breakdown
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-4">
+                      <!-- Credit Card Details -->
+                      <div class="col-lg-4" *ngIf="accountSummary.liabilities.creditCard.outstanding > 0">
+                        <div class="card border h-100">
+                          <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                              <i class="bx bx-credit-card me-2"></i>
+                              Credit Card Details
+                            </h6>
+                          </div>
+                          <div class="card-body">
+                            <div class="mb-3">
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Outstanding</small>
+                                <strong>₹{{ accountSummary.liabilities.creditCard.outstanding | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                            <div class="mb-3">
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Credit Limit</small>
+                                <strong>₹{{ accountSummary.liabilities.creditCard.limit | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                            <div class="mb-3">
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Total Paid</small>
+                                <strong>₹{{ accountSummary.liabilities.creditCard.totalPaid | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                            <div>
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Interest Paid</small>
+                                <strong>₹{{ accountSummary.liabilities.creditCard.totalInterestPaid | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- User Fees Breakdown -->
+                      <div class="col-lg-4" *ngIf="accountSummary.assets.userFees.total_fees > 0">
+                        <div class="card border h-100">
+                          <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                              <i class="bx bx-receipt me-2"></i>
+                              Membership Fees
+                            </h6>
+                          </div>
+                          <div class="card-body">
+                            <div class="mb-3">
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Shared Money</small>
+                                <strong>₹{{ accountSummary.assets.userFees.shared_money | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                            <div class="mb-3">
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Admission Fees</small>
+                                <strong>₹{{ accountSummary.assets.userFees.admission_fees | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                            <div class="mb-3">
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Building Fund</small>
+                                <strong>₹{{ accountSummary.assets.userFees.building_fund | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                            <div class="mb-3">
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Welfare Fund</small>
+                                <strong>₹{{ accountSummary.assets.userFees.welfare_fund | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                            <div>
+                              <div class="d-flex justify-content-between">
+                                <small class="text-muted">Other Deposit</small>
+                                <strong>₹{{ accountSummary.assets.userFees.other_deposit | number:'1.2-2' }}</strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Fund PINs Details -->
+                      <div class="col-lg-4" *ngIf="accountSummary.assets.fundPins.pins.length > 0">
+                        <div class="card border h-100">
+                          <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                              <i class="bx bx-pin me-2"></i>
+                              Fund PINs ({{ accountSummary.assets.fundPins.pins.length }})
+                            </h6>
+                          </div>
+                          <div class="card-body p-0">
+                            <div class="table-responsive">
+                              <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                  <tr>
+                                    <th class="small border-0 ps-3">PIN</th>
+                                    <th class="small border-0">Amount</th>
+                                    <th class="small border-0 pe-3">Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr *ngFor="let pin of accountSummary.assets.fundPins.pins.slice(0, 8)">
+                                    <td class="small ps-3">{{ pin.pin }}</td>
+                                    <td class="small">₹{{ pin.amount | number:'1.2-2' }}</td>
+                                    <td class="small pe-3">
+                                      <span class="badge" [ngClass]="{
+                                        'bg-success': pin.status === 'Active',
+                                        'bg-warning': pin.status === 'Assigned',
+                                        'bg-secondary': pin.status === 'Used'
+                                      }">
+                                        {{ pin.status }}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <div class="text-center p-3" *ngIf="accountSummary.assets.fundPins.pins.length > 8">
+                                <small class="text-muted">And {{ accountSummary.assets.fundPins.pins.length - 8 }} more...</small>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

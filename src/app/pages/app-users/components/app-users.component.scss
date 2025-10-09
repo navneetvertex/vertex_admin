@@ -1,3 +1,14 @@
+.user-name-link {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #007bff;
+  cursor: pointer;
+}
+
+.user-name-link:hover {
+  text-decoration-color: #0056b3;
+}
+
 .blink-red {
     animation: blink-red 1s infinite;
 }

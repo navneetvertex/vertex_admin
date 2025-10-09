@@ -79,7 +79,7 @@
                                               alt="User" class="avatar-sm rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
                                         </div>
                                         <div>
-                                          <h6 class="mb-0">{{ user.name }}</h6>
+                                          <h6 class="mb-0 user-name-link" (click)="viewAccountSummary(user._id)">{{ user.name }}</h6>
                                           <small class="text-muted">User ID: {{ user.user_id }}</small><br/>
                                           <small class="text-muted" *ngIf="user.email_id">{{ user.email_id }}</small><br/>
                                           <small class="text-muted">Joined: {{ user.created_date | date:'shortDate' }}</small><br/>

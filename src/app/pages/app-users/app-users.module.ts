@@ -22,6 +22,7 @@ import { KycRequestComponent } from './components/kyc-request/kyc-request.compon
 import { EditFormComponent } from './components/edit-form/edit-form.component';
 import { NotificationsListsComponent } from './components/notifications-lists/notifications-lists.component';
 import { AccountClosureRequestComponent } from './components/account-closure-request/account-closure-request.component';
+import { AccountSummaryComponent } from './components/account-summary/account-summary.component';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { AccountClosureRequestComponent } from './components/account-closure-req
     KycRequestComponent,
     EditFormComponent,
     NotificationsListsComponent,
-    AccountClosureRequestComponent
+    AccountClosureRequestComponent,
+    AccountSummaryComponent
   ],
   imports: [
     CommonModule,

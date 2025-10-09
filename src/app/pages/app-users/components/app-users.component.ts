@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { UserProfileService } from 'src/app/core/services/user.service';
@@ -15,7 +16,8 @@ export class AppUsersComponent implements OnInit, AfterViewInit {
 
   constructor(private userService: UserProfileService,
     private modalService: NgbModal,
-    private toast: ToastrService
+    private toast: ToastrService,
+    private router: Router
   ) { }
   breadCrumbItems: Array<{}>;
   notificationFormGroup: FormGroup
@@ -336,6 +338,10 @@ export class AppUsersComponent implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  viewAccountSummary(userId: string) {
+    this.router.navigate(['/members/account-summary', userId]);
   }
 
 }

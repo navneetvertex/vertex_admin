@@ -102,6 +102,11 @@
                                         tooltip="View Profile">
                                   <i class="bx bx-user-circle"></i>
                                 </button>
+                                <button class="btn btn-sm btn-outline-info"
+                                        (click)="viewAccountSummary(request._id)"
+                                        tooltip="View Account Summary">
+                                  <i class="bx bx-bar-chart-alt-2"></i>
+                                </button>
                                 <button class="btn btn-sm btn-success"
                                         (click)="approveClosureRequest(request)"
                                         tooltip="Approve Closure">
