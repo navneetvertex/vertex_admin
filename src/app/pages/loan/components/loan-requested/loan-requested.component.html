@@ -1,6 +1,6 @@
 <div class="container-fluid">
 
-  <app-page-title title="Requested {{loanType === 'Personal' ? 'Personal' : 'Garanteed'}} Loan" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+  <app-page-title title="Requested {{loanType === 'Personal' ? 'Personal' : loanType === 'fd-against-loans' ? 'FD against' : 'Garanteed'}} Loan" [breadcrumbItems]="breadCrumbItems"></app-page-title>
 
   <div class="row">
             <div class="col-xl-12">
@@ -17,6 +17,7 @@
                                             <option value="">Select Loan Type</option>
                                             <option value="Personal">Personal</option>
                                             <option value="Garanteed">Garanteed</option>
+                                            <option value="fd-against-loans">FD against Loans</option>
                                         </select>
                                     </div>
                                     <div class="col-lg-2">
@@ -111,6 +112,11 @@
                                                   <i class="bx bx-detail"></i>
                                                 </a>
                                               </li>
+                                              <li class="list-inline-item px-2" *ngIf="loan.status !== 'Pending' && loan.status !== 'Rejected' && loan.loan_type === 'Loan Against FD'" >
+                                                <a (click)="viewPersonalLoan(loanViewGaranteedModal, loan)" tooltip="Profile">
+                                                  <i class="bx bx-detail"></i>
+                                                </a>
+                                              </li>
                                             </ul>
                                           </td>
                                         </tr>
@@ -143,7 +149,7 @@
 
 <ng-template #loanModal role="document" let-modal>
     <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Approved/Reject {{loanType}} Loan</h5>
+        <h5 class="modal-title" id="myModalLabel">Approved/Reject {{loanType === 'fd-against-loans'? 'FD against': loanType}} Loan</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
             (click)="modal.dismiss('Cross click')"></button>
     </div>

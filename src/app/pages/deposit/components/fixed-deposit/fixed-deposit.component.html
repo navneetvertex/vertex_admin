@@ -81,8 +81,8 @@
                                             <td>{{ user.notes }}</td>
                                             <td>{{ user.created_date | date}}</td>
                                             <td>
-                                                <span class="badge font-size-11 m-1 rounded-pill badge-soft-{{ user.status === 'Requested' ? 'warning' : user.status === 'Approved' ? 'success' : user.status === 'Close-Requested' ? 'danger' : 'secondary' }} text-{{ user.status === 'Requested' ? 'warning' : user.status === 'Approved' ? 'success' : user.status === 'Close-Requested' ? 'danger' : 'secondary' }}">
-                                                    {{ user.status === 'Close-Requested' ? 'Closure Requested' : user.status }}
+                                                <span class="badge font-size-11 m-1 rounded-pill badge-soft-{{ (user.status === 'Approved' && user.paidAmount === 0) ? 'warning' : user.status === 'Requested' ? 'warning' : user.status === 'Approved' ? 'success' : user.status === 'Close-Requested' ? 'danger' : 'secondary' }} text-{{ (user.status === 'Approved' && user.paidAmount === 0) ? 'warning' : user.status === 'Requested' ? 'warning' : user.status === 'Approved' ? 'success' : user.status === 'Close-Requested' ? 'danger' : 'secondary' }}">
+                                                    {{ (user.status === 'Approved' && user.paidAmount === 0) ? 'in-hold' : user.status === 'Close-Requested' ? 'Closure Requested' : user.status }}
                                                 </span>
                                             </td>
                                             <ul class="list-inline font-size-20 contact-links mb-0">

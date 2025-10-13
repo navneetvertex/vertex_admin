@@ -213,6 +213,12 @@ export const MENU: MenuItem[] = [
                 link: '/loan-management/loans/Garanteed'
             },
             {
+                id: 21,
+                parentId: 7,
+                label: 'FD against Loans',
+                link: '/loan-management/loans/fd-against-loans'
+            },
+            {
                 id:18,
                 parentId: 7,
                 label: 'Pay Loan',
