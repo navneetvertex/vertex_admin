@@ -187,28 +187,39 @@ export class AccountClosureRequestComponent implements OnInit {
   }
 
   confirmClosureApproval(user: any) {
-    Swal.fire({
-      title: 'Confirm Account Closure Approval',
-      html: `
-        <p>Are you sure you want to approve the account closure request for:</p>
-        <div class="alert alert-info">
-          <strong>${user.name}</strong> (${user.user_id})<br/>
-          Account: ${user.account_number || 'N/A'}<br/>
-          Requested: ${new Date(user.account_closure_requested_date).toLocaleDateString()}
-        </div>
-        <p class="text-danger"><strong>Warning:</strong> This action will permanently close the user's account and cannot be undone.</p>
-      `,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Approve Closure',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#dc3545'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Here you would call an API to approve the closure
-        // For now, just show success message
-        this.toast.success(`Account closure approved for ${user.name}`);
-        this.getClosureRequests(); // Refresh the list
+    // Call the backend API to approve closure
+    this.userService.approveAccountClosure(user._id).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.toast.success(`Account closure approved successfully for ${user.name}`);
+          
+          // Show additional details if available
+          if (response.data && response.data.netBalance > 0) {
+            Swal.fire({
+              title: 'Account Closure Completed',
+              html: `
+                <div class="text-center">
+                  <p class="text-success"><strong>Account closure approved for ${user.name}</strong></p>
+                  <div class="alert alert-success">
+                    <strong>Settlement Amount:</strong> ₹${response.data.netBalance.toFixed(2)}<br/>
+                    <small>Bank transfer has been initiated for the outstanding balance.</small>
+                  </div>
+                  <p class="text-muted">The user's account has been terminated and they will no longer be able to log in.</p>
+                </div>
+              `,
+              icon: 'success',
+              confirmButtonText: 'OK'
+            });
+          }
+          
+          this.getClosureRequests(); // Refresh the list
+        } else {
+          this.toast.error(response.message || 'Failed to approve account closure');
+        }
+      },
+      error: (error: any) => {
+        console.error('Error approving account closure:', error);
+        this.toast.error(error.error?.message || 'Failed to approve account closure');
       }
     });
   }
@@ -249,6 +260,7 @@ export class AccountClosureRequestComponent implements OnInit {
           <strong>${user.name}</strong> (${user.user_id})<br/>
           Account: ${user.account_number || 'N/A'}
         </div>
+        <p class="text-warning">The user will be notified of the rejection.</p>
       `,
       icon: 'question',
       showCancelButton: true,
@@ -257,10 +269,21 @@ export class AccountClosureRequestComponent implements OnInit {
       confirmButtonColor: '#6c757d'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Here you would call an API to reject the closure
-        // For now, just show success message
-        this.toast.success(`Account closure request rejected for ${user.name}`);
-        this.getClosureRequests(); // Refresh the list
+        // Call the backend API to reject closure
+        this.userService.rejectAccountClosure(user._id).subscribe({
+          next: (response: any) => {
+            if (response.success) {
+              this.toast.success(`Account closure request rejected for ${user.name}`);
+              this.getClosureRequests(); // Refresh the list
+            } else {
+              this.toast.error(response.message || 'Failed to reject account closure request');
+            }
+          },
+          error: (error: any) => {
+            console.error('Error rejecting account closure:', error);
+            this.toast.error(error.error?.message || 'Failed to reject account closure request');
+          }
+        });
       }
     });
   }

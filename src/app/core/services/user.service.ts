@@ -114,4 +114,12 @@ export class UserProfileService {
         return this.http.get(`${environment.api_url}users/income-statistics?advisorId=${advisor_id}&userId=${userId}&type=${type}`);
     }
 
+    approveAccountClosure(userId: string) {
+        return this.http.put(`${environment.api_url}users/approve-account-closure/${userId}`, {});
+    }
+
+    rejectAccountClosure(userId: string) {
+        return this.http.put(`${environment.api_url}users/reject-account-closure/${userId}`, {});
+    }
+
 }
