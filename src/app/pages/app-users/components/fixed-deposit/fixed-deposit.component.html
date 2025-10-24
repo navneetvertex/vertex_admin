@@ -19,7 +19,7 @@
                         <div class="col-lg-4">
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
-                                    <img src="{{profile.profile_image || 'assets/images/users/user_placeholder.png'}}" 
+                                    <img src="{{profile.profile_image || 'assets/images/users/user_placeholder.png'}}"
                                          alt="profile-image" class="avatar-md rounded-circle img-thumbnail">
                                 </div>
                                 <div class="flex-grow-1 align-self-center">
@@ -27,7 +27,7 @@
                                         <p class="mb-2">Admin Managing Fixed Deposit</p>
                                         <h5 class="mb-1">{{profile.name}}</h5>
                                         <p class="mb-0">{{profile.account_number}}</p>
-                                        <span *ngIf="selectedSetting" class="badge badge-pill mt-2" 
+                                        <span *ngIf="selectedSetting" class="badge badge-pill mt-2"
                                               [ngClass]="{
                                                 'badge-soft-warning': selectedSetting.status === 'Requested',
                                                 'badge-soft-success': selectedSetting.status === 'Approved',
@@ -84,7 +84,7 @@
                                         <div class="dropdown-divider" *ngIf="canRequestClosure || (selectedSetting && selectedSetting.status === 'Close-Requested')"></div>
                                         <h6 class="dropdown-header">Current Status</h6>
                                         <span class="dropdown-item-text">
-                                            <span class="badge" 
+                                            <span class="badge"
                                                   [ngClass]="{
                                                     'badge-soft-warning': selectedSetting?.status === 'Requested',
                                                     'badge-soft-success': selectedSetting?.status === 'Approved',
@@ -183,7 +183,7 @@
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="d-flex align-items-center">
                                             <h6 class="mb-0 me-2 fs-14 fw-bold">FD #{{setting.id}}</h6>
-                                            <span class="badge badge-sm" 
+                                            <span class="badge badge-sm"
                                                   [ngClass]="{
                                                     'badge-soft-warning': setting.status === 'Requested',
                                                     'badge-soft-success': setting.status === 'Approved',
@@ -193,7 +193,7 @@
                                                 {{ setting.status }}
                                             </span>
                                         </div>
-                                        <button class="btn btn-xs py-1 px-2" 
+                                        <button class="btn btn-xs py-1 px-2"
                                                 [ngClass]="{
                                                     'btn-success': selectedSetting?._id === setting._id,
                                                     'btn-outline-primary': selectedSetting?._id !== setting._id
@@ -204,7 +204,7 @@
                                             <i class="bx bx-hand-up fs-12" *ngIf="selectedSetting?._id !== setting._id"></i>
                                         </button>
                                     </div>
-                                    
+
                                     <!-- Compact Info Grid -->
                                     <div class="row g-1 fd-info-grid">
                                         <div class="col-6">
@@ -251,13 +251,13 @@
 
                                     <!-- Action buttons based on status -->
                                     <div class="mt-2 d-flex gap-1" *ngIf="setting.status === 'Approved'">
-                                        <button class="btn btn-xs btn-success flex-fill py-1" 
+                                        <button class="btn btn-xs btn-success flex-fill py-1"
                                                 style="font-size: 10px;"
                                                 (click)="selectFDAccount(setting); openAddDepositModal()"
                                                 [disabled]="!canSelectedAccountMakeDeposits() || setting._id !== selectedSetting?._id">
                                             <i class="bx bx-plus fs-10"></i> Deposit
                                         </button>
-                                        <button class="btn btn-xs btn-danger flex-fill py-1" 
+                                        <button class="btn btn-xs btn-danger flex-fill py-1"
                                                 style="font-size: 10px;"
                                                 (click)="selectFDAccount(setting); requestCloseFD()"
                                                 [disabled]="setting._id !== selectedSetting?._id">
@@ -267,7 +267,7 @@
 
                                     <!-- Admin approval button for requested accounts -->
                                     <div class="mt-2" *ngIf="setting.status === 'Requested'">
-                                        <button class="btn btn-xs btn-primary w-100 py-1" 
+                                        <button class="btn btn-xs btn-primary w-100 py-1"
                                                 style="font-size: 10px;"
                                                 (click)="selectFDAccount(setting); openModal(editSettingModal)">
                                             <i class="bx bx-check fs-10"></i> Approve FD
@@ -282,7 +282,7 @@
                                                 {{ setting.status === 'Completed' ? 'Account Closed' : 'Closure Pending' }}
                                             </small>
                                         </div>
-                                        <button class="btn btn-xs btn-warning w-100 py-1" 
+                                        <button class="btn btn-xs btn-warning w-100 py-1"
                                                 style="font-size: 10px;"
                                                 *ngIf="setting.status === 'Close-Requested'"
                                                 (click)="selectFDAccount(setting); openCloseFDModal(closeFDModal)">
@@ -306,7 +306,7 @@
                     <h4 class="card-title mb-0">
                         <i class="bx bx-bookmark me-2"></i>
                         Fixed Deposit Account #{{selectedSetting.id}}
-                        <span class="badge ms-2" 
+                        <span class="badge ms-2"
                               [ngClass]="{
                                 'badge-soft-warning': selectedSetting.status === 'Requested',
                                 'badge-soft-success': selectedSetting.status === 'Approved',
@@ -319,7 +319,7 @@
                     <div class="d-flex gap-2 align-items-center">
                         <!-- Action Buttons -->
                         <div class="btn-group" role="group" *ngIf="selectedSetting.status === 'Approved'">
-                            <button class="btn btn-success btn-sm" 
+                            <button class="btn btn-success btn-sm"
                                     (click)="openAddDepositModal()"
                                     [disabled]="!canSelectedAccountMakeDeposits()">
                                 <i class="bx bx-plus me-1"></i>Add Deposit
@@ -419,9 +419,9 @@
                                             The account is up to date. No outstanding payments required.
                                         </p>
                                     </div>
-                                    <button class="btn btn-sm" 
+                                    <button class="btn btn-sm"
                                             [ngClass]="fdOutstandingAmounts[selectedSetting._id].outstanding > 0 ? 'btn-warning' : 'btn-success'"
-                                            (click)="refreshStatistics()" 
+                                            (click)="refreshStatistics()"
                                             [disabled]="isLoadingAccountStatistics">
                                         <i class="bx bx-refresh" [class.bx-spin]="isLoadingAccountStatistics"></i>
                                     </button>
@@ -444,7 +444,7 @@
                             <i class="mdi mdi-information-outline me-2"></i>
                             FD Closure Details
                         </h5>
-                        <span class="badge" 
+                        <span class="badge"
                               [ngClass]="{
                                 'badge-soft-danger': selectedSetting.status === 'Close-Requested',
                                 'badge-soft-success': selectedSetting.status === 'Completed'
@@ -528,11 +528,11 @@
                     <!-- Status Messages -->
                     <div class="row mt-3">
                         <div class="col-12">
-                            <div class="alert" 
+                            <div class="alert"
                                  [ngClass]="{
                                    'alert-warning': selectedSetting.status === 'Close-Requested',
                                    'alert-success': selectedSetting.status === 'Completed'
-                                 }" 
+                                 }"
                                  role="alert">
                                 <div *ngIf="selectedSetting.status === 'Close-Requested'">
                                     <i class="mdi mdi-clock-outline me-2"></i>
@@ -558,8 +558,8 @@
                         <h5 class="mb-0 card-title flex-grow-1">Deposit History</h5>
                         <div class="flex-shrink-0 d-flex gap-1">
                             <a href="javascript:void(0);" class="btn btn-primary" *ngIf="depositSettings.length > 0 && depositList.length == 0"  (click)="openModal(addDepositModal)" >Add Deposit</a>
-                            <a href="javascript:void(0);"  *ngIf="canRequestClosure" 
-                               class="btn btn-warning" 
+                            <a href="javascript:void(0);"  *ngIf="canRequestClosure"
+                               class="btn btn-warning"
                                (click)="requestCloseFD()" >
                                 <i class="mdi mdi-lock-check me-1"></i>
                                 Request FD Closure
@@ -606,7 +606,7 @@
                             <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;" *ngIf="depositList.length === 0">
                             <img src="assets/img/not-found.png" width="300px" alt="">
                             <p class="text-mutes mt-2">No deposit found.</p>
-                        </div> 
+                        </div>
                             <div class="table-responsive" *ngIf="depositList.length !== 0">
                                     <table id="basic-datatable" class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
                                         <thead>
@@ -637,7 +637,7 @@
                                                     </td> -->
                                                 </tr>
                                             </ng-container>
-                                            
+
                                         </tbody>
                                     </table>
                         </div>
@@ -715,7 +715,7 @@
                     </div>
                 </div>
 
-                
+
 
                 <!-- Indirect Referral -->
                 <div class="col-md-6 mb-3">
@@ -778,7 +778,7 @@
 <ng-template #editSettingModal role="document" let-modal>
     <div class="modal-header">
         <h5 class="modal-title" id="myModalLabel">Update Settings</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" *ngIf="!isUserRequested" aria-label="Close"
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
             (click)="modal.dismiss('Cross click')"></button>
     </div>
     <form [formGroup]="editSettingFormGroup">
@@ -839,7 +839,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label for="maturityAmount" class="form-label">Maturity Amount</label>
-                    <input type="number" id="maturityAmount" class="form-control" formControlName="maturity_amount" 
+                    <input type="number" id="maturityAmount" class="form-control" formControlName="maturity_amount"
                         placeholder="Enter maturity amount">
                     <div *ngIf="editSettingFormGroup.get('maturity_amount')?.touched && editSettingFormGroup.get('maturity_amount')?.invalid"
                         class="text-danger">
@@ -885,7 +885,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal" *ngIf="!isUserRequested"
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
                 (click)="modal.close('Close click')">Close</button>
             <button type="submit" class="btn btn-primary waves-effect waves-light"
                 [disabled]="editSettingFormGroup.invalid" (click)="editSetting()" >Submit</button>
@@ -942,7 +942,7 @@
                 </div>
 
                 <!-- Status -->
-                
+
                 <!-- Notes -->
                 <div class="col-md-12 mb-3">
                     <label class="form-label">Notes</label>

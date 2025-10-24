@@ -18,7 +18,7 @@
                                         <p  class="mb-2">Welcome to Recurring Deposit</p>
                                         <h5  class="mb-1">{{profile.name}}</h5>
                                         <p  class="mb-0">{{profile.account_number}}</p>
-                                        <span *ngIf="selectedSetting" class="badge badge-pill mt-2" 
+                                        <span *ngIf="selectedSetting" class="badge badge-pill mt-2"
                                               [ngClass]="{
                                                 'badge-soft-warning': selectedSetting.status === 'Requested',
                                                 'badge-soft-success': selectedSetting.status === 'Approved',
@@ -75,7 +75,7 @@
                                 </div>
                             </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -321,7 +321,7 @@
                             <i class="mdi mdi-information-outline me-2"></i>
                             RD Closure Details
                         </h5>
-                        <span class="badge" 
+                        <span class="badge"
                               [ngClass]="{
                                 'badge-soft-danger': selectedSetting.status === 'Close-Requested',
                                 'badge-soft-success': selectedSetting.status === 'Completed'
@@ -405,11 +405,11 @@
                     <!-- Status Messages -->
                     <div class="row mt-3">
                         <div class="col-12">
-                            <div class="alert" 
+                            <div class="alert"
                                  [ngClass]="{
                                    'alert-warning': selectedSetting.status === 'Close-Requested',
                                    'alert-success': selectedSetting.status === 'Completed'
-                                 }" 
+                                 }"
                                  role="alert">
                                 <div *ngIf="selectedSetting.status === 'Close-Requested'">
                                     <i class="mdi mdi-clock-outline me-2"></i>
@@ -532,7 +532,7 @@
                                                     </td> -->
                                                 </tr>
                                             </ng-container>
-                                            
+
                                         </tbody>
                                     </table>
                             </div>
@@ -611,7 +611,7 @@
                         </div>
                     </div>
 
-                    
+
 
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label">Duration</label>
@@ -637,7 +637,7 @@
                         </div>
                     </div>
 
-                    
+
 
 
             </div>
@@ -656,7 +656,7 @@
 <ng-template #editSettingModal role="document" let-modal>
     <div class="modal-header">
         <h5 class="modal-title" id="myModalLabel">Settings</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" *ngIf="canCreateSettings"
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
             (click)="modal.dismiss('Cross click')"></button>
     </div>
     <form [formGroup]="editDepositSettings">
@@ -707,7 +707,7 @@
                         </div>
                     </div>
 
-                    
+
                     <div class="mb-3 col-lg-6">
                         <label class="col-form-label">Penality Rate(per day)</label>
                         <input type="number" class="form-control" placeholder="Penality Rate" formControlName="penality_rate">
@@ -754,7 +754,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" *ngIf="canCreateSettings" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
                 (click)="modal.close('Close click')">Close</button>
             <button type="button" class="btn btn-primary waves-effect waves-light"
                 [disabled]="editDepositSettings.invalid" (click)="editSettings()" >Submit</button>
