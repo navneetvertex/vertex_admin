@@ -8,11 +8,11 @@
                 <div class="card-body">
                     <div class="card-body border-bottom">
                       <form [formGroup]="searchFormGroup">
-                        <div class="row">
+                        <div class="row align-items-end">
                             <div class="col-lg-3">
                                 <input type="search" class="form-control" id="searchInput" formControlName="name" placeholder="Search for Name...">
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-2">
                                 <input type="search" class="form-control" id="searchInput" formControlName="user_id" placeholder="Search for User id...">
                             </div>
                             <div class="col-lg-2">
@@ -22,7 +22,7 @@
                                     <option *ngFor="let status of statusList" [value]="status" >{{status}}</option>
                                 </select>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-2">
                                 <select class="form-control select2" formControlName="monthYear">
                                     <option value="">Select Due Details</option>
                                     <option *ngFor="let item of monthYearList" [value]="item.value">{{item.display}}</option>
@@ -31,9 +31,14 @@
                             <div class="col-lg-1">
                                 <button type="button" (click)="getRecrruingDeposits()" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
                             </div>
-                            <div class="col-lg-1" >
-                                    <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
-                                </div>
+                            <div class="col-lg-1">
+                                <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-refresh"></i></button>
+                            </div>
+                            <div class="col-lg-1">
+                                <button (click)="openPenaltyRequestsModal(penaltyRequestsModal)" type="button" class="btn btn-warning w-100" title="View Penalty Removal Requests">
+                                    <i class="mdi mdi-alert-circle-outline"></i>
+                                </button>
+                            </div>
                         </div>
                       </form>
                   </div>
@@ -96,7 +101,7 @@
                                   </thead>
                                   <tbody>
                                     <ng-container *ngFor="let user of userList; let i = index">
-                                        <tr>
+                                        <tr [ngClass]="{'table-warning': user.hasPendingRequest}">
                                             <td>
                                               <div class="form-check">
                                                 <input class="form-check-input" 
@@ -121,14 +126,22 @@
                                             <td>₹{{ user.paidAmount | number: '1.2-2' }}</td>
                                             <td>₹{{ user.outstanding | number: '1.2-2' }}</td>
                                             <td>{{ user.created_date | date}}</td>
-                                            <ul class="list-inline font-size-20 contact-links mb-0">
-                                                <li class="list-inline-item px-2" >
-                                                    <a [routerLink]="['/members/compulsory-deposit/', user?.user?._id]" tooltip="Profile">
-                                                    <i class="bx bx-wallet"></i>
-                                                    </a>
-                                                </li>
-                                                
-                                            </ul>
+                                            <td>
+                                                <ul class="list-inline font-size-20 contact-links mb-0">
+                                                    <li class="list-inline-item px-2" >
+                                                        <a [routerLink]="['/members/compulsory-deposit/', user?.user?._id]" tooltip="Profile">
+                                                        <i class="bx bx-wallet"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li class="list-inline-item px-2" *ngIf="user.hasPendingRequest">
+                                                        <button class="btn btn-sm btn-warning" 
+                                                                (click)="viewUserPenaltyRequests(user, penaltyRequestsModal)"
+                                                                tooltip="View Penalty Requests">
+                                                            <i class="mdi mdi-alert-circle"></i>
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </td>
                                         </tr>
                                     </ng-container>
                                   </tbody>
@@ -225,6 +238,245 @@
             <i class="fas fa-paper-plane me-1" *ngIf="!isSendingNotification"></i>
             <i class="fas fa-spinner fa-spin me-1" *ngIf="isSendingNotification"></i>
             {{ isSendingNotification ? 'Sending...' : 'Send Notification' }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Penalty Removal Requests Modal -->
+<ng-template #penaltyRequestsModal let-modal>
+    <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title text-white">
+            <i class="mdi mdi-alert-circle-outline me-2"></i>Compulsory Deposit Penalty Removal Requests
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <!-- Filter by Status -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label">Filter by Status</label>
+                <select class="form-control" [(ngModel)]="penaltyRequestsStatus" (change)="filterPenaltyRequestsByStatus()">
+                    <option value="">All Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="col-md-8">
+                <div class="alert alert-info mb-0">
+                    <i class="mdi mdi-information me-2"></i>
+                    <strong>Total Requests:</strong> {{penaltyRequestsTotal}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 20%;">User</th>
+                        <th style="width: 15%;">Request Date</th>
+                        <th style="width: 12%;">Requested Amount</th>
+                        <th style="width: 12%;">Total Penalty</th>
+                        <th style="width: 10%;">Status</th>
+                        <th style="width: 26%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let request of penaltyRequests; let i = index">
+                        <ng-container *ngFor="let penaltyReq of request.penalty_removal_requests">
+                            <tr>
+                                <td>{{(penaltyRequestsPage - 1) * penaltyRequestsPageSize + i + 1}}</td>
+                                <td>
+                                    <strong>{{request.user?.name}}</strong><br>
+                                    <small class="text-muted">{{request.user?.user_id}}</small>
+                                </td>
+                                <td>{{penaltyReq.request_date | date:'MMM dd, yyyy'}}</td>
+                                <td><strong class="text-primary">₹{{penaltyReq.requested_amount}}</strong></td>
+                                <td><strong class="text-danger">₹{{request.currentTotalPenalty}}</strong></td>
+                                <td>
+                                    <span class="badge" [ngClass]="getPenaltyStatusBadgeClass(penaltyReq.status)">
+                                        {{penaltyReq.status}}
+                                    </span>
+                                    <div *ngIf="penaltyReq.status === 'Approved'" class="mt-1">
+                                        <small class="text-success">₹{{penaltyReq.penalty_removed}} removed</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-info" 
+                                                (click)="viewPenaltyRequestDetails(penaltyReq, request)">
+                                            <i class="mdi mdi-eye"></i> View
+                                        </button>
+                                        <button *ngIf="penaltyReq.status === 'Pending'" 
+                                                class="btn btn-sm btn-success" 
+                                                (click)="openApproveModal(approveModal, request, penaltyReq)">
+                                            <i class="mdi mdi-check"></i> Approve
+                                        </button>
+                                        <button *ngIf="penaltyReq.status === 'Pending'" 
+                                                class="btn btn-sm btn-danger" 
+                                                (click)="openRejectModal(rejectModal, request, penaltyReq)">
+                                            <i class="mdi mdi-close"></i> Reject
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                    <tr *ngIf="penaltyRequests.length === 0">
+                        <td colspan="7" class="text-center py-4">
+                            <i class="mdi mdi-information-outline fs-3 text-muted"></i>
+                            <p class="text-muted mb-0 mt-2">No penalty removal requests found</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-3" *ngIf="penaltyRequestsTotal > penaltyRequestsPageSize">
+            <div class="col-md-12">
+                <ngb-pagination
+                    class="pagination-rounded justify-content-end"
+                    [(page)]="penaltyRequestsPage"
+                    [pageSize]="penaltyRequestsPageSize"
+                    [collectionSize]="penaltyRequestsTotal"
+                    (pageChange)="changePenaltyRequestsPage($event)">
+                </ngb-pagination>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+            <i class="mdi mdi-close me-1"></i>Close
+        </button>
+    </div>
+</ng-template>
+
+<!-- Approve Penalty Modal -->
+<ng-template #approveModal let-modal>
+    <div class="modal-header bg-success text-white">
+        <h5 class="modal-title text-white">
+            <i class="mdi mdi-check-circle me-2"></i>Approve Penalty Removal
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-info">
+            <h6 class="alert-heading"><i class="mdi mdi-information me-2"></i>Request Information</h6>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>User:</strong> {{selectedPenaltyRequest?.user?.name}}</p>
+                    <p><strong>User ID:</strong> {{selectedPenaltyRequest?.user?.user_id}}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Requested Amount:</strong> <span class="text-primary">₹{{selectedPenaltyRequest?.penaltyRequest?.requested_amount}}</span></p>
+                    <p><strong>Total Penalty:</strong> <span class="text-danger">₹{{selectedPenaltyRequest?.currentTotalPenalty}}</span></p>
+                </div>
+            </div>
+            <p class="mb-0"><strong>Reason:</strong> {{selectedPenaltyRequest?.penaltyRequest?.reason}}</p>
+        </div>
+
+        <form [formGroup]="penaltyApprovalForm">
+            <div class="mb-3">
+                <label class="form-label">Amount to Remove <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text">₹</span>
+                    <input type="number" 
+                           class="form-control" 
+                           formControlName="penalty_removed"
+                           [max]="Math.min(selectedPenaltyRequest?.penaltyRequest?.requested_amount, selectedPenaltyRequest?.currentTotalPenalty)"
+                           placeholder="Enter amount">
+                </div>
+                <small class="text-muted">
+                    Maximum: ₹{{Math.min(selectedPenaltyRequest?.penaltyRequest?.requested_amount, selectedPenaltyRequest?.currentTotalPenalty)}}
+                </small>
+                <div class="invalid-feedback d-block" 
+                     *ngIf="penaltyApprovalForm.get('penalty_removed')?.invalid && penaltyApprovalForm.get('penalty_removed')?.touched">
+                    <small *ngIf="penaltyApprovalForm.get('penalty_removed')?.errors?.['required']">Amount is required</small>
+                    <small *ngIf="penaltyApprovalForm.get('penalty_removed')?.errors?.['min']">Amount must be at least ₹1</small>
+                    <small *ngIf="penaltyApprovalForm.get('penalty_removed')?.errors?.['max']">Amount exceeds maximum allowed</small>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Admin Response (Optional)</label>
+                <textarea class="form-control" 
+                          formControlName="admin_response" 
+                          rows="3"
+                          placeholder="Add any comments or response..."></textarea>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()" [disabled]="isProcessingPenalty">
+            <i class="mdi mdi-close me-1"></i>Cancel
+        </button>
+        <button type="button" 
+                class="btn btn-success" 
+                (click)="approvePenaltyRemoval()"
+                [disabled]="penaltyApprovalForm.invalid || isProcessingPenalty">
+            <i class="mdi mdi-check me-1" *ngIf="!isProcessingPenalty"></i>
+            <i class="mdi mdi-loading mdi-spin me-1" *ngIf="isProcessingPenalty"></i>
+            {{isProcessingPenalty ? 'Processing...' : 'Approve'}}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Reject Penalty Modal -->
+<ng-template #rejectModal let-modal>
+    <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title text-white">
+            <i class="mdi mdi-close-circle me-2"></i>Reject Penalty Removal
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-warning">
+            <h6 class="alert-heading"><i class="mdi mdi-alert me-2"></i>Request Information</h6>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>User:</strong> {{selectedPenaltyRequest?.user?.name}}</p>
+                    <p><strong>User ID:</strong> {{selectedPenaltyRequest?.user?.user_id}}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Requested Amount:</strong> <span class="text-primary">₹{{selectedPenaltyRequest?.penaltyRequest?.requested_amount}}</span></p>
+                    <p><strong>Total Penalty:</strong> <span class="text-danger">₹{{selectedPenaltyRequest?.currentTotalPenalty}}</span></p>
+                </div>
+            </div>
+            <p class="mb-0"><strong>Reason:</strong> {{selectedPenaltyRequest?.penaltyRequest?.reason}}</p>
+        </div>
+
+        <form [formGroup]="penaltyRejectionForm">
+            <div class="mb-3">
+                <label class="form-label">Rejection Reason <span class="text-danger">*</span></label>
+                <textarea class="form-control" 
+                          formControlName="admin_response" 
+                          rows="4"
+                          placeholder="Please provide a detailed reason for rejection..."
+                          [class.is-invalid]="penaltyRejectionForm.get('admin_response')?.invalid && penaltyRejectionForm.get('admin_response')?.touched"></textarea>
+                <div class="invalid-feedback">
+                    <small *ngIf="penaltyRejectionForm.get('admin_response')?.errors?.['required']">Rejection reason is required</small>
+                    <small *ngIf="penaltyRejectionForm.get('admin_response')?.errors?.['minlength']">Reason must be at least 10 characters</small>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss()" [disabled]="isProcessingPenalty">
+            <i class="mdi mdi-close me-1"></i>Cancel
+        </button>
+        <button type="button" 
+                class="btn btn-danger" 
+                (click)="rejectPenaltyRemoval()"
+                [disabled]="penaltyRejectionForm.invalid || isProcessingPenalty">
+            <i class="mdi mdi-close me-1" *ngIf="!isProcessingPenalty"></i>
+            <i class="mdi mdi-loading mdi-spin me-1" *ngIf="isProcessingPenalty"></i>
+            {{isProcessingPenalty ? 'Processing...' : 'Reject'}}
         </button>
     </div>
 </ng-template>

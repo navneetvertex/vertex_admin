@@ -118,4 +118,33 @@ getNotificationStats() {
   return this.http.get(`${environment.api_url}notifications/stats`);
 }
 
+// ========================================
+// Compulsory Deposit Penalty Removal (Admin)
+// ========================================
+
+/**
+ * Get all penalty removal requests (with pagination and filters)
+ */
+getPenaltyRemovalRequests(page: number = 1, limit: number = 10, status?: string) {
+  let url = `${environment.api_url}deposit/compulsory/penalty-removal-requests?page=${page}&limit=${limit}`;
+  if (status) {
+    url += `&status=${status}`;
+  }
+  return this.http.get(url);
+}
+
+/**
+ * Approve penalty removal request (full or partial)
+ */
+approvePenaltyRemovalRequest(requestId: string, payload: any) {
+  return this.http.post(`${environment.api_url}deposit/compulsory/penalty-removal-request/${requestId}/approve`, payload);
+}
+
+/**
+ * Reject penalty removal request
+ */
+rejectPenaltyRemovalRequest(requestId: string, payload: any) {
+  return this.http.post(`${environment.api_url}deposit/compulsory/penalty-removal-request/${requestId}/reject`, payload);
+}
+
 }

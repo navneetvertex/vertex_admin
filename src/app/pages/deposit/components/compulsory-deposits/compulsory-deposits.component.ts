@@ -40,6 +40,20 @@ export class CompulsoryDepositsComponent implements OnInit {
     // Notification modal properties
     notificationForm: FormGroup;
     isSendingNotification: boolean = false;
+    
+    // Penalty Removal properties
+    penaltyRequests: any[] = [];
+    penaltyRequestsTotal: number = 0;
+    penaltyRequestsPage: number = 1;
+    penaltyRequestsPageSize: number = 10;
+    penaltyRequestsStatus: string = 'Pending'; // Default filter to Pending
+    selectedPenaltyRequest: any = null;
+    
+    // Expose Math to template
+    Math = Math;
+    penaltyApprovalForm: FormGroup;
+    penaltyRejectionForm: FormGroup;
+    isProcessingPenalty: boolean = false;
   
     ngOnInit(): void {
       this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Compulsory Deposit List', active: true }];
@@ -67,6 +81,17 @@ export class CompulsoryDepositsComponent implements OnInit {
         title: new FormControl('', [Validators.required, Validators.minLength(3)]),
         body: new FormControl('', [Validators.required, Validators.minLength(10)]),
         sendSMS: new FormControl(false)
+      });
+      
+      // Initialize penalty approval form
+      this.penaltyApprovalForm = new FormGroup({
+        penalty_removed: new FormControl('', [Validators.required, Validators.min(1)]),
+        admin_response: new FormControl('', [Validators.minLength(5)])
+      });
+      
+      // Initialize penalty rejection form
+      this.penaltyRejectionForm = new FormGroup({
+        admin_response: new FormControl('', [Validators.required, Validators.minLength(10)])
       });
       
       this.settingsService.getGeneralSettings$().subscribe(settings => {
@@ -429,4 +454,267 @@ export class CompulsoryDepositsComponent implements OnInit {
       });
     }
 
+    // ========================================
+    // Penalty Removal Request Management
+    // ========================================
+    
+    /**
+     * Load penalty removal requests
+     */
+    loadPenaltyRemovalRequests() {
+      this.depositService.getPenaltyRemovalRequests(
+        this.penaltyRequestsPage,
+        this.penaltyRequestsPageSize,
+        this.penaltyRequestsStatus
+      ).subscribe({
+        next: (res: any) => {
+          if (res && res.status === 'success' && res.data) {
+            this.penaltyRequests = res.data.requests || [];
+            this.penaltyRequestsTotal = res.data.total || 0;
+          }
+        },
+        error: (err: any) => {
+          console.error('Error loading penalty requests:', err);
+          this.toastr.error('Failed to load penalty removal requests');
+        }
+      });
+    }
+    
+    /**
+     * Open penalty requests modal
+     */
+    openPenaltyRequestsModal(content: any) {
+      this.loadPenaltyRemovalRequests();
+      this.modalService.open(content, {
+        size: 'xl',
+        centered: true,
+        backdrop: 'static',
+        keyboard: false
+      });
+    }
+    
+    /**
+     * View specific user's penalty requests from main table
+     */
+    viewUserPenaltyRequests(user: any, content: any) {
+      // Filter penalty requests for this specific user
+      const userRequests = [{
+        ...user,
+        penalty_removal_requests: user.penalty_removal_requests || [],
+        currentTotalPenalty: user.currentTotalPenalty || 0 // Use the actual penalty from API
+      }];
+      
+      // Temporarily store the current requests
+      const originalRequests = this.penaltyRequests;
+      const originalTotal = this.penaltyRequestsTotal;
+      const originalStatus = this.penaltyRequestsStatus;
+      
+      // Set filtered data
+      this.penaltyRequests = userRequests;
+      this.penaltyRequestsTotal = userRequests.length;
+      this.penaltyRequestsStatus = ''; // Show all statuses for this user
+      
+      // Open the penalty requests modal
+      const modalRef = this.modalService.open(content, {
+        size: 'xl',
+        centered: true,
+        backdrop: 'static',
+        keyboard: false
+      });
+      
+      // Restore original data when modal is closed
+      modalRef.result.then(
+        () => {
+          this.penaltyRequests = originalRequests;
+          this.penaltyRequestsTotal = originalTotal;
+          this.penaltyRequestsStatus = originalStatus;
+          // Reload the main table to reflect any changes
+          this.getRecrruingDeposits();
+        },
+        () => {
+          this.penaltyRequests = originalRequests;
+          this.penaltyRequestsTotal = originalTotal;
+          this.penaltyRequestsStatus = originalStatus;
+          // Reload the main table to reflect any changes
+          this.getRecrruingDeposits();
+        }
+      );
+    }
+    
+    /**
+     * Filter penalty requests by status
+     */
+    filterPenaltyRequestsByStatus() {
+      this.penaltyRequestsPage = 1;
+      this.loadPenaltyRemovalRequests();
+    }
+    
+    /**
+     * Change penalty requests page
+     */
+    changePenaltyRequestsPage(page: number) {
+      this.penaltyRequestsPage = page;
+      this.loadPenaltyRemovalRequests();
+    }
+    
+    /**
+     * Open approve modal
+     */
+    openApproveModal(content: any, request: any, requestData: any) {
+      this.selectedPenaltyRequest = {
+        ...request,
+        penaltyRequest: requestData
+      };
+      
+      // Set default values
+      this.penaltyApprovalForm.patchValue({
+        penalty_removed: requestData.requested_amount,
+        admin_response: ''
+      });
+      
+      // Set max validator
+      this.penaltyApprovalForm.get('penalty_removed')?.setValidators([
+        Validators.required,
+        Validators.min(1),
+        Validators.max(Math.min(requestData.requested_amount, request.currentTotalPenalty))
+      ]);
+      this.penaltyApprovalForm.get('penalty_removed')?.updateValueAndValidity();
+      
+      this.modalService.open(content, {
+        size: 'lg',
+        centered: true,
+        backdrop: 'static'
+      });
+    }
+    
+    /**
+     * Approve penalty removal
+     */
+    approvePenaltyRemoval() {
+      if (this.penaltyApprovalForm.invalid) {
+        this.penaltyApprovalForm.markAllAsTouched();
+        this.toastr.error('Please fill all required fields correctly');
+        return;
+      }
+      
+      this.isProcessingPenalty = true;
+      const payload = this.penaltyApprovalForm.value;
+      
+      this.depositService.approvePenaltyRemovalRequest(
+        this.selectedPenaltyRequest.penaltyRequest._id,
+        payload
+      ).subscribe({
+        next: (res: any) => {
+          this.isProcessingPenalty = false;
+          if (res && res.status === 'success') {
+            this.toastr.success('Penalty removal request approved successfully');
+            this.modalService.dismissAll();
+            this.penaltyApprovalForm.reset();
+            this.loadPenaltyRemovalRequests();
+          }
+        },
+        error: (err: any) => {
+          this.isProcessingPenalty = false;
+          console.error('Error approving penalty:', err);
+          this.toastr.error(err?.error?.message || 'Failed to approve penalty removal request');
+        }
+      });
+    }
+    
+    /**
+     * Open reject modal
+     */
+    openRejectModal(content: any, request: any, requestData: any) {
+      this.selectedPenaltyRequest = {
+        ...request,
+        penaltyRequest: requestData
+      };
+      
+      this.penaltyRejectionForm.reset();
+      
+      this.modalService.open(content, {
+        size: 'lg',
+        centered: true,
+        backdrop: 'static'
+      });
+    }
+    
+    /**
+     * Reject penalty removal
+     */
+    rejectPenaltyRemoval() {
+      if (this.penaltyRejectionForm.invalid) {
+        this.penaltyRejectionForm.markAllAsTouched();
+        this.toastr.error('Please provide rejection reason');
+        return;
+      }
+      
+      this.isProcessingPenalty = true;
+      const payload = this.penaltyRejectionForm.value;
+      
+      this.depositService.rejectPenaltyRemovalRequest(
+        this.selectedPenaltyRequest.penaltyRequest._id,
+        payload
+      ).subscribe({
+        next: (res: any) => {
+          this.isProcessingPenalty = false;
+          if (res && res.status === 'success') {
+            this.toastr.success('Penalty removal request rejected');
+            this.modalService.dismissAll();
+            this.penaltyRejectionForm.reset();
+            this.loadPenaltyRemovalRequests();
+          }
+        },
+        error: (err: any) => {
+          this.isProcessingPenalty = false;
+          console.error('Error rejecting penalty:', err);
+          this.toastr.error(err?.error?.message || 'Failed to reject penalty removal request');
+        }
+      });
+    }
+    
+    /**
+     * Get status badge class
+     */
+    getPenaltyStatusBadgeClass(status: string): string {
+      switch(status) {
+        case 'Pending': return 'badge-warning';
+        case 'Approved': return 'badge-success';
+        case 'Rejected': return 'badge-danger';
+        default: return 'badge-secondary';
+      }
+    }
+    
+    /**
+     * View penalty request details in alert
+     */
+    viewPenaltyRequestDetails(penaltyReq: any, request: any): void {
+      let message = `
+        <strong>User:</strong> ${request.user?.name} (${request.user?.user_id})<br>
+        <strong>Request Date:</strong> ${new Date(penaltyReq.request_date).toLocaleDateString()}<br>
+        <strong>Status:</strong> ${penaltyReq.status}<br>
+        <strong>Requested Amount:</strong> ₹${penaltyReq.requested_amount}<br>
+        <strong>Total Penalty:</strong> ₹${request.currentTotalPenalty}<br>
+        <strong>Reason:</strong> ${penaltyReq.reason}<br>
+      `;
+      
+      if (penaltyReq.status === 'Approved') {
+        message += `<strong>Penalty Removed:</strong> ₹${penaltyReq.penalty_removed}<br>`;
+        message += `<strong>Approved By:</strong> ${penaltyReq.responded_by?.name}<br>`;
+        message += `<strong>Approved Date:</strong> ${new Date(penaltyReq.responded_date).toLocaleDateString()}<br>`;
+      } else if (penaltyReq.status === 'Rejected') {
+        message += `<strong>Rejected By:</strong> ${penaltyReq.responded_by?.name}<br>`;
+        message += `<strong>Rejected Date:</strong> ${new Date(penaltyReq.responded_date).toLocaleDateString()}<br>`;
+      }
+      
+      if (penaltyReq.admin_response) {
+        message += `<strong>Admin Response:</strong> ${penaltyReq.admin_response}`;
+      }
+      
+      this.toastr.info(message, 'Penalty Request Details', {
+        enableHtml: true,
+        timeOut: 10000,
+        closeButton: true
+      });
+    }
 }
