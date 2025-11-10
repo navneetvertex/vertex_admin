@@ -24,7 +24,7 @@ export class EditFormComponent implements OnInit {
       private route: Router,
       private modalService: NgbModal,
       private authService: AuthenticationService,
-    ) { 
+    ) {
       this.user = this.router.snapshot.params['user'];
     }
     breadCrumbItems: Array<{}>;
@@ -57,7 +57,7 @@ export class EditFormComponent implements OnInit {
 
       this.profileFormGroup = new FormGroup({
         _id: new FormControl('', [Validators.required]),
-        name: new FormControl({value: '', disabled: true}, [Validators.minLength(2)]),
+        name: new FormControl('', [Validators.minLength(2)]),
         father_or_husband_name : new FormControl('', [Validators.minLength(2)]),
         mother_name : new FormControl('', [Validators.minLength(2)]),
         maritial_status: new FormControl(null),
@@ -66,11 +66,11 @@ export class EditFormComponent implements OnInit {
         nominee_dob: new FormControl(''),
         mobile_number_2: new FormControl('', [Validators.pattern('^[6-9][0-9]{9}$')]),
         whatsapp_no: new FormControl(null, [Validators.pattern('^[6-9][0-9]{9}$')]),
-        account_number: new FormControl({value: '', disabled: true}, [Validators.pattern('^[0-9]{9,18}$')]),
-        user_id: new FormControl({value: '', disabled: true}),
+        account_number: new FormControl('', [Validators.pattern('^[0-9]{9,18}$')]),
+        user_id: new FormControl(),
         mobile_number: new FormControl('', [Validators.pattern('^[6-9][0-9]{9}$')]),
         gender: new FormControl(''),
-        date_of_birth: new FormControl({value: '', disabled: true}),
+        date_of_birth: new FormControl(),
         guardian_name: new FormControl('', [Validators.minLength(2)]),
         guardian_relation: new FormControl(''),
         nominee_name: new FormControl('', [Validators.minLength(2)]),

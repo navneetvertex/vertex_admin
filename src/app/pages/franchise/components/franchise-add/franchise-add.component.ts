@@ -31,6 +31,9 @@ export class FranchiseAddComponent implements OnInit {
   allStates: any[] = [];
   allAreasWithFranchiseUser: any[] = [];
   areaAlreadyExistsmessage: string = "";
+  isEditMode: boolean = false;
+  currentFranchiseId: string = null;
+  uploadedChequeProof: string = "";
 
   ngOnInit(): void {
     this.breadCrumbItems = [
@@ -125,12 +128,24 @@ export class FranchiseAddComponent implements OnInit {
       next: (response: any) => {
         if (response && response.data) {
           const isUserAlreadyFranchise = response.data.franchise;
-          this.addFranchiseFormGroup.patchValue({
-            area: isUserAlreadyFranchise?.area.map((area: any) => area._id) || [],
-            cheque_proof: isUserAlreadyFranchise?.cheque_proof || null
-          });
+          if (isUserAlreadyFranchise) {
+            this.isEditMode = true;
+            this.currentFranchiseId = isUserAlreadyFranchise._id;
+
+            this.addFranchiseFormGroup.patchValue({
+              area: isUserAlreadyFranchise?.area.map((area: any) => area._id) || [],
+              cheque_proof: isUserAlreadyFranchise?.cheque_proof || null
+            });
+
+            this.uploadedChequeProof = isUserAlreadyFranchise?.cheque_proof || null;
+
+            // If cheque proof exists, remove the required validator
+            if (this.uploadedChequeProof) {
+              this.addFranchiseFormGroup.get('cheque_proof')?.clearValidators();
+              this.addFranchiseFormGroup.get('cheque_proof')?.updateValueAndValidity();
+            }
+          }
           console.log("Franchise Details:", isUserAlreadyFranchise);
-          this.uploadedChequeProof = isUserAlreadyFranchise?.cheque_proof || null;
         }
       },
       error: (error) => {
@@ -254,7 +269,16 @@ export class FranchiseAddComponent implements OnInit {
       const isAreaAlreadySelected: any = this.allAreasWithFranchiseUser.find(
         (area: any) => area._id === last_selectedArea._id
       );
+
+      // In edit mode, check if the area belongs to the current franchise being edited
       if (isAreaAlreadySelected) {
+        // If in edit mode and the area belongs to the current user, allow it
+        if (this.isEditMode && isAreaAlreadySelected?.user?.[0]?._id === this.userDetails?._id) {
+          // Area belongs to current franchise, allow it
+          return;
+        }
+
+        // Area belongs to a different franchise
         this.toast.error(
           `This area is already associated with a franchise ${isAreaAlreadySelected?.user[0]?.name} (${isAreaAlreadySelected?.user[0]?.user_id})`
         );
@@ -280,7 +304,7 @@ export class FranchiseAddComponent implements OnInit {
     this.franchiseService.getAllAreasWithFranchise().subscribe({
       next: (response: any) => {
         this.allAreasWithFranchiseUser = response?.data?.areas || [];
-       
+
         console.log("Areas with franchise:", this.allAreasWithFranchiseUser);
         // if (response && response.data) {
         //   this.allAreas = response.data || [];
@@ -337,8 +361,6 @@ export class FranchiseAddComponent implements OnInit {
         console.log("Modal dismissed:", reason);
       });
   }
-
-  uploadedChequeProof: string = "";
 
   cropAndSetPhoto(base64: string, type: string = "chequeProof") {
     const img = new Image();
