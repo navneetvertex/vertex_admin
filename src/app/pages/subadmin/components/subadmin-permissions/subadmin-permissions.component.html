@@ -1,0 +1,461 @@
+<div class="container-fluid">
+  <app-page-title title="Manage Permissions" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="alert alert-info" role="alert">
+            <i class="mdi mdi-information-outline me-2"></i>
+            Configure access permissions for <strong>{{ subAdminName }}</strong>. Dashboard access is always enabled by default.
+          </div>
+
+          <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <div *ngIf="!loading">
+            <!-- Dashboard -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-view-dashboard mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Dashboard</h5>
+                </div>
+                <span class="badge bg-success">Always Enabled</span>
+              </div>
+              <div class="section-body">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.dashboard" disabled checked>
+                  <label class="form-check-label">Access Dashboard</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Members Management -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-account-group mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Members Management</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('members', !isAllSelected('members'))">
+                  {{ isAllSelected('members') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.members.view">
+                      <label class="form-check-label">View Member List</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.members.kyc">
+                      <label class="form-check-label">KYC Requests</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.members.accountClosure">
+                      <label class="form-check-label">Account Closure</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Advisors -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-account-check mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Advisors</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('advisors', !isAllSelected('advisors'))">
+                  {{ isAllSelected('advisors') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.advisors.view">
+                      <label class="form-check-label">View Advisors</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.advisors.manage">
+                      <label class="form-check-label">Manage Advisors</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Franchises -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-store mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Franchises</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('franchises', !isAllSelected('franchises'))">
+                  {{ isAllSelected('franchises') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.franchises.view">
+                      <label class="form-check-label">View Franchises</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.franchises.manage">
+                      <label class="form-check-label">Manage Franchises</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Deposit Management -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-wallet mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Deposit Management</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('deposits', !isAllSelected('deposits'))">
+                  {{ isAllSelected('deposits') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.deposits.compulsory">
+                      <label class="form-check-label">Compulsory Deposit</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.deposits.recurring">
+                      <label class="form-check-label">Recurring Deposit</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.deposits.fixed">
+                      <label class="form-check-label">Fixed Deposit</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pin Management -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-tag-multiple mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Pin Management</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('pinManagement', !isAllSelected('pinManagement'))">
+                  {{ isAllSelected('pinManagement') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.pinManagement.add">
+                      <label class="form-check-label">Add Pins</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.pinManagement.assigned">
+                      <label class="form-check-label">Assigned Pins</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.pinManagement.fund">
+                      <label class="form-check-label">Fund Pins</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-message-text mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Messages</h5>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.messages">
+                  <label class="form-check-label">Access Messages</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sahyog Card (Credit Card) -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-credit-card mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Sahyog Card</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('sahyogCard', !isAllSelected('sahyogCard'))">
+                  {{ isAllSelected('sahyogCard') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.sahyogCard.cardList">
+                      <label class="form-check-label">Card List</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.sahyogCard.requestNew">
+                      <label class="form-check-label">Request New Card</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.sahyogCard.assignedCards">
+                      <label class="form-check-label">Assigned Cards</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.sahyogCard.requestAmounts">
+                      <label class="form-check-label">Request Amounts</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.sahyogCard.payableAmount">
+                      <label class="form-check-label">Payable Amount</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.sahyogCard.transactions">
+                      <label class="form-check-label">Transactions</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.sahyogCard.reports">
+                      <label class="form-check-label">Reports</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loan Management -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-cash-multiple mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Loan Management</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('loanManagement', !isAllSelected('loanManagement'))">
+                  {{ isAllSelected('loanManagement') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.loanManagement.personalLoans">
+                      <label class="form-check-label">Personal Loans</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.loanManagement.guaranteedLoans">
+                      <label class="form-check-label">Guaranteed Loans</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.loanManagement.fdAgainstLoans">
+                      <label class="form-check-label">FD Against Loans</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.loanManagement.payLoan">
+                      <label class="form-check-label">Pay Loan</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.loanManagement.userTransactions">
+                      <label class="form-check-label">User Transactions</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.loanManagement.adminTransactions">
+                      <label class="form-check-label">Admin Transactions</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.loanManagement.reports">
+                      <label class="form-check-label">Reports</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Other Modules -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-dots-horizontal mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Other Modules</h5>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.shg">
+                      <label class="form-check-label">SHG</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.careers">
+                      <label class="form-check-label">Careers</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.awards">
+                      <label class="form-check-label">Awards</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.paymentManagement">
+                      <label class="form-check-label">Payment Management</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-cog mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">Settings</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('settings', !isAllSelected('settings'))">
+                  {{ isAllSelected('settings') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.settings.general">
+                      <label class="form-check-label">General Settings</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.settings.fees">
+                      <label class="form-check-label">Member Fees</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- State Management -->
+            <div class="permission-section">
+              <div class="section-header">
+                <div class="d-flex align-items-center">
+                  <i class="mdi mdi-map-marker mdi-24px me-2 text-primary"></i>
+                  <h5 class="mb-0">State Management</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary"
+                        (click)="toggleAll('stateManagement', !isAllSelected('stateManagement'))">
+                  {{ isAllSelected('stateManagement') ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+              <div class="section-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.stateManagement.states">
+                      <label class="form-check-label">States</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.stateManagement.districts">
+                      <label class="form-check-label">Districts</label>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.stateManagement.areas">
+                      <label class="form-check-label">Areas</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-4 d-flex gap-2">
+              <button type="button" class="btn btn-primary" (click)="savePermissions()">
+                <i class="mdi mdi-content-save me-1"></i>
+                Save Permissions
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="cancel()">
+                <i class="mdi mdi-close me-1"></i>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

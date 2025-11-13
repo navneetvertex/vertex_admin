@@ -22,6 +22,7 @@ const routes: Routes = [
   { path: 'master-data', loadChildren: () => import('./masters/masters.module').then(m => m.MastersModule) },
   { path: 'payments', loadChildren: () => import('./payments/payments.module').then(m => m.PaymentsModule) },
   { path: 'agents', loadChildren: () => import('./agents/agents.module').then(m => m.AgentsModule) },
+  { path: 'subadmin', loadChildren: () => import('./subadmin/subadmin.module').then(m => m.SubadminModule) },
   { path: 'franchises', loadChildren: () => import('./franchise/franchise.module').then(m => m.FranchiseModule) },
   { path: 'deposits', loadChildren: () => import('./deposit/deposit.module').then(m => m.DepositModule) },
   { path: 'shg', loadChildren: () => import('./shg/shg.module').then(m => m.ShgModule) },

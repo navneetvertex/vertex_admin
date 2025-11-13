@@ -1,0 +1,197 @@
+<div class="container-fluid">
+  <app-page-title [title]="isEditMode ? 'Edit Sub-Admin' : 'Add Sub-Admin'" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="subAdminForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <!-- Personal Information -->
+              <div class="col-12">
+                <h5 class="card-title mb-3">Personal Information</h5>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="name" placeholder="Enter full name">
+                  <div *ngIf="subAdminForm.get('name')?.invalid && subAdminForm.get('name')?.touched" class="text-danger mt-1">
+                    <small>Name is required</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" formControlName="mobile_number" placeholder="10-digit mobile number" maxlength="10">
+                  <div *ngIf="subAdminForm.get('mobile_number')?.invalid && subAdminForm.get('mobile_number')?.touched" class="text-danger mt-1">
+                    <small>Valid 10-digit mobile number is required</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-control" formControlName="email_id" placeholder="Enter email address">
+                  <div *ngIf="subAdminForm.get('email_id')?.invalid && subAdminForm.get('email_id')?.touched" class="text-danger mt-1">
+                    <small>Valid email is required</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">WhatsApp Number</label>
+                  <input type="text" class="form-control" formControlName="whatsapp_no" placeholder="10-digit WhatsApp number" maxlength="10">
+                  <div *ngIf="subAdminForm.get('whatsapp_no')?.invalid && subAdminForm.get('whatsapp_no')?.touched" class="text-danger mt-1">
+                    <small>Valid 10-digit number required</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Date of Birth</label>
+                  <input type="date" class="form-control" formControlName="date_of_birth">
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Gender <span class="text-danger">*</span></label>
+                  <select class="form-control" formControlName="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Payment Method <span class="text-danger">*</span></label>
+                  <select class="form-control" formControlName="payment_method">
+                    <option value="cash">Cash</option>
+                    <option value="online">Online</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Guardian Information -->
+              <div class="col-12 mt-3">
+                <h5 class="card-title mb-3">Guardian Information (Optional)</h5>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Guardian Name</label>
+                  <input type="text" class="form-control" formControlName="guardian_name" placeholder="Enter guardian name">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Guardian Relation</label>
+                  <select class="form-control" formControlName="guardian_relation">
+                    <option value="">Select Relation</option>
+                    <option value="Father">Father</option>
+                    <option value="Mother">Mother</option>
+                    <option value="Brother">Brother</option>
+                    <option value="Sister">Sister</option>
+                    <option value="Wife">Wife</option>
+                    <option value="Husband">Husband</option>
+                    <option value="Son">Son</option>
+                    <option value="Daughter">Daughter</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Location Information -->
+              <div class="col-12 mt-3">
+                <h5 class="card-title mb-3">Location Information (Optional)</h5>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">State</label>
+                  <select class="form-control" formControlName="state">
+                    <option [ngValue]="null">Select State</option>
+                    <option *ngFor="let state of states" [ngValue]="state._id">{{ state.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">District</label>
+                  <select class="form-control" formControlName="district" [disabled]="!subAdminForm.get('state')?.value">
+                    <option [ngValue]="null">Select District</option>
+                    <option *ngFor="let district of districts" [ngValue]="district._id">{{ district.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Area</label>
+                  <select class="form-control" formControlName="area" [disabled]="!subAdminForm.get('district')?.value">
+                    <option [ngValue]="null">Select Area</option>
+                    <option *ngFor="let area of areas" [ngValue]="area._id">{{ area.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="col-12 mt-3" *ngIf="!isEditMode">
+                <h5 class="card-title mb-3">Security</h5>
+              </div>
+
+              <div class="col-md-6" *ngIf="!isEditMode">
+                <div class="mb-3">
+                  <label class="form-label">Password <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control" formControlName="password"
+                         placeholder="Enter password (min 8 characters)">
+                  <small class="text-muted">Password must include uppercase, lowercase, number, and special character.</small>
+                  <div *ngIf="subAdminForm.get('password')?.invalid && subAdminForm.get('password')?.touched" class="text-danger mt-1">
+                    <small>Password is required and must be at least 8 characters</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6" *ngIf="!isEditMode">
+                <div class="mb-3">
+                  <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                  <input type="password" class="form-control" formControlName="confirmPassword"
+                         placeholder="Re-enter password">
+                  <div *ngIf="subAdminForm.get('confirmPassword')?.invalid && subAdminForm.get('confirmPassword')?.touched" class="text-danger mt-1">
+                    <small>Please confirm your password</small>
+                  </div>
+                  <div *ngIf="subAdminForm.hasError('passwordMismatch') && subAdminForm.get('confirmPassword')?.touched" class="text-danger mt-1">
+                    <small>Passwords do not match</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="col-12 mt-3">
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary" [disabled]="subAdminForm.invalid">
+                    <i class="mdi mdi-content-save me-1"></i>
+                    {{ isEditMode ? 'Update Sub-Admin' : 'Create Sub-Admin' }}
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="cancel()">
+                    <i class="mdi mdi-close me-1"></i>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -40,6 +40,25 @@ export const MENU: MenuItem[] = [
         link: '/agents'
     },
     {
+        id: 15,
+        label: 'Sub-Admin',
+        icon: 'bx-shield',
+        subItems: [
+            {
+                id: 28,
+                parentId: 15,
+                label: 'Sub-Admin List',
+                link: '/subadmin/list'
+            },
+            {
+                id: 29,
+                parentId: 15,
+                label: 'Add Sub-Admin',
+                link: '/subadmin/add'
+            }
+        ]
+    },
+    {
         id: 14,
         label: 'Franchises',
         icon: 'bx-building-house',
@@ -81,7 +100,7 @@ export const MENU: MenuItem[] = [
                 label: 'Fixed Deposit',
                 link: '/deposits/fixed-deposit'
             },
-            
+
         ]
     },
     {

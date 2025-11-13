@@ -1,0 +1,177 @@
+<div class="container-fluid">
+  <app-page-title title="Sub-Admin List" [breadcrumbItems]="breadCrumbItems"></app-page-title>
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card">
+        <div class="card-body">
+          <!-- Search Filters -->
+          <div class="card-body border-bottom">
+            <form [formGroup]="searchFormGroup">
+              <div class="row align-items-end g-2">
+                <div class="col-lg-3">
+                  <label class="form-label">Name</label>
+                  <input type="search" class="form-control" formControlName="name" placeholder="Search by name...">
+                </div>
+                <div class="col-lg-3">
+                  <label class="form-label">User ID</label>
+                  <input type="search" class="form-control" formControlName="user_id" placeholder="Search by user ID...">
+                </div>
+                <div class="col-lg-2">
+                  <label class="form-label">Status</label>
+                  <select class="form-control" formControlName="status">
+                    <option value="">All Status</option>
+                    <option *ngFor="let status of statusList" [value]="status">{{status}}</option>
+                  </select>
+                </div>
+                <div class="col-lg-2 d-grid">
+                  <button type="button" (click)="search()" class="btn btn-soft-secondary">
+                    <i class="mdi mdi-filter-outline align-middle"></i> Filter
+                  </button>
+                </div>
+                <div class="col-lg-1 d-grid">
+                  <button (click)="reset()" type="button" class="btn btn-soft-secondary">
+                    <i class="mdi mdi-refresh"></i>
+                  </button>
+                </div>
+                <div class="col-lg-1 d-grid">
+                  <button class="btn btn-primary" routerLink="/subadmin/add">
+                    <i class="mdi mdi-plus"></i> Add
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Table -->
+          <div class="row mt-3">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Sr No</th>
+                    <th>Name</th>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Status</th>
+                    <th>Permissions</th>
+                    <th>Created Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let subAdmin of subAdminList; let i = index">
+                    <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar-sm me-2">
+                          <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                            {{ subAdmin.name?.charAt(0).toUpperCase() }}
+                          </span>
+                        </div>
+                        <div>
+                          <h6 class="mb-0">{{ subAdmin.name }}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ subAdmin.user_id }}</td>
+                    <td>{{ subAdmin.email_id || 'N/A' }}</td>
+                    <td>{{ subAdmin.mobile_number }}</td>
+                    <td>
+                      <span class="badge fs-6"
+                            [ngClass]="{
+                              'bg-success': subAdmin.status === 'Active',
+                              'bg-warning': subAdmin.status === 'Pending',
+                              'bg-secondary': subAdmin.status === 'Inactive',
+                              'bg-danger': subAdmin.status === 'Blocked'
+                            }">
+                        {{ subAdmin.status }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span *ngIf="subAdmin.hasPermissions" class="badge bg-success">
+                        <i class="mdi mdi-check"></i> Configured
+                      </span>
+                      <span *ngIf="!subAdmin.hasPermissions" class="badge bg-warning">
+                        <i class="mdi mdi-alert"></i> Not Set
+                      </span>
+                    </td>
+                    <td>{{ subAdmin.created_date | date: 'dd/MM/yyyy' }}</td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-primary" (click)="editSubAdmin(subAdmin._id)"
+                                title="Edit">
+                          <i class="mdi mdi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-info" (click)="managePermissions(subAdmin._id)"
+                                title="Manage Permissions">
+                          <i class="mdi mdi-shield-account"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-warning" (click)="updatePassword(subAdmin._id, subAdmin.name)"
+                                title="Update Password">
+                          <i class="mdi mdi-key"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary"
+                                (click)="openStatusModal(changeStatusModal, subAdmin._id, subAdmin.status)"
+                                title="Change Status">
+                          <i class="mdi mdi-cog"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" (click)="deleteSubAdmin(subAdmin._id, subAdmin.name)"
+                                title="Delete">
+                          <i class="mdi mdi-delete"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="subAdminList.length === 0">
+                    <td colspan="9" class="text-center py-4">
+                      <i class="mdi mdi-alert-circle-outline mdi-24px text-muted"></i>
+                      <p class="text-muted mt-2">No sub-admins found</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div class="row justify-content-md-between align-items-md-center mt-2" *ngIf="total > 0">
+                <div class="col-sm-12 col-md-5">
+                  <div class="dataTables_info mb-2">
+                    Showing {{ (page - 1) * pageSize + 1 }} to {{ Math.min(page * pageSize, total) }} of {{ total }} entries
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-5">
+                  <div class="text-md-right float-md-end pagination-rounded">
+                    <ngb-pagination [collectionSize]="total" [(page)]="page" [pageSize]="pageSize"
+                                    (pageChange)="onPageChange($event)">
+                    </ngb-pagination>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Change Status Modal -->
+<ng-template #changeStatusModal role="document" let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Change Status</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="status-select" class="form-label">Select Status:</label>
+      <select class="form-control" [(ngModel)]="currStatus" id="status-select">
+        <option *ngFor="let status of statusList" [ngValue]="status">{{ status }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="changeStatus()">Update Status</button>
+  </div>
+</ng-template>

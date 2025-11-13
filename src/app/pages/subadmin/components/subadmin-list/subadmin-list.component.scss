@@ -1,0 +1,33 @@
+.avatar-sm {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.avatar-title {
+  align-items: center;
+  background-color: #667eea;
+  color: #fff;
+  display: flex;
+  font-weight: 500;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.bg-soft-primary {
+  background-color: rgba(102, 126, 234, 0.18) !important;
+  color: #667eea !important;
+}
+
+.btn-group {
+  gap: 4px;
+}
+
+.table {
+  th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+}
