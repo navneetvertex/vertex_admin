@@ -31,13 +31,15 @@ export class AuthenticationService {
 
     login(email_id: string, password: string) {
         return this.http.post<any>(`${environment.api_url}auth/login`, { email_id, password }, { withCredentials: true })
-            .pipe(map(user => {
-                if (user && user.accessToken) {
+            .pipe(map(response => {
+                if (response && response.accessToken && response.user) {
+                    // Store the user object with the accessToken added to it
+                    const user = { ...response.user, accessToken: response.accessToken };
                     localStorage.setItem('currentUser', JSON.stringify(user));
-                    localStorage.setItem('token', user.accessToken);
+                    localStorage.setItem('token', response.accessToken);
                     this.currentUserSubject.next(user);
                 }
-                return user;
+                return response;
             }));
     }
 

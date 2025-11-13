@@ -6,4 +6,6 @@ export class User {
     accessToken?: string;
     email_id: string;
     profile_image?: string;
+    user_type?: string;
+    permissions?: any;
 }
