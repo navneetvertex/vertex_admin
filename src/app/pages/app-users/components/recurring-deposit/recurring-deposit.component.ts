@@ -22,7 +22,7 @@ export class RecurringDepositComponent implements OnInit {
     private router: Router,
     private settingsService: SettingsService,
     private route: ActivatedRoute
-  ) { 
+  ) {
     this.user_id = this.route.snapshot.paramMap.get('user') || '';
     this.getProfile(this.user_id)
     this.getDepositSettings();
@@ -72,7 +72,7 @@ export class RecurringDepositComponent implements OnInit {
   @ViewChild('editSettingModal') editSettingModal: TemplateRef<any>;
 
   searchFormGroup: FormGroup ;
-  user_id: string = ''; 
+  user_id: string = '';
   profile: any = null;
 
   depositSettingsList: any = [];
@@ -128,7 +128,7 @@ export class RecurringDepositComponent implements OnInit {
     this.selectedSetting = account;
     this.getDeposits(account._id);
     this.depositFormGroup.patchValue({ payment_interval: account.interval, transanction_id: this.generateUniqueId() });
-    
+
     // Load outstanding amount for selected account
     if (account.status === 'Approved') {
       this.outstanding(this.user_id, account._id);
@@ -155,7 +155,7 @@ export class RecurringDepositComponent implements OnInit {
     this.activeRDAccounts = this.depositSettingsList.filter(account => account.status === 'Approved').length;
     this.completedRDAccounts = this.depositSettingsList.filter(account => account.status === 'Completed').length;
     this.pendingRDAccounts = this.depositSettingsList.filter(account => account.status === 'Requested').length;
-    
+
     // Calculate total outstanding amount across all approved accounts
     this.totalOutstandingAmount = 0;
     Object.values(this.rdOutstandingAmounts).forEach((outstanding: any) => {
@@ -199,8 +199,8 @@ export class RecurringDepositComponent implements OnInit {
 
     this.depositFormGroup = new FormGroup({
       payment_interval: new FormControl({value:'', disabled: true}, [Validators.required]),
-      paid_amount: new FormControl({value:'', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      payment_method: new FormControl('', [Validators.required]),
+      paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      payment_method: new FormControl('Cash', [Validators.required]),
       transanction_id: new FormControl('', [Validators.required]),
       notes: new FormControl(''),
     });
@@ -309,19 +309,19 @@ export class RecurringDepositComponent implements OnInit {
         console.log('Deposit settings:', this.depositSettingsList);
 
         // Check if RD account exists and is in an active state
-        this.isRDOpened = this.depositSettingsList.some(setting => 
-          setting.status === 'Approved' || 
-          setting.status === 'Completed' || 
+        this.isRDOpened = this.depositSettingsList.some(setting =>
+          setting.status === 'Approved' ||
+          setting.status === 'Completed' ||
           setting.status === 'Close-Requested'
         );
-        
+
         // Check if user can make new deposits (only for Approved status)
-        this.canMakeDeposits = this.depositSettingsList.some(setting => 
+        this.canMakeDeposits = this.depositSettingsList.some(setting =>
           setting.status === 'Approved'
         );
-        
+
         // Check if user can request closure (only for Approved status)
-        this.canRequestClosure = this.depositSettingsList.some(setting => 
+        this.canRequestClosure = this.depositSettingsList.some(setting =>
           setting.status === 'Approved'
         );
 
@@ -337,20 +337,20 @@ export class RecurringDepositComponent implements OnInit {
           // Load outstanding amounts for all RD accounts to display in overview cards
           this.loadOutstandingAmountsForAllAccounts();
         }
-        
+
         // Refresh statistics after a short delay to ensure data is loaded
         setTimeout(() => {
           this.refreshStatistics();
         }, 500);
-        
+
         if(this.depositSettingsList.length > 0 && this.isRDOpened) {
           // Prioritize approved accounts for selection
           const approvedAccount = this.depositSettingsList.find(setting => setting.status === 'Approved');
           const defaultAccount = approvedAccount || this.depositSettingsList[0];
-          
+
           this.getDeposits(defaultAccount._id);
           this.depositFormGroup.patchValue({  payment_interval: defaultAccount.interval, transanction_id: this.generateUniqueId()});
-          
+
           // Auto-select first approved account if available, otherwise first account
           this.selectedSetting = defaultAccount;
           this.selectRDAccount(defaultAccount);
@@ -375,7 +375,7 @@ export class RecurringDepositComponent implements OnInit {
   getDeposits(setting: string) {
     const searchParams = this.searchFormGroup.value;
     const queryParamArray = [];
-    
+
     Object.keys(searchParams).forEach(key => {
       if (searchParams[key] !== null && searchParams[key] !== '') {
       queryParamArray.push(`${key}=${encodeURIComponent(searchParams[key])}`);
@@ -404,7 +404,7 @@ export class RecurringDepositComponent implements OnInit {
     if (selectedSetting) {
       console.log('Selecting RD account:', selectedSetting._id, 'Status:', selectedSetting.status);
       this.editDepositSettings.patchValue(selectedSetting)
-      
+
       // Only load outstanding data for approved accounts
       if (selectedSetting.status === 'Approved') {
         this.outstanding(this.user_id, selectedSetting._id);
@@ -418,7 +418,7 @@ export class RecurringDepositComponent implements OnInit {
           total: 0
         };
       }
-      
+
       this.depositFormGroup.patchValue({
         required_amount: selectedSetting.amount,
         payment_interval: selectedSetting.interval,
@@ -449,12 +449,11 @@ export class RecurringDepositComponent implements OnInit {
         this.toast.error('Paid amount must be lower than or equal to the required amount', 'Error');
         return;
       }
-      
+
       payload.user = this.user_id;
       payload.r_deposit_settings = this.selectedSetting._id;
       payload.required_amount = this.selectedSetting.amount;
       payload.payment_interval = this.selectedSetting.interval;
-      payload.paid_amount = this.selectedSetting.amount
       this.depositService.createRDeposit(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.toast.success('Deposit created successfully');
