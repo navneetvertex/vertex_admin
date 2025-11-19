@@ -94,7 +94,7 @@
                     <div class="row mb-4">
                         <label for="date_of_birth" class="col-sm-3 col-form-label">Date of birth </label>
                         <div class="col-sm-2">
-                            <input type="text" id="date_of_birth" formControlName="date_of_birth" placeholder="Enter Your DOB" class="form-control">
+                            <input type="date" id="date_of_birth" formControlName="date_of_birth" class="form-control" (change)="onDOBChange($event)">
                         </div>
                         <label for="date_of_birth" class="col-sm-3 col-form-label">(Age: {{ userAge }} years)</label>
                     </div>
@@ -473,7 +473,7 @@
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </div>
-                                   
+
                                 </div>
                                 <div class="mt-1">
                                     <button type="button" class="btn btn-success btn-sm" (click)="addBank()">
@@ -515,7 +515,8 @@
                     <div class="row mb-4 align-items-center">
                         <label class="col-sm-3 col-form-label">Nominee DOB</label>
                         <div class="col-sm-2">
-                            <input type="date" formControlName="nominee_dob" class="form-control">
+                            <input type="date" formControlName="nominee_dob" class="form-control" (change)="onNomineeDOBChange($event)">
+                            <small *ngIf="nomineeAge !== null" class="text-muted">(Age: {{ nomineeAge }} years)</small>
                         </div>
                         <label class="col-sm-2 col-form-label">Nominee Mobile</label>
                         <div class="col-sm-2">

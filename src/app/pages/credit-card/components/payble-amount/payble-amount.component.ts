@@ -29,7 +29,7 @@ export class PaybleAmountComponent implements OnInit {
     this.payFormGroup = new FormGroup({
       user_id: new FormControl('', Validators.required),
       card_id: new FormControl('', Validators.required),
-      transaction_id: new FormControl('', Validators.required),
+      transaction_id: new FormControl(''),
       payment_method: new FormControl('', Validators.required),
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
     });
@@ -43,7 +43,7 @@ export class PaybleAmountComponent implements OnInit {
         if (res.status) {
           this.userDetails = res?.data?.user;
           this.getAllActiveCards(this.userDetails._id);
-        } 
+        }
       }, error: (err) => {
         console.error('Error fetching user details:', err);
       }
@@ -106,7 +106,7 @@ export class PaybleAmountComponent implements OnInit {
       amount: this.payFormGroup.value.amount
     };
 
-    console.log('Payment Payload:', payload); 
+    console.log('Payment Payload:', payload);
 
     this.creditCardService.payCreditCardFees(payload).subscribe({
       next: (res: any) => {

@@ -267,6 +267,7 @@ export class FundPinComponent implements OnInit {
       case 'Used': return 'badge-soft-info';
       case 'Inactive': return 'badge-soft-danger';
       case 'Hold': return 'badge-soft-warning';
+      case 'Transferred': return 'badge-soft-warning';
       case 'Expired': return 'badge-soft-secondary';
       default: return 'badge-soft-light';
     }

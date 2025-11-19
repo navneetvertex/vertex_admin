@@ -114,6 +114,8 @@
                                                 <span class="badge" [ngClass]="getStatusBadgeClass(pin.status)">{{ pin.status }}</span>
                                                 <br *ngIf="pin.expiry_date">
                                                 <small *ngIf="pin.expiry_date" class="text-muted">Expires: {{ pin.expiry_date | date }}</small>
+                                                <br *ngIf="pin.status === 'Transferred'">
+                                                <span *ngIf="pin.transferred_to_user[0]?.name">{{ pin.transferred_to_user[0]?.name }}<br>({{pin.transferred_to_user[0]?.user_id}})</span>
                                             </td>
                                             <td>{{ pin.created_date | date }}</td>
                                             <td>

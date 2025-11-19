@@ -35,6 +35,7 @@ export class EditFormComponent implements OnInit {
     selected_photo: string = null;
     selected_signature: string = null;
     userAge: number = 0;
+    nomineeAge: number | null = null;
     allStates: any[] = []
     allDistricts: any[] = [];
     allAreas: any[] = [];
@@ -438,9 +439,23 @@ export class EditFormComponent implements OnInit {
 
             console.log('Profile Data:', profile.nominee_dob);
 
-            this.profileFormGroup.patchValue({date_of_birth: formatDate(new Date(profile.date_of_birth),'dd-MM-yyyy','en')})
+            // Format dates for date input fields (yyyy-MM-dd)
+            this.profileFormGroup.patchValue({date_of_birth: formatDate(new Date(profile.date_of_birth),'yyyy-MM-dd','en')})
             this.profileFormGroup.patchValue({created_date: formatDate(new Date(profile.created_date),'dd-MM-yyyy','en')})
-            // this.profileFormGroup.patchValue({nominee_dob: formatDate(new Date(profile.nominee_dob),'dd-MM-yyyy','en')})
+
+            // Calculate nominee age if nominee_dob exists
+            if (profile.nominee_dob) {
+              this.profileFormGroup.patchValue({nominee_dob: formatDate(new Date(profile.nominee_dob),'yyyy-MM-dd','en')})
+              const birthDate = new Date(profile.nominee_dob);
+              const today = new Date();
+              let age = today.getFullYear() - birthDate.getFullYear();
+              const m = today.getMonth() - birthDate.getMonth();
+              if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+              }
+              this.nomineeAge = age;
+            }
+
             this.maritalStatus = response.data.marital_status;
 
             this.selected_signature = profile?.signature || null;
@@ -510,6 +525,30 @@ export class EditFormComponent implements OnInit {
     }
     console.log('Calculated age:', age);
     this.userAge = age;
+  }
+
+  onDOBChange(event: any) {
+    const dob = event.target.value;
+    if (dob) {
+      this.calculateAge(dob);
+    }
+  }
+
+  onNomineeDOBChange(event: any) {
+    const dob = event.target.value;
+    if (dob) {
+      const birthDate = new Date(dob);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      this.nomineeAge = age;
+      console.log('Nominee age:', age);
+    } else {
+      this.nomineeAge = null;
+    }
   }
 
   onSelfPhotoSelected(event: any) {
