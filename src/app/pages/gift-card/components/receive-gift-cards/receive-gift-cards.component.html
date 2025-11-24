@@ -12,13 +12,13 @@
                                         <input type="search" class="form-control" id="searchInput" placeholder="Search for Name / User Id / Email id..." formControlName="name">
                                     </div>
                                     <div class="col-lg-3">
-                                        <input type="search" class="form-control" id="searchInput" placeholder="Search for Distrubutor" formControlName="loan_id">
+                                        <input type="search" class="form-control" id="searchDistributor" placeholder="Search for Distributor" formControlName="distributor">
                                     </div>
-                                    
+
                                     <div class="col-lg-3" >
                                        <input type="date" class="form-control" id="searchInput" formControlName="transaction_date">
                                     </div>
-                                    
+
                                     <div class="col-lg-1">
                                         <button (click)="getAllGifts()" type="button" class="btn btn-soft-secondary w-100"><i class="mdi mdi-filter-outline align-middle"></i> Filter</button>
                                     </div>
@@ -29,59 +29,73 @@
                           </form>
                       </div>
                         <div class="row">
-                                <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!giftList || giftList.length === 0">
-                                    <img src="assets/img/not-found.png" width="300px" alt="">
-                                    <p class="text-mutes mt-2">No one received gift in the current filter.</p>
+                                <!-- Loading State -->
+                                <div class="d-flex justify-content-center align-items-center" style="min-height: 150px;" *ngIf="isLoading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
                                 </div>
-                                <div class="table-responsive"  *ngIf="giftList.length !== 0">
-                                    <table id="basic-datatable"
-                                      class="table table-bordered dt-responsive nowrap datatables no-footer dtr-inline">
+
+                                <!-- No Data State -->
+                                <div class="d-flex flex-column justify-content-center align-items-center"  style="min-height: 150px;"  *ngIf="!isLoading && (!giftList || giftList.length === 0)">
+                                    <img src="assets/img/not-found.png" width="300px" alt="">
+                                    <p class="text-muted mt-2">No one received gift in the current filter.</p>
+                                </div>
+
+                                <!-- Data Table -->
+                                <div class="table-responsive"  *ngIf="!isLoading && giftList.length !== 0">
+                                    <table class="table table-bordered dt-responsive nowrap">
                                       <thead>
                                         <tr>
                                           <th>Sr No</th>
                                           <th>User</th>
-                                          <th>Loan ID</th>
-                                          <th>Transanction Id</th>
-                                          <th>Transanction Type</th>
-                                          <th>Credit Amount</th>
-                                          <th>Debit Amount</th>
-                                          <th>Payment Method</th>
+                                          <th>Distributor</th>
+                                          <th>Gift Name</th>
+                                          <th>Quantity</th>
+                                          <th>Transaction ID</th>
                                           <th>Date</th>
+                                          <th>Status</th>
+                                          <th>Notes</th>
                                         </tr>
                                       </thead>
                                       <tbody>
-                                        <tr *ngFor="let loan of giftList; let i = index">
+                                        <tr *ngFor="let receive of giftList; let i = index">
                                           <td>{{ (page - 1) * pageSize + i + 1 }}</td>
-                                          <td>{{loan.user.name}} ({{loan.user.user_id}})  </td>
-                                          <td>{{loan.loan.loan_id}}</td>
-                                          <td>{{loan.transaction_id}}</td>
                                           <td>
-                                             <a *ngIf="loan.transaction_type" href="javascript: void(0);" class="badge font-size-11 m-1"
-                                              [ngClass]="{
-                                                'badge-soft-primary': loan.transaction_type === 'credit' , 
-                                                'badge-soft-info': loan.transaction_type === 'interest' , 
-                                                'badge-soft-warning': loan.transaction_type === 'debit'
-                                              }">
-                                              {{ loan.transaction_type | titlecase }}
-                                            </a>
-                                          </td>
-                                          <td>
-                                            <div *ngIf="loan.transaction_type === 'interest'  " >
-                                              Principal Amount : ₹{{loan.principal_component}} <br>
-                                              Interest Amount : ₹{{loan.interest_component}} <br>
-                                              <b> Amount : ₹{{loan.amount}} </b>
-                                            </div>
-                                            <div *ngIf="loan.transaction_type === 'credit'  " >
-                                             ₹{{loan.amount}} 
+                                            <div *ngIf="receive.user">
+                                              <strong>{{receive.user.name}}</strong><br>
+                                              <small>ID: {{receive.user.user_id}}</small><br>
+                                              <small *ngIf="receive.user.email_id">{{receive.user.email_id}}</small>
                                             </div>
                                           </td>
                                           <td>
-                                            <span *ngIf="loan.payment_amount">₹{{loan.payment_amount}}</span>
+                                            <div *ngIf="receive.distributor">
+                                              <strong>{{receive.distributor.name}}</strong><br>
+                                              <small>ID: {{receive.distributor.distributor_id}}</small>
+                                            </div>
                                           </td>
-                                          <td>{{loan.payment_method}}</td>
-                                          <td>{{loan.transaction_date | date: 'medium'}}</td>
-                                          
-                                          
+                                          <td>
+                                            <div *ngIf="receive.gift">
+                                              {{receive.gift.gift_name}}<br>
+                                              <small>ID: {{receive.gift.gift_id}}</small>
+                                            </div>
+                                          </td>
+                                          <td>{{receive.quantity}}</td>
+                                          <td>{{receive.transaction_id}}</td>
+                                          <td>{{receive.transaction_date | date: 'dd MMM yyyy, hh:mm a'}}</td>
+                                          <td>
+                                            <span class="badge"
+                                                  [ngClass]="{
+                                                    'bg-success': receive.status === 'Received',
+                                                    'bg-warning': receive.status === 'Pending',
+                                                    'bg-danger': receive.status === 'Rejected'
+                                                  }">
+                                              {{receive.status}}
+                                            </span>
+                                          </td>
+                                          <td>
+                                            <small>{{receive.notes || '-'}}</small>
+                                          </td>
                                         </tr>
                                       </tbody>
                                     </table>
@@ -102,7 +116,7 @@
                                     </div>
                                   </div>
                         </div>
-                            
+
                     </div>
                 </div>
             </div>
