@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { DefaultComponent } from './dashboards/default/default.component';
 import { PermissionGuard } from '../core/guards/permission.guard';
+import { PaymentComponent } from './payment/payment.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: 'dashboard' },
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'franchises', loadChildren: () => import('./franchise/franchise.module').then(m => m.FranchiseModule), canActivate: [PermissionGuard] },
   { path: 'deposits', loadChildren: () => import('./deposit/deposit.module').then(m => m.DepositModule), canActivate: [PermissionGuard] },
   { path: 'shg', loadChildren: () => import('./shg/shg.module').then(m => m.ShgModule), canActivate: [PermissionGuard] },
+  { path: 'payment', component: PaymentComponent},
 ];
 
 @NgModule({
