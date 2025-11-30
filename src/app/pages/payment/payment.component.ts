@@ -26,7 +26,7 @@ export class PaymentComponent implements OnInit {
 
   ngOnInit(): void {
     this.paymentForm = new FormGroup({
-      amount: new FormControl('', [Validators.required, Validators.min(1), Validators.max(10)]),
+      amount: new FormControl('5', [Validators.required, Validators.min(1), Validators.max(10)]),
       payment_purpose: new FormControl('wallet_topup', [Validators.required]),
       payment_mode: new FormControl('all', [Validators.required])
     });

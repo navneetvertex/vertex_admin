@@ -4,6 +4,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { DefaultComponent } from './dashboards/default/default.component';
 import { PermissionGuard } from '../core/guards/permission.guard';
 import { PaymentComponent } from './payment/payment.component';
+import { PaymentSuccessComponent } from './payment/payment-success/payment-success.component';
+import { PaymentFailedComponent } from './payment/payment-failed/payment-failed.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: 'dashboard' },
@@ -29,7 +31,9 @@ const routes: Routes = [
   { path: 'franchises', loadChildren: () => import('./franchise/franchise.module').then(m => m.FranchiseModule), canActivate: [PermissionGuard] },
   { path: 'deposits', loadChildren: () => import('./deposit/deposit.module').then(m => m.DepositModule), canActivate: [PermissionGuard] },
   { path: 'shg', loadChildren: () => import('./shg/shg.module').then(m => m.ShgModule), canActivate: [PermissionGuard] },
-  { path: 'payment', component: PaymentComponent},
+  { path: 'payment', component: PaymentComponent },
+  { path: 'payment/success', component: PaymentSuccessComponent },
+  { path: 'payment/failed', component: PaymentFailedComponent },
 ];
 
 @NgModule({

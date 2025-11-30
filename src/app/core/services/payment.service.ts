@@ -17,10 +17,17 @@ export class PaymentService {
   }
 
   /**
-   * Get transaction status
+   * Get transaction status (authenticated)
    */
   getTransactionStatus(transactionId: string) {
     return this.http.get(`${environment.api_url}payment/transaction/${transactionId}`);
+  }
+
+  /**
+   * Get public transaction status (for redirect pages - no auth required)
+   */
+  getPublicTransactionStatus(transactionId: string) {
+    return this.http.get(`${environment.api_url}payment/status/${transactionId}`);
   }
 
   /**

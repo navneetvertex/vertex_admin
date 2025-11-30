@@ -1,0 +1,83 @@
+<div class="container-fluid">
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+      <div class="card text-center">
+        <div class="card-body p-5">
+          <!-- Loading State -->
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading transaction details...</p>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!loading && error" class="text-center">
+            <div class="avatar-lg mx-auto mb-4">
+              <div class="avatar-title bg-danger-subtle text-danger rounded-circle">
+                <i class="mdi mdi-alert-circle-outline" style="font-size: 3rem;"></i>
+              </div>
+            </div>
+            <h4 class="text-danger">Error</h4>
+            <p class="text-muted">{{ error }}</p>
+            <a routerLink="/payment" class="btn btn-primary mt-3">Try Again</a>
+          </div>
+
+          <!-- Success State -->
+          <div *ngIf="!loading && !error && transaction">
+            <div class="avatar-lg mx-auto mb-4">
+              <div class="avatar-title bg-success-subtle text-success rounded-circle">
+                <i class="mdi mdi-check-circle-outline" style="font-size: 3rem;"></i>
+              </div>
+            </div>
+
+            <h3 class="text-success mb-3">Payment Successful!</h3>
+            <p class="text-muted mb-4">Your payment has been processed successfully.</p>
+
+            <div class="table-responsive">
+              <table class="table table-borderless mb-4">
+                <tbody>
+                  <tr>
+                    <td class="text-muted">Transaction ID</td>
+                    <td class="text-end fw-semibold">{{ transaction.merchant_txn_id }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted">Amount</td>
+                    <td class="text-end fw-semibold text-success">₹{{ transaction.amount }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted">Purpose</td>
+                    <td class="text-end fw-semibold text-capitalize">{{ transaction.payment_purpose | titlecase }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted">Status</td>
+                    <td class="text-end">
+                      <span class="badge bg-success">{{ transaction.status }}</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="transaction.pg_txn_id">
+                    <td class="text-muted">PG Transaction ID</td>
+                    <td class="text-end fw-semibold">{{ transaction.pg_txn_id }}</td>
+                  </tr>
+                  <tr *ngIf="transaction.pg_bank_txn_id">
+                    <td class="text-muted">Bank Reference</td>
+                    <td class="text-end fw-semibold">{{ transaction.pg_bank_txn_id }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex gap-2 justify-content-center">
+              <a routerLink="/dashboard" class="btn btn-primary">
+                <i class="mdi mdi-home me-1"></i> Go to Dashboard
+              </a>
+              <a routerLink="/payment" class="btn btn-outline-primary">
+                <i class="mdi mdi-plus me-1"></i> New Payment
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

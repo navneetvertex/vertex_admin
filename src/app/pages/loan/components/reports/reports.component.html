@@ -87,7 +87,7 @@
 
   <!-- Status Summary Cards -->
   <div class="row mb-4">
-    <div class="col-xl-4 col-md-4">
+    <div class="col-xl-3 col-md-3">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-center">
@@ -103,7 +103,7 @@
       </div>
     </div>
 
-    <div class="col-xl-4 col-md-4">
+    <div class="col-xl-3 col-md-3">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-center">
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <div class="col-xl-4 col-md-4">
+    <div class="col-xl-3 col-md-3">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-center">
@@ -129,6 +129,22 @@
             </div>
             <div class="flex-shrink-0">
               <span class="badge badge-soft-danger font-size-12">Rejected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+              <span class="text-muted">Document Fees</span>
+              <h5 class="mb-0">{{ (summary.activeLoans || 0) * 50 | number }}</h5>
+            </div>
+            <div class="flex-shrink-0">
+              <span class="badge badge-soft-info font-size-12">₹</span>
             </div>
           </div>
         </div>
@@ -160,7 +176,7 @@
           <div class="row mb-3">
             <div class="col-xl-3 col-md-6 mb-2">
               <label class="form-label">Search</label>
-              <input type="text" class="form-control" placeholder="Search by name, email, loan ID..." 
+              <input type="text" class="form-control" placeholder="Search by name, email, loan ID..."
                      [(ngModel)]="filters.search" (ngModelChange)="onFilterChange()">
             </div>
 
@@ -182,13 +198,13 @@
 
             <div class="col-xl-2 col-md-6 mb-2">
               <label class="form-label">Min Outstanding</label>
-              <input type="number" class="form-control" placeholder="Min amount" 
+              <input type="number" class="form-control" placeholder="Min amount"
                      [(ngModel)]="filters.min_outstanding" (ngModelChange)="onFilterChange()">
             </div>
 
             <div class="col-xl-2 col-md-6 mb-2">
               <label class="form-label">Max Outstanding</label>
-              <input type="number" class="form-control" placeholder="Max amount" 
+              <input type="number" class="form-control" placeholder="Max amount"
                      [(ngModel)]="filters.max_outstanding" (ngModelChange)="onFilterChange()">
             </div>
 
@@ -203,13 +219,13 @@
           <div class="row mb-3">
             <div class="col-xl-3 col-md-6 mb-2">
               <label class="form-label">Start Date</label>
-              <input type="date" class="form-control" 
+              <input type="date" class="form-control"
                      [(ngModel)]="filters.start_date" (ngModelChange)="onFilterChange()">
             </div>
 
             <div class="col-xl-3 col-md-6 mb-2">
               <label class="form-label">End Date</label>
-              <input type="date" class="form-control" 
+              <input type="date" class="form-control"
                      [(ngModel)]="filters.end_date" (ngModelChange)="onFilterChange()">
             </div>
 
@@ -290,8 +306,8 @@
                   <td>
                     <div class="d-flex flex-column">
                       <div class="progress mb-1" style="height: 6px;">
-                        <div class="progress-bar" 
-                             [style.width.%]="loan.paymentPercentage" 
+                        <div class="progress-bar"
+                             [style.width.%]="loan.paymentPercentage"
                              [ngClass]="{'bg-success': loan.paymentPercentage >= 100, 'bg-warning': loan.paymentPercentage < 100}">
                         </div>
                       </div>
@@ -315,7 +331,7 @@
 
                   <!-- Actions -->
                   <td>
-                    <button class="btn btn-outline-primary btn-sm" 
+                    <button class="btn btn-outline-primary btn-sm"
                             (click)="viewLoanDetails(loan._id, detailModal)"
                             [disabled]="loadingDetail">
                       <i class="bx bx-show me-1"></i>
@@ -337,17 +353,17 @@
           <div *ngIf="!loading && loanReports.length > 0" class="row align-items-center mt-3">
             <div class="col-sm-6">
               <div class="dataTables_info">
-                Showing {{ ((currentPage - 1) * limit) + 1 }} to {{ Math.min(currentPage * limit, totalRecords) }} 
+                Showing {{ ((currentPage - 1) * limit) + 1 }} to {{ Math.min(currentPage * limit, totalRecords) }}
                 of {{ totalRecords }} entries
               </div>
             </div>
             <div class="col-sm-6">
               <div class="dataTables_paginate paging_simple_numbers float-end">
-                <ngb-pagination 
-                  [(page)]="currentPage" 
-                  [pageSize]="limit" 
+                <ngb-pagination
+                  [(page)]="currentPage"
+                  [pageSize]="limit"
                   [collectionSize]="totalRecords"
-                  [maxSize]="5" 
+                  [maxSize]="5"
                   [rotate]="true"
                   (pageChange)="onPageChange($event)">
                 </ngb-pagination>
@@ -386,7 +402,7 @@
             <div class="col-md-6">
               <p><strong>Loan ID:</strong> {{ selectedLoanReport.loan.loan_id }}</p>
               <p><strong>Type:</strong> {{ selectedLoanReport.loan.loan_type }}</p>
-              <p><strong>Status:</strong> 
+              <p><strong>Status:</strong>
                 <span class="badge" [ngClass]="getStatusClass(selectedLoanReport.loan.status)">
                   {{ selectedLoanReport.loan.status }}
                 </span>
