@@ -88,9 +88,16 @@ findOutstandingDepositsOfCompulsory(user_id: string) {
 }
 
 findOutstandingDepositsOfRecurring(user_id: string, rd_id?: string) {
-  const url = rd_id 
+  const url = rd_id
     ? `${environment.api_url}deposit/findOutstandingDepositsOfRecurring?user_id=${user_id}&rd_id=${rd_id}`
     : `${environment.api_url}deposit/findOutstandingDepositsOfRecurring?user_id=${user_id}`;
+  return this.http.get(url);
+}
+
+findOutstandingDepositsOfFixed(user_id: string, fd_id?: string) {
+  const url = fd_id
+    ? `${environment.api_url}deposit/findOutstandingDepositsOfFixed?user_id=${user_id}&fd_id=${fd_id}`
+    : `${environment.api_url}deposit/findOutstandingDepositsOfFixed?user_id=${user_id}`;
   return this.http.get(url);
 }
 

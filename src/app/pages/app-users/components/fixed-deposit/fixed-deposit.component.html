@@ -28,13 +28,8 @@
                                         <h5 class="mb-1">{{profile.name}}</h5>
                                         <p class="mb-0">{{profile.account_number}}</p>
                                         <span *ngIf="selectedSetting" class="badge badge-pill mt-2"
-                                              [ngClass]="{
-                                                'badge-soft-warning': selectedSetting.status === 'Requested',
-                                                'badge-soft-success': selectedSetting.status === 'Approved',
-                                                'badge-soft-primary': selectedSetting.status === 'Completed',
-                                                'badge-soft-danger': selectedSetting.status === 'Close-Requested'
-                                              }">
-                                            {{ selectedSetting.status }}
+                                              [ngClass]="getStatusClass(selectedSetting)">
+                                            {{ getDisplayStatus(selectedSetting) }}
                                         </span>
                                     </div>
                                 </div>
@@ -85,13 +80,8 @@
                                         <h6 class="dropdown-header">Current Status</h6>
                                         <span class="dropdown-item-text">
                                             <span class="badge"
-                                                  [ngClass]="{
-                                                    'badge-soft-warning': selectedSetting?.status === 'Requested',
-                                                    'badge-soft-success': selectedSetting?.status === 'Approved',
-                                                    'badge-soft-primary': selectedSetting?.status === 'Completed',
-                                                    'badge-soft-danger': selectedSetting?.status === 'Close-Requested'
-                                                  }">
-                                                {{ selectedSetting?.status || 'No Status' }}
+                                                  [ngClass]="selectedSetting ? getStatusClass(selectedSetting) : 'badge-soft-secondary'">
+                                                {{ selectedSetting ? getDisplayStatus(selectedSetting) : 'No Status' }}
                                             </span>
                                         </span>
                                     </div>
@@ -184,13 +174,8 @@
                                         <div class="d-flex align-items-center">
                                             <h6 class="mb-0 me-2 fs-14 fw-bold">FD #{{setting.id}}</h6>
                                             <span class="badge badge-sm"
-                                                  [ngClass]="{
-                                                    'badge-soft-warning': setting.status === 'Requested',
-                                                    'badge-soft-success': setting.status === 'Approved',
-                                                    'badge-soft-primary': setting.status === 'Completed',
-                                                    'badge-soft-danger': setting.status === 'Close-Requested'
-                                                  }">
-                                                {{ setting.status }}
+                                                  [ngClass]="getStatusClass(setting)">
+                                                {{ getDisplayStatus(setting) }}
                                             </span>
                                         </div>
                                         <button class="btn btn-xs py-1 px-2"
@@ -266,13 +251,13 @@
                                     </div>
 
                                     <!-- Admin approval button for requested accounts -->
-                                    <div class="mt-2" *ngIf="setting.status === 'Requested'">
+                                    <!-- <div class="mt-2" *ngIf="setting.status === 'Requested'">
                                         <button class="btn btn-xs btn-primary w-100 py-1"
                                                 style="font-size: 10px;"
                                                 (click)="selectFDAccount(setting); openModal(editSettingModal)">
                                             <i class="bx bx-check fs-10"></i> Approve FD
                                         </button>
-                                    </div>
+                                    </div> -->
 
                                     <!-- Closure status for closed accounts -->
                                     <div class="mt-2" *ngIf="setting.status === 'Close-Requested' || setting.status === 'Completed'">
@@ -332,11 +317,11 @@
                             </button>
                         </div>
                         <!-- Approval button for requested accounts -->
-                        <div *ngIf="selectedSetting.status === 'Requested'">
+                        <!-- <div *ngIf="selectedSetting.status === 'Requested'">
                             <button class="btn btn-primary btn-sm" (click)="openModal(editSettingModal)">
                                 <i class="bx bx-check me-1"></i>Approve FD
                             </button>
-                        </div>
+                        </div> -->
                         <!-- Process closure button -->
                         <div *ngIf="selectedSetting.status === 'Close-Requested'">
                             <button class="btn btn-warning btn-sm" (click)="openCloseFDModal(closeFDModal)">
@@ -775,123 +760,7 @@
     </form>
 </ng-template>
 
-<ng-template #editSettingModal role="document" let-modal>
-    <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Update Settings</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-            (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <form [formGroup]="editSettingFormGroup">
-        <div class="modal-body">
-            <div class="row">
-                <!-- Amount -->
-                <div class="col-md-6 mb-3">
-                    <label for="amount" class="form-label">Amount</label>
-                    <input type="number" id="amount" class="form-control" formControlName="amount" (blur)="calculateMaturityAmount()"
-                        placeholder="Enter amount">
-                    <div *ngIf="editSettingFormGroup.get('amount')?.touched && editSettingFormGroup.get('amount')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editSettingFormGroup.get('amount')?.errors?.['required']">Amount is required.</small>
-                        <small *ngIf="editSettingFormGroup.get('amount')?.errors?.['pattern']">Enter a valid number (up to 2
-                            decimal places).</small>
-                    </div>
-                </div>
 
-                <!-- Duration -->
-                <div class="col-md-6 mb-3">
-                    <label for="duration" class="form-label">Duration</label>
-                    <select type="text" id="duration" class="form-control" formControlName="duration" (blur)="calculateMaturityAmount()"> >
-                        <option value="" disabled selected>Select duration</option>
-                        <option value="1">1 Years</option>
-                        <option value="2">2 Years</option>
-                        <option value="3">3 Years</option>
-                        <option value="4">4 Years</option>
-                        <option value="5">5 Years</option>
-                        <option value="6">6 Years</option>
-                        <option value="7">7 Years</option>
-                        <option value="8">8 Years</option>
-                        <option value="9">9 Years</option>
-                        <option value="10">10 Years</option>
-                    </select>
-                    <div *ngIf="editSettingFormGroup.get('duration')?.touched && editSettingFormGroup.get('duration')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editSettingFormGroup.get('duration')?.errors?.['required']">Duration is
-                            required.</small>
-                    </div>
-                </div>
-
-
-                <!-- Annual Rate -->
-                <div class="col-md-6 mb-3">
-                    <label for="annualRate" class="form-label">Annual Rate (%)</label>
-                    <input type="number" id="annualRate" class="form-control" formControlName="annual_rate"  (keyup)="calculateMaturityAmount()"
-                        placeholder="Enter annual rate">
-                    <div *ngIf="editSettingFormGroup.get('annual_rate')?.touched && editSettingFormGroup.get('annual_rate')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editSettingFormGroup.get('annual_rate')?.errors?.['required']">Annual rate is
-                            required.</small>
-                        <small *ngIf="editSettingFormGroup.get('annual_rate')?.errors?.['min']">Rate cannot be
-                            negative.</small>
-                        <small *ngIf="editSettingFormGroup.get('annual_rate')?.errors?.['max']">Rate cannot exceed
-                            100%.</small>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="maturityAmount" class="form-label">Maturity Amount</label>
-                    <input type="number" id="maturityAmount" class="form-control" formControlName="maturity_amount"
-                        placeholder="Enter maturity amount">
-                    <div *ngIf="editSettingFormGroup.get('maturity_amount')?.touched && editSettingFormGroup.get('maturity_amount')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editSettingFormGroup.get('maturity_amount')?.errors?.['required']">Maturity amount is
-                            required.</small>
-                        <small *ngIf="editSettingFormGroup.get('maturity_amount')?.errors?.['pattern']">Enter a valid number
-                            (up to 2 decimal places).</small>
-                    </div>
-                </div>
-
-                <!-- Indirect Referral -->
-                <!-- <div class="col-md-6 mb-3">
-                    <label for="indirectReferral" class="form-label">Indirect Referral Percentage</label>
-                    <input type="number" id="indirectReferral" class="form-control" formControlName="indirect_refer_per"
-                        placeholder="Enter indirect referral %">
-                    <div *ngIf="editSettingFormGroup.get('indirect_refer_per')?.touched && editSettingFormGroup.get('indirect_refer_per')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editSettingFormGroup.get('indirect_refer_per')?.errors?.['required']">Indirect
-                            referral % is required.</small>
-                        <small *ngIf="editSettingFormGroup.get('indirect_refer_per')?.errors?.['min']">Must be at least
-                            0%.</small>
-                        <small *ngIf="editSettingFormGroup.get('indirect_refer_per')?.errors?.['max']">Must be 100% or
-                            less.</small>
-                    </div>
-                </div> -->
-
-                <!-- Direct Referral -->
-                <!-- <div class="col-md-6 mb-3">
-                    <label for="directReferral" class="form-label">Direct Referral Percentage</label>
-                    <input type="number" id="directReferral" class="form-control" formControlName="direct_refer_per"
-                        placeholder="Enter direct referral %">
-                    <div *ngIf="editSettingFormGroup.get('direct_refer_per')?.touched && editSettingFormGroup.get('direct_refer_per')?.invalid"
-                        class="text-danger">
-                        <small *ngIf="editSettingFormGroup.get('direct_refer_per')?.errors?.['required']">Direct referral %
-                            is required.</small>
-                        <small *ngIf="editSettingFormGroup.get('direct_refer_per')?.errors?.['min']">Must be at least
-                            0%.</small>
-                        <small *ngIf="editSettingFormGroup.get('direct_refer_per')?.errors?.['max']">Must be 100% or
-                            less.</small>
-                    </div>
-                </div> -->
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
-                (click)="modal.close('Close click')">Close</button>
-            <button type="submit" class="btn btn-primary waves-effect waves-light"
-                [disabled]="editSettingFormGroup.invalid" (click)="editSetting()" >Submit</button>
-        </div>
-    </form>
-</ng-template>
 
 <ng-template #addDepositModal role="document" let-modal>
     <div class="modal-header">
@@ -931,7 +800,7 @@
                 </div>
 
                 <!-- Transaction ID -->
-                <div class="col-md-6 mb-3">
+                <!-- <div class="col-md-6 mb-3">
                     <label class="form-label">Transaction ID</label>
                     <input type="text" class="form-control" formControlName="transaction_id"
                         placeholder="Enter transaction ID" />
@@ -939,7 +808,7 @@
                         class="text-danger">
                         Required.
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Status -->
 

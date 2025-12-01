@@ -17,7 +17,7 @@ export class FixedDepositComponent implements OnInit {
 
   //@ViewChild('requestForm') requestFormRef!: TemplateRef<any>;
   @ViewChild('addDepositModal') addDepositModalRef!: TemplateRef<any>;
-  @ViewChild('editSettingModal') editSettingModal: TemplateRef<any>;
+  // @ViewChild('editSettingModal') editSettingModal: TemplateRef<any>;
 
   constructor(private modalService: NgbModal,
     private depositService: DepositService,
@@ -94,11 +94,10 @@ export class FixedDepositComponent implements OnInit {
       franchise_refer_per: new FormControl(null, { nonNullable: true, validators: [Validators.required, Validators.min(0), Validators.max(100)] }),
       notes: new FormControl('')
     });
-    
+
     this.addDepositFormGroup = new FormGroup({
-      tot_paid_amt: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      payment_method: new FormControl('', [Validators.required]),
-      transaction_id: new FormControl('', [Validators.required]),
+      tot_paid_amt: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      payment_method: new FormControl({value: 'Cash', disabled: true}, [Validators.required]),
       notes: new FormControl('')
     });
 
@@ -231,7 +230,7 @@ export class FixedDepositComponent implements OnInit {
       const rate = parseFloat(annualRate) / 100; // Convert percentage to decimal
       const time = parseFloat(duration);
       const n = parseInt(compoundingFrequency); // Compounding frequency
-      
+
       const maturityAmount = principal * Math.pow((1 + rate / n), n * time);
       this.editSettingFormGroup.patchValue({ maturity_amount: maturityAmount.toFixed(2) });
     } else {
@@ -274,7 +273,7 @@ export class FixedDepositComponent implements OnInit {
 
   openNewFDAccount(content: any) {
     Swal.fire({
-      title: "Are you sure?", 
+      title: "Are you sure?",
       text: "You want to open a Fixed Deposit Account!",
       icon: "warning",
       showCancelButton: true,
@@ -331,13 +330,12 @@ export class FixedDepositComponent implements OnInit {
 
           if(this.isUserRequested) {
              this.editSettingFormGroup.patchValue({annual_rate: this.fd_rate});
-              this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
+              // this.modalService.open(this.editSettingModal, {size: 'lg', centered: true, backdrop: 'static', keyboard: false});
           }
-          
+
           this.editSettingFormGroup.patchValue(this.selectedSetting);
           this.addDepositFormGroup.patchValue({
-            tot_paid_amt: this.selectedSetting.amount,
-            transaction_id: this.generateUniqueId()
+            tot_paid_amt: this.selectedSetting.amount
           });
 
           this.getDeposits(this.selectedSetting._id);
@@ -357,13 +355,13 @@ export class FixedDepositComponent implements OnInit {
     if (this.settingFormGroup.valid) {
       const payload = { ...this.settingFormGroup.value };
       payload.user = this.user_id;
-      
+
       // Compound Interest formula: A = P * (1 + r/n)^(n*t)
       const principal = payload.amount;
       const rate = payload.annual_rate / 100; // Convert percentage to decimal
       const time = Number(payload.duration);
       const n = parseInt(payload.compounding_frequency); // Compounding frequency
-      
+
       payload.maturity_amount = parseFloat((principal * Math.pow((1 + rate / n), n * time)).toFixed(2));
       this.depositService.createFDepositSettings(payload).subscribe({
         next: (res) => {
@@ -393,13 +391,13 @@ export class FixedDepositComponent implements OnInit {
       const payload = this.editSettingFormGroup.value;
       // Ensure duration is a number for calculation
       const duration = parseFloat(payload.duration);
-      
+
       // Compound Interest formula: A = P * (1 + r/n)^(n*t)
       const principal = payload.amount;
       const rate = payload.annual_rate / 100; // Convert percentage to decimal
       const time = duration;
       const n = parseInt(payload.compounding_frequency); // Compounding frequency
-      
+
       payload.maturity_amount = (principal * Math.pow((1 + rate / n), n * time)).toFixed(2);
       payload.status = 'Approved';
       console.log('Payload for editing deposit setting:', payload);
@@ -427,24 +425,25 @@ export class FixedDepositComponent implements OnInit {
       }
 
       const payload = {
-        ...this.addDepositFormGroup.value,
+        ...this.addDepositFormGroup.getRawValue(),
         f_deposit_setting: this.selectedSetting._id,
         user: this.user_id,
         tot_paid_amt: this.selectedSetting.amount,
-        per_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2)
+        per_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2),
+        payment_method: 'Cash'
       };
       this.depositService.createFDeposit(payload).subscribe({
         next: (res) => {
           this.toast.success('Fixed deposit created successfully');
           this.modalService.dismissAll();
           this.addDepositFormGroup.reset();
-          
+
           // Refresh outstanding amount first
           this.outstanding(this.user_id, this.selectedSetting._id);
-          
+
           // Refresh deposits and check if due transaction should be removed
           this.getDeposits(this.selectedSetting._id);
-          
+
           // After refreshing data, check if outstanding is zero and remove due transaction
           setTimeout(() => {
             const outstandingData = this.fdOutstandingAmounts[this.selectedSetting._id];
@@ -503,8 +502,7 @@ export class FixedDepositComponent implements OnInit {
 
     // Update form with selected setting details
     this.addDepositFormGroup.patchValue({
-      tot_paid_amt: setting.amount,
-      transaction_id: this.generateUniqueId()
+      tot_paid_amt: setting.amount
     });
 
     // Load deposits for this specific FD account
@@ -552,7 +550,7 @@ export class FixedDepositComponent implements OnInit {
     this.depositService.getFDeposits(settingId).subscribe({
       next: (res: any) => {
         this.depositList = res.data.deposits || [];
-        
+
         // Add due amount transaction if there's outstanding amount for this FD
         this.addDueTransactionForFD(settingId);
       },
@@ -627,12 +625,12 @@ export class FixedDepositComponent implements OnInit {
         }
 
         this.isLoadingAccountStatistics = false;
-        
+
         // Update due transaction for this FD
         if (fd_id) {
           this.addDueTransactionForFD(fd_id);
         }
-        
+
         // Force change detection to update the UI
         this.cdr.detectChanges();
       } else {
@@ -714,7 +712,7 @@ export class FixedDepositComponent implements OnInit {
   addDueTransactionForFD(settingId: string) {
     // Remove any existing due transaction first
     this.depositList = this.depositList.filter((deposit: any) => deposit.status !== 'Due');
-    
+
     // Add due amount transaction if there's outstanding amount for this FD
     const outstandingData = this.fdOutstandingAmounts[settingId];
     if (this.outstandingAmount > 0) {
@@ -869,6 +867,41 @@ export class FixedDepositComponent implements OnInit {
     } else {
       this.closeFDFormGroup.markAllAsTouched();
     }
+  }
+
+  // Get display status for FD account - shows "In-Hold" if Approved but no payments made
+  getDisplayStatus(setting: any): string {
+    if (setting.status === 'Approved') {
+      // Check if this FD has any payments
+      const fdOutstanding = this.fdOutstandingAmounts[setting._id];
+
+      // If no outstanding data loaded yet, or if total paid amount is 0 or outstanding equals the full amount
+      if (fdOutstanding && fdOutstanding.totalPaidAmount === 0) {
+        return 'In-Hold';
+      }
+
+      // If depositSummary exists and total paid is 0
+      if (this.depositSummary && this.depositSummary.totalPaidAmount === 0) {
+        return 'In-Hold';
+      }
+    }
+
+    return setting.status;
+  }
+
+  // Get CSS class for display status
+  getStatusClass(setting: any): string {
+    const displayStatus = this.getDisplayStatus(setting);
+
+    const statusClasses: { [key: string]: string } = {
+      'Requested': 'badge-soft-warning',
+      'Approved': 'badge-soft-success',
+      'In-Hold': 'badge-soft-info',
+      'Completed': 'badge-soft-primary',
+      'Close-Requested': 'badge-soft-danger'
+    };
+
+    return statusClasses[displayStatus] || 'badge-soft-secondary';
   }
 
 }
