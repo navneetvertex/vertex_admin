@@ -41,6 +41,7 @@ export class CompulsoryDepositComponent implements OnInit {
 
   outstandingAmount: any = null;
   userIsNotActive: boolean = false;
+  totalPenalty: number = 0;
 
   searchFormGroup: FormGroup;
 
@@ -56,9 +57,17 @@ export class CompulsoryDepositComponent implements OnInit {
       if (res && res.status === 'success') {
         const outstandingDeposits = res.data || [];
         this.outstandingAmount = outstandingDeposits;
+
+        // Extract penalty from API response
+        this.totalPenalty = outstandingDeposits.totalPenalty || 0;
+
         console.log('Outstanding Amount:', this.outstandingAmount);
+        console.log('Total Penalty:', this.totalPenalty);
+
         if (outstandingDeposits !== 0) {
-          this.depositFormGroup.patchValue({paid_amount: this.outstandingAmount.outstanding });
+          // Include penalty in the payment amount
+          const totalDue = (this.outstandingAmount.outstanding || 0) + this.totalPenalty;
+          this.depositFormGroup.patchValue({paid_amount: totalDue });
           this.toast.info(`Outstanding compulsory deposits found: ₹${outstandingDeposits.outstanding}`);
         } else {
           this.toast.success('No outstanding compulsory deposits found.');
@@ -89,9 +98,8 @@ export class CompulsoryDepositComponent implements OnInit {
     });
 
     this.depositFormGroup = new FormGroup({
-      payment_interval: new FormControl({value:'', disabled: true}, [Validators.required]),
-      paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      payment_method: new FormControl('', [Validators.required]),
+      paid_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      payment_method: new FormControl('Cash', [Validators.required]),
       notes: new FormControl(''),
     });
 
@@ -141,15 +149,20 @@ export class CompulsoryDepositComponent implements OnInit {
 
   addDeposit() {
     if (this.depositFormGroup.valid) {
-      const payload = this.depositFormGroup.value;
+      const payload = this.depositFormGroup.getRawValue();
       payload.user = this.user_id;
-      payload.c_deposit_setting = this.settings._id
+      payload.c_deposit_setting = this.settings._id;
       payload.payment_interval = this.settings.interval;
+      payload.payment_method = 'Cash';
       this.depositService.createCDeposit(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.toast.success('Deposit created successfully');
-          this.depositFormGroup.reset();
           this.modalService.dismissAll();
+          this.depositFormGroup.reset({
+            paid_amount: '',
+            payment_method: 'Cash',
+            notes: ''
+          });
           this.outstanding(this.user_id);
           this.getDepositSettings();
         }

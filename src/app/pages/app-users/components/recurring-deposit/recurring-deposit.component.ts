@@ -111,27 +111,49 @@ export class RecurringDepositComponent implements OnInit {
   isSendingNotification: boolean = false;
 
   outstanding(user_id: any, setting_id: any) {
+    this.isLoadingAccountStatistics = true;
     this.depositService.findOutstandingDepositsOfRecurring(user_id, setting_id).subscribe((res: any) => {
       if (res && res.status === 'success') {
         this.outstandingAmount = res.data;
+        this.depositSummary = res.data.depositSummary;
         console.log('Outstanding amount:', this.outstandingAmount);
+        console.log('Deposit summary:', this.depositSummary);
+
+        // Update paid_amount field with outstanding amount
+        if (this.outstandingAmount && this.outstandingAmount.outstanding) {
+          this.depositFormGroup.patchValue({ paid_amount: this.outstandingAmount.outstanding });
+        }
+
+        this.isLoadingAccountStatistics = false;
       } else {
         this.toast.error('Failed to fetch outstanding amount', 'Error');
+        this.isLoadingAccountStatistics = false;
       }
     }, error => {
       console.error('Error fetching outstanding amount:', error);
       this.toast.error('Error fetching outstanding amount', 'Error');
+      this.isLoadingAccountStatistics = false;
     });
   }
 
   selectRDAccount(account: any) {
     this.selectedSetting = account;
     this.getDeposits(account._id);
-    this.depositFormGroup.patchValue({ payment_interval: account.interval, transanction_id: this.generateUniqueId() });
+    this.depositFormGroup.patchValue({ payment_interval: account.interval });
 
     // Load outstanding amount for selected account
     if (account.status === 'Approved') {
       this.outstanding(this.user_id, account._id);
+    } else {
+      // Clear outstanding data for non-approved accounts
+      this.outstandingAmount = null;
+      this.depositSummary = {
+        interest: 0,
+        paid: 0,
+        penalty: 0,
+        total: 0
+      };
+      this.depositFormGroup.patchValue({ paid_amount: '' });
     }
   }
 
@@ -141,6 +163,10 @@ export class RecurringDepositComponent implements OnInit {
         this.depositService.findOutstandingDepositsOfRecurring(this.user_id, account._id).subscribe((res: any) => {
           if (res && res.status === 'success') {
             this.rdOutstandingAmounts[account._id] = res.data;
+            // Store depositSummary for each account if needed
+            if (res.data && res.data.depositSummary) {
+              this.rdOutstandingAmounts[account._id].depositSummary = res.data.depositSummary;
+            }
           }
         }, error => {
           console.error('Error loading outstanding amount for account:', account._id, error);
@@ -199,9 +225,8 @@ export class RecurringDepositComponent implements OnInit {
 
     this.depositFormGroup = new FormGroup({
       payment_interval: new FormControl({value:'', disabled: true}, [Validators.required]),
-      paid_amount: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
-      payment_method: new FormControl('Cash', [Validators.required]),
-      transanction_id: new FormControl('', [Validators.required]),
+      paid_amount: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      payment_method: new FormControl({value: 'Cash', disabled: true}, [Validators.required]),
       notes: new FormControl(''),
     });
 
@@ -349,7 +374,7 @@ export class RecurringDepositComponent implements OnInit {
           const defaultAccount = approvedAccount || this.depositSettingsList[0];
 
           this.getDeposits(defaultAccount._id);
-          this.depositFormGroup.patchValue({  payment_interval: defaultAccount.interval, transanction_id: this.generateUniqueId()});
+          this.depositFormGroup.patchValue({  payment_interval: defaultAccount.interval});
 
           // Auto-select first approved account if available, otherwise first account
           this.selectedSetting = defaultAccount;
@@ -422,8 +447,7 @@ export class RecurringDepositComponent implements OnInit {
       this.depositFormGroup.patchValue({
         required_amount: selectedSetting.amount,
         payment_interval: selectedSetting.interval,
-        pay_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2),
-        transanction_id: this.generateUniqueId()
+        pay_day_rate: +(this.selectedSetting.annual_rate / 365).toFixed(2)
       });
       this.getDeposits(selectedSetting._id);
     }
@@ -443,7 +467,7 @@ export class RecurringDepositComponent implements OnInit {
         return;
       }
 
-      const payload = this.depositFormGroup.value;
+      const payload = this.depositFormGroup.getRawValue();
 
       if(payload.paid_amount > this.selectedSetting.amount) {
         this.toast.error('Paid amount must be lower than or equal to the required amount', 'Error');
@@ -454,11 +478,21 @@ export class RecurringDepositComponent implements OnInit {
       payload.r_deposit_settings = this.selectedSetting._id;
       payload.required_amount = this.selectedSetting.amount;
       payload.payment_interval = this.selectedSetting.interval;
+      payload.payment_method = 'Cash';
       this.depositService.createRDeposit(payload).subscribe((res: any) => {
         if (res && res.status === 'success') {
           this.toast.success('Deposit created successfully');
-          this.depositFormGroup.reset();
           this.modalService.dismissAll();
+
+          // Reset form but preserve the structure for readonly fields
+          this.depositFormGroup.reset({
+            payment_interval: this.selectedSetting.interval,
+            paid_amount: '',
+            payment_method: 'Cash',
+            notes: ''
+          });
+
+          // Reload outstanding and deposits
           this.outstanding(this.user_id, this.selectedSetting._id);
           this.getDeposits(payload.r_deposit_settings);
         }
@@ -808,4 +842,44 @@ export class RecurringDepositComponent implements OnInit {
         console.error('Error sending notification:', err);
         this.toast.error('Failed to send notification', 'Error');
       });
-    }}
+    }
+
+  // Get display status for RD account - shows "In-Hold" if Approved but no payments made
+  getDisplayStatus(setting: any): string {
+    if (setting.status === 'Approved') {
+      // Check if this RD has any deposits
+      const rdOutstanding = this.rdOutstandingAmounts[setting._id];
+
+      // Check depositSummary for total paid amount
+      if (rdOutstanding && rdOutstanding.depositSummary) {
+        if (rdOutstanding.depositSummary.paid === 0) {
+          return 'In-Hold';
+        }
+      }
+
+      // If depositSummary exists for selected setting and total paid is 0
+      if (this.selectedSetting && this.selectedSetting._id === setting._id) {
+        if (this.depositSummary && this.depositSummary.paid === 0) {
+          return 'In-Hold';
+        }
+      }
+    }
+
+    return setting.status;
+  }
+
+  // Get CSS class for display status
+  getStatusClass(setting: any): string {
+    const displayStatus = this.getDisplayStatus(setting);
+
+    const statusClasses: { [key: string]: string } = {
+      'Requested': 'badge-soft-warning',
+      'Approved': 'badge-soft-success',
+      'In-Hold': 'badge-soft-info',
+      'Completed': 'badge-soft-primary',
+      'Close-Requested': 'badge-soft-danger'
+    };
+
+    return statusClasses[displayStatus] || 'badge-soft-secondary';
+  }
+}

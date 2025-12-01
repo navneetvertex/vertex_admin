@@ -19,13 +19,8 @@
                                         <h5  class="mb-1">{{profile.name}}</h5>
                                         <p  class="mb-0">{{profile.account_number}}</p>
                                         <span *ngIf="selectedSetting" class="badge badge-pill mt-2"
-                                              [ngClass]="{
-                                                'badge-soft-warning': selectedSetting.status === 'Requested',
-                                                'badge-soft-success': selectedSetting.status === 'Approved',
-                                                'badge-soft-primary': selectedSetting.status === 'Completed',
-                                                'badge-soft-danger': selectedSetting.status === 'Close-Requested'
-                                              }">
-                                            {{ selectedSetting.status }}
+                                              [ngClass]="getStatusClass(selectedSetting)">
+                                            {{ getDisplayStatus(selectedSetting) }}
                                         </span>
                                     </div>
                                 </div>
@@ -162,13 +157,8 @@
                                         <div class="d-flex align-items-center">
                                             <h6 class="mb-0 me-2 fs-14 fw-bold">RD #{{setting.id}}</h6>
                                             <span class="badge badge-sm"
-                                                  [ngClass]="{
-                                                    'badge-soft-warning': setting.status === 'Requested',
-                                                    'badge-soft-success': setting.status === 'Approved',
-                                                    'badge-soft-primary': setting.status === 'Completed',
-                                                    'badge-soft-danger': setting.status === 'Close-Requested'
-                                                  }">
-                                                {{ setting.status }}
+                                                  [ngClass]="getStatusClass(setting)">
+                                                {{ getDisplayStatus(setting) }}
                                             </span>
                                         </div>
                                         <button class="btn btn-xs py-1 px-2"
@@ -862,23 +852,11 @@
     <form [formGroup]="depositFormGroup">
         <div class="modal-body">
             <div class="row">
-                <div class="mb-3 col-lg-6">
-                    <label for="payment-interval" class="col-form-label">Payment Interval</label>
-                    <select class="form-control" id="payment-interval" formControlName="payment_interval">
-                        <option value="" disabled>Select Interval</option>
-                        <option value="Monthly">Monthly</option>
-                        <option value="Yearly">Yearly</option>
-                    </select>
-                    <div *ngIf="depositFormGroup.get('payment_interval')?.touched && depositFormGroup.get('payment_interval')?.invalid"
-                        class="text-danger">
-                        <small>Required</small>
-                    </div>
-                </div>
 
                 <div class="mb-3 col-lg-6">
                     <label for="paid-amount" class="col-form-label">Paid Amount</label>
                     <input type="number" class="form-control" id="paid-amount" formControlName="paid_amount"
-                        placeholder="Paid Amount">
+                        placeholder="Paid Amount" readonly>
                     <div *ngIf="depositFormGroup.get('paid_amount')?.touched && depositFormGroup.get('paid_amount')?.invalid"
                         class="text-danger">
                         <small *ngIf="depositFormGroup.get('paid_amount')?.errors?.['required']">Required</small>
@@ -888,24 +866,10 @@
 
                 <div class="mb-3 col-lg-6">
                     <label for="payment-method" class="col-form-label">Payment Method</label>
-                    <select class="form-control" id="payment-method" formControlName="payment_method">
-                        <option value="" disabled>Select Method</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
+                    <select class="form-control" id="payment-method" formControlName="payment_method" disabled>
                         <option value="Cash">Cash</option>
-                        <option value="UPI">UPI</option>
-                        <option value="Cheque">Cheque</option>
                     </select>
                     <div *ngIf="depositFormGroup.get('payment_method')?.touched && depositFormGroup.get('payment_method')?.invalid"
-                        class="text-danger">
-                        <small>Required</small>
-                    </div>
-                </div>
-
-                <div class="mb-3 col-lg-6">
-                    <label for="transaction-id" class="col-form-label">Transaction ID</label>
-                    <input type="text" class="form-control" id="transaction-id" formControlName="transanction_id"
-                        placeholder="Transaction Id">
-                    <div *ngIf="depositFormGroup.get('transanction_id')?.touched && depositFormGroup.get('transanction_id')?.invalid"
                         class="text-danger">
                         <small>Required</small>
                     </div>

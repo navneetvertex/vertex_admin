@@ -76,7 +76,7 @@
 
         <div class="col-xl-12">
             <div class="row">
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <div class="card mini-stats-wid">
                         <div class="card-body">
                             <div class="d-flex flex-wrap">
@@ -94,7 +94,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <div class="card blog-stats-wid">
                         <div class="card-body">
                             <div class="d-flex flex-wrap">
@@ -111,16 +111,35 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+
+                <div class="col-lg-3">
+                    <div class="card blog-stats-wid">
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap">
+                                <div class="mr-3">
+                                    <p class="text-muted mb-2">Total Penalty</p>
+                                    <h5 class="mb-0 text-danger">₹{{totalPenalty}}</h5>
+                                </div>
+                                <div class="avatar-sm ms-auto">
+                                    <div class="avatar-title bg-light rounded-circle text-danger font-size-20">
+                                        <i class="bx bx-error-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
                     <div class="card blog-stats-wid">
                         <div class="card-body">
                             <div class="d-flex flex-wrap">
                                 <div class="mr-3">
                                     <p class="text-muted mb-2">Total Outstanding</p>
-                                    <h5 class="mb-0">₹{{outstandingAmount?.outstanding}}</h5>
+                                    <h5 class="mb-0 text-warning">₹{{outstandingAmount?.outstanding + totalPenalty}}</h5>
                                 </div>
                                 <div class="avatar-sm ms-auto">
-                                    <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
+                                    <div class="avatar-title bg-light rounded-circle text-warning font-size-20">
                                         <i class="bx bxs-message-square-dots"></i>
                                     </div>
                                 </div>
@@ -139,7 +158,7 @@
                     <div class="d-flex align-items-center">
                         <h5 class="mb-0 card-title flex-grow-1">Deposit History</h5>
                         <div class="flex-shrink-0 d-flex gap-1">
-                            <a href="javascript:void(0);"  class="btn btn-primary"  *ngIf="isSettingsAdded && outstandingAmount?.outstanding !== 0" (click)="openModal(addDepositModal)" >Add Deposit</a>
+                            <a href="javascript:void(0);"  class="btn btn-primary"  *ngIf="isSettingsAdded && (outstandingAmount?.outstanding + totalPenalty) > 0" (click)="openModal(addDepositModal)" >Add Deposit</a>
                             <a href="javascript:void(0);"  *ngIf="listAvialble" class="btn btn-light"><i class="mdi mdi-refresh"></i></a>
                         </div>
                     </div>
@@ -420,26 +439,10 @@
     <form [formGroup]="depositFormGroup">
         <div class="modal-body">
             <div class="row">
-
-
-                <div class="mb-3 col-lg-6">
-                    <label for="payment-interval" class="col-form-label">Payment Interval</label>
-                    <select class="form-control" id="payment-interval" formControlName="payment_interval">
-                        <option value="" disabled>Select Interval</option>
-                        <option value="Daily">Daily</option>
-                        <option value="Monthly">Monthly</option>
-                        <option value="Yearly">Yearly</option>
-                    </select>
-                    <div *ngIf="depositFormGroup.get('payment_interval')?.touched && depositFormGroup.get('payment_interval')?.invalid"
-                        class="text-danger">
-                        <small>Required</small>
-                    </div>
-                </div>
-
-                <div class="mb-3 col-lg-6">
+                <div class="mb-3 col-lg-12">
                     <label for="paid-amount" class="col-form-label">Paid Amount</label>
                     <input type="number" class="form-control" id="paid-amount" formControlName="paid_amount"
-                        placeholder="Paid Amount">
+                        placeholder="Paid Amount" readonly>
                     <div *ngIf="depositFormGroup.get('paid_amount')?.touched && depositFormGroup.get('paid_amount')?.invalid"
                         class="text-danger">
                         <small *ngIf="depositFormGroup.get('paid_amount')?.errors?.['required']">Required</small>
@@ -449,17 +452,7 @@
 
                 <div class="mb-3 col-lg-12">
                     <label for="payment-method" class="col-form-label">Payment Method</label>
-                    <select class="form-control" id="payment-method" formControlName="payment_method">
-                        <option value="" disabled>Select Method</option>
-                        <!-- <option value="Bank Transfer">Bank Transfer</option> -->
-                        <option value="Cash">Cash</option>
-                        <!-- <option value="UPI">UPI</option>
-                        <option value="Cheque">Cheque</option> -->
-                    </select>
-                    <div *ngIf="depositFormGroup.get('payment_method')?.touched && depositFormGroup.get('payment_method')?.invalid"
-                        class="text-danger">
-                        <small>Required</small>
-                    </div>
+                    <input type="text" class="form-control" id="payment-method" value="Cash" readonly>
                 </div>
 
                 <!-- <div class="mb-3 col-lg-6">
