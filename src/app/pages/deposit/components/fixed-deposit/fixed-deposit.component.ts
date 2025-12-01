@@ -16,7 +16,7 @@ export class FixedDepositComponent implements OnInit {
       private cdr: ChangeDetectorRef
     ) { }
     breadCrumbItems: Array<{}>;
-  
+
     userList: any[] = []
     total: number = 0;
     page: number = 1;
@@ -29,13 +29,13 @@ export class FixedDepositComponent implements OnInit {
     selectedUser: any = null;
     depositSummary: any = null;
     isFormInitializing: boolean = false;
-  
+
     ngOnInit(): void {
       this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Fixed Deposit List', active: true }];
-      
+
       // Generate combined month-year list from current month back to 2 years ago
       this.generateMonthYearList();
-      
+
       this.searchFormGroup = new FormGroup({
         name:new FormControl(''),
         user_id: new FormControl(''),
@@ -71,44 +71,48 @@ export class FixedDepositComponent implements OnInit {
         if (this.isFormInitializing) {
           return;
         }
-        
+
+        const currentDuration = this.editSettingFormGroup.get('duration')?.value;
+        const durationNum = parseFloat(currentDuration);
+
         if (isMIS) {
-          // If MIS is selected, limit duration to max 2 years
-          const currentDuration = this.editSettingFormGroup.get('duration')?.value;
-          const durationNum = parseFloat(currentDuration);
-          if (currentDuration && durationNum > 2) {
-            this.editSettingFormGroup.get('duration')?.setValue('2');
+          // If MIS is selected, clear duration if it's not in allowed range (1, 1.5, 2)
+          if (currentDuration && ![1, 1.5, 2].includes(durationNum)) {
+            this.editSettingFormGroup.get('duration')?.setValue('');
           }
         }
-        // Note: When MIS is unchecked, all duration options become available, so no need to change current value
+        // Note: When unchecking MIS, keep the value since all options are now available
+
+        // Recalculate maturity amount after duration change
+        this.calculateMaturityAmount();
       });
 
       this.getRecrruingDeposits();
     }
 
     generateMonthYearList() {
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+      const months = ['January', 'February', 'March', 'April', 'May', 'June',
                      'July', 'August', 'September', 'October', 'November', 'December'];
-      
+
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear();
       const currentMonth = currentDate.getMonth(); // 0-based
-      
+
       // Generate from current month back to 2 years ago
       for (let yearOffset = 0; yearOffset <= 2; yearOffset++) {
         const year = currentYear - yearOffset;
-        
+
         // For current year, start from current month
         // For previous years, start from December
         const startMonth = (yearOffset === 0) ? currentMonth : 11;
         const endMonth = (yearOffset === 2) ? 0 : 0; // For 2 years ago, start from January
-        
+
         for (let month = startMonth; month >= endMonth; month--) {
           const monthName = months[month];
           const monthValue = (month + 1).toString().padStart(2, '0'); // 01-12 format
           const displayText = `${monthName} ${year}`;
           const value = `${year}-${monthValue}`; // YYYY-MM format
-          
+
           this.monthYearList.push({
             display: displayText,
             value: value
@@ -137,19 +141,19 @@ export class FixedDepositComponent implements OnInit {
         const rate = parseFloat(annualRate) / 100; // Convert percentage to decimal
         const time = parseFloat(duration);
         const n = parseInt(compoundingFrequency); // Compounding frequency
-        
+
         const maturityAmount = principal * Math.pow((1 + rate / n), n * time);
         this.editSettingFormGroup.patchValue({ maturity_amount: maturityAmount.toFixed(2) });
       } else {
         this.editSettingFormGroup.patchValue({ maturity_amount: '' });
       }
     }
-  
+
     getRecrruingDeposits() {
-  
+
       const searchParams = this.searchFormGroup.value;
       const queryParamArray = [];
-  
+
       Object.keys(searchParams).forEach(key => {
         if (searchParams[key] !== null && searchParams[key] !== '' && searchParams[key] !== undefined) {
           if (key === 'monthYear') {
@@ -162,9 +166,9 @@ export class FixedDepositComponent implements OnInit {
           }
         }
       });
-  
+
       const queryParams = queryParamArray.join('&');
-  
+
       this.depositService.getAllFixedDeposits(this.page, this.pageSize,queryParams).subscribe((res: any) => {
         if (res.status) {
           this.userList = res.data.deposits;
@@ -174,22 +178,22 @@ export class FixedDepositComponent implements OnInit {
         console.error(err);
       });
     }
-    
+
     reset() {
       this.searchFormGroup.reset();
       this.page = 1;
       this.getRecrruingDeposits();
     }
-  
+
     findPageShowing(): number {
       return Math.min(this.page * this.pageSize, this.total)
     }
-  
+
     pageChange(page: number) {
       this.page = page;
       this.getRecrruingDeposits();
     }
-  
+
     openRDSettingFn(settingModal: any, user: any) {
       console.log('Editing deposit setting for user:', user);
       console.log('User duration type:', typeof user.duration, 'value:', user.duration);
@@ -200,17 +204,17 @@ export class FixedDepositComponent implements OnInit {
       }
       console.log('Form data duration after conversion:', typeof formData.duration, 'value:', formData.duration);
       console.log('Form data isMIS:', formData.isMIS);
-      
+
       this.isFormInitializing = true;
       this.editSettingFormGroup.patchValue(formData);
       console.log('Form control duration value after patch:', this.editSettingFormGroup.get('duration')?.value);
       console.log('Form control isMIS value after patch:', this.editSettingFormGroup.get('isMIS')?.value);
-      
+
       // Force change detection to ensure UI updates
       this.cdr.detectChanges();
-      
+
       this.modalService.open(settingModal, { size: 'lg', centered: true });
-      
+
       // Reset the flag after a short delay
       setTimeout(() => {
         this.isFormInitializing = false;
@@ -218,19 +222,19 @@ export class FixedDepositComponent implements OnInit {
     }
 
 
-  
+
     editSetting() {
       if (this.editSettingFormGroup.valid) {
         const payload = this.editSettingFormGroup.value;
         // Ensure duration is a number for calculation
         const duration = parseFloat(payload.duration);
-        
+
         // Compound Interest formula: A = P * (1 + r/n)^(n*t)
         const principal = payload.amount;
         const rate = payload.annual_rate / 100; // Convert percentage to decimal
         const time = duration;
         const n = parseInt(payload.compounding_frequency); // Compounding frequency
-        
+
         payload.maturity_amount = (principal * Math.pow((1 + rate / n), n * time)).toFixed(2);
         payload.status = 'Approved';
         console.log('Payload for editing deposit setting:', payload);
@@ -268,10 +272,10 @@ export class FixedDepositComponent implements OnInit {
         const totalPaid = this.selectedUser.amount || 0;
         const annualRate = this.selectedUser.annual_rate || 0;
         const duration = this.selectedUser.duration || 0;
-        
+
         // Calculate interest: (Principal * Rate * Time) / 100
         const totalInterest = (totalPaid * annualRate * duration) / 100;
-        
+
         this.depositSummary = {
           paid: totalPaid,
           interest: totalInterest,

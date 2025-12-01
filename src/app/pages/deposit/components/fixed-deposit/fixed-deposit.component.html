@@ -157,37 +157,28 @@
                 <!-- Duration -->
                 <div class="col-md-6 mb-3">
                     <label for="duration" class="form-label">Duration</label>
-                    <select id="duration" class="form-control" formControlName="duration" (blur)="calculateMaturityAmount()">
-                        <option value="" disabled selected>Select duration</option>
-                        <!-- Regular FD options (when MIS is not selected) -->
-                        <ng-container *ngIf="!editSettingFormGroup.get('isMIS')?.value">
-                            <option value="0.5">Half Year</option>
-                            <option value="1">1 Year</option>
-                            <option value="1.5">1.5 Year</option>
-                            <option value="2">2 Year</option>
-                            <option value="2.5">2.5 Year</option>
-                            <option value="3">3 Year</option>
-                            <option value="3.5">3.5 Year</option>
-                            <option value="4">4 Year</option>
-                            <option value="4.5">4.5 Year</option>
-                            <option value="5">5 Year</option>
-                            <option value="5.5">5.5 Year</option>
-                            <option value="6">6 Year</option>
-                            <option value="6.5">6.5 Year</option>
-                            <option value="7">7 Year</option>
-                            <option value="7.5">7.5 Year</option>
-                            <option value="8">8 Year</option>
-                            <option value="8.5">8.5 Year</option>
-                            <option value="9">9 Year</option>
-                            <option value="9.5">9.5 Year</option>
-                            <option value="10">10 Year</option>
-                        </ng-container>
-                        <!-- MIS options (when MIS is selected) -->
-                        <ng-container *ngIf="editSettingFormGroup.get('isMIS')?.value">
-                            <option value="1">1 Year</option>
-                            <option value="1.5">1.5 Year</option>
-                            <option value="2">2 Year</option>
-                        </ng-container>
+                    <select id="duration" class="form-control" formControlName="duration" (change)="calculateMaturityAmount()">
+                        <option value="" disabled>Select duration</option>
+                        <option value="0.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">Half Year</option>
+                        <option value="1">1 Year</option>
+                        <option value="1.5">1.5 Year</option>
+                        <option value="2">2 Year</option>
+                        <option value="2.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">2.5 Year</option>
+                        <option value="3" *ngIf="!editSettingFormGroup.get('isMIS')?.value">3 Year</option>
+                        <option value="3.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">3.5 Year</option>
+                        <option value="4" *ngIf="!editSettingFormGroup.get('isMIS')?.value">4 Year</option>
+                        <option value="4.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">4.5 Year</option>
+                        <option value="5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">5 Year</option>
+                        <option value="5.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">5.5 Year</option>
+                        <option value="6" *ngIf="!editSettingFormGroup.get('isMIS')?.value">6 Year</option>
+                        <option value="6.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">6.5 Year</option>
+                        <option value="7" *ngIf="!editSettingFormGroup.get('isMIS')?.value">7 Year</option>
+                        <option value="7.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">7.5 Year</option>
+                        <option value="8" *ngIf="!editSettingFormGroup.get('isMIS')?.value">8 Year</option>
+                        <option value="8.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">8.5 Year</option>
+                        <option value="9" *ngIf="!editSettingFormGroup.get('isMIS')?.value">9 Year</option>
+                        <option value="9.5" *ngIf="!editSettingFormGroup.get('isMIS')?.value">9.5 Year</option>
+                        <option value="10" *ngIf="!editSettingFormGroup.get('isMIS')?.value">10 Year</option>
                     </select>
                     <div *ngIf="editSettingFormGroup.get('duration')?.touched && editSettingFormGroup.get('duration')?.invalid"
                         class="text-danger">
@@ -234,7 +225,7 @@
 
                 <div class="col-md-6 mb-3">
                     <label for="maturityAmount" class="form-label">Maturity Amount</label>
-                    <input type="number" id="maturityAmount" class="form-control" formControlName="maturity_amount" 
+                    <input type="number" id="maturityAmount" class="form-control" formControlName="maturity_amount"
                         placeholder="Enter maturity amount">
                     <div *ngIf="editSettingFormGroup.get('maturity_amount')?.touched && editSettingFormGroup.get('maturity_amount')?.invalid"
                         class="text-danger">
