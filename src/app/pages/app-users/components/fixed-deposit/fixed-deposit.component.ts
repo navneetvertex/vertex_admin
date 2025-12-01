@@ -96,7 +96,7 @@ export class FixedDepositComponent implements OnInit {
     });
     
     this.addDepositFormGroup = new FormGroup({
-      tot_paid_amt: new FormControl({value: '', disabled: true}, [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
+      tot_paid_amt: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+(\\.[0-9]{1,2})?$')]),
       payment_method: new FormControl('', [Validators.required]),
       transaction_id: new FormControl('', [Validators.required]),
       notes: new FormControl('')
@@ -577,9 +577,8 @@ export class FixedDepositComponent implements OnInit {
 
     this.isLoadingStatistics = true;
 
-    // Use API that returns outstanding amounts for all FD settings (if available)
-    // For now, we'll use individual calls or placeholder functionality
-    this.depositService.findOutstandingDepositsOfRecurring(this.user_id, approvedSettings[0]._id).subscribe((res: any) => {
+    // Use API that returns outstanding amounts for all FD settings
+    this.depositService.findOutstandingDepositsOfFixed(this.user_id, approvedSettings[0]._id).subscribe((res: any) => {
       if (res && res.status === 'success') {
         const outstandingData = res.data;
 
@@ -611,7 +610,7 @@ export class FixedDepositComponent implements OnInit {
     console.log('Loading outstanding for FD:', fd_id);
     this.isLoadingAccountStatistics = true;
 
-    this.depositService.findOutstandingDepositsOfRecurring(user, fd_id).subscribe((res: any) => {
+    this.depositService.findOutstandingDepositsOfFixed(user, fd_id).subscribe((res: any) => {
       if (res && res.status === 'success') {
         const outstandingDeposits = res.data || [];
         this.outstandingAmount = outstandingDeposits;
