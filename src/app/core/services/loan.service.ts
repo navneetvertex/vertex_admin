@@ -37,6 +37,10 @@ recordPayment(paymentData: any) {
   return this.http.post<any>(`${environment.api_url}loans/record-payment`, paymentData);
 }
 
+clearOffLoan(data: { loanId: string, notes?: string }) {
+  return this.http.post<any>(`${environment.api_url}loans/clear-off-loan`, data);
+}
+
 getLoanSchedule(loanId: string) {
   return this.http.get<any>(`${environment.api_url}loans/schedule/${loanId}`);
 }
@@ -54,7 +58,7 @@ getPersonalLoanSchedule(loanId: string) {
  */
 getAllUsersLoanReport(filters: any = {}) {
   let queryParams = new URLSearchParams();
-  
+
   Object.keys(filters).forEach(key => {
     if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
       queryParams.append(key, filters[key].toString());

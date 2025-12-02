@@ -7,7 +7,7 @@
         <div class="card-body">
           <div class="alert alert-info" role="alert">
             <i class="mdi mdi-information-outline me-2"></i>
-            Configure access permissions for <strong>{{ subAdminName }}</strong>. Dashboard access is always enabled by default.
+            Configure access permissions for <strong>{{ subAdminName }}</strong>. If Dashboard is disabled, the sub-admin will land on the first available page after login.
           </div>
 
           <div *ngIf="loading" class="text-center py-5">
@@ -24,11 +24,11 @@
                   <i class="mdi mdi-view-dashboard mdi-24px me-2 text-primary"></i>
                   <h5 class="mb-0">Dashboard</h5>
                 </div>
-                <span class="badge bg-success">Always Enabled</span>
+                <span class="badge" [ngClass]="permissions.dashboard ? 'bg-success' : 'bg-secondary'">{{ permissions.dashboard ? 'Enabled' : 'Disabled' }}</span>
               </div>
               <div class="section-body">
                 <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.dashboard" disabled checked>
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="permissions.dashboard">
                   <label class="form-check-label">Access Dashboard</label>
                 </div>
               </div>

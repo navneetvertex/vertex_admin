@@ -9,6 +9,55 @@ export class PermissionGuard implements CanActivate {
         private authenticationService: AuthenticationService
     ) { }
 
+    /**
+     * Get the first available route for sub-admin based on their permissions
+     */
+    getFirstAvailableRoute(permissions: any): string | null {
+        // Order of priority for fallback routes
+        if (permissions.members?.view) return '/members/all';
+        if (permissions.members?.kyc) return '/members/kyc';
+        if (permissions.members?.accountClosure) return '/members/account-closure-requests';
+        if (permissions.advisors?.view || permissions.advisors?.manage) return '/agents';
+        if (permissions.franchises?.view) return '/franchises/list';
+        if (permissions.franchises?.manage) return '/franchises/add';
+        if (permissions.deposits?.compulsory) return '/deposits/compulsory-deposit';
+        if (permissions.deposits?.recurring) return '/deposits/recurring-deposit';
+        if (permissions.deposits?.fixed) return '/deposits/fixed-deposit';
+        if (permissions.pinManagement?.add) return '/pin-management/add';
+        if (permissions.pinManagement?.assigned) return '/pin-management/list';
+        if (permissions.pinManagement?.fund) return '/pin-management/fund-pins';
+        if (permissions.messages) return '/messages';
+        if (permissions.sahyogCard?.cardList) return '/credit-management/list';
+        if (permissions.sahyogCard?.requestNew) return '/credit-management/request';
+        if (permissions.sahyogCard?.assignedCards) return '/credit-management/assigned-card-list';
+        if (permissions.sahyogCard?.requestAmounts) return '/credit-management/request-amount';
+        if (permissions.sahyogCard?.payableAmount) return '/credit-management/payable-amount';
+        if (permissions.sahyogCard?.transactions) return '/credit-management/all-transanction';
+        if (permissions.sahyogCard?.reports) return '/credit-management/reports';
+        if (permissions.giftCard?.add) return '/gift-card-management/add';
+        if (permissions.giftCard?.list) return '/gift-card-management/list';
+        if (permissions.giftCard?.distributor) return '/gift-card-management/distributor';
+        if (permissions.giftCard?.receive) return '/gift-card-management/receive';
+        if (permissions.loanManagement?.personalLoans) return '/loan-management/loans/Personal';
+        if (permissions.loanManagement?.guaranteedLoans) return '/loan-management/loans/Garanteed';
+        if (permissions.loanManagement?.fdAgainstLoans) return '/loan-management/loans/fd-against-loans';
+        if (permissions.loanManagement?.payLoan) return '/loan-management/pay-loan';
+        if (permissions.loanManagement?.userTransactions) return '/loan-management/user-transanction';
+        if (permissions.loanManagement?.adminTransactions) return '/loan-management/admin-transanction';
+        if (permissions.loanManagement?.reports) return '/loan-management/reports';
+        if (permissions.shg) return '/shg';
+        if (permissions.careers) return '/careers';
+        if (permissions.awards) return '/awards';
+        if (permissions.settings?.general) return '/vertex-settings/general';
+        if (permissions.settings?.fees) return '/vertex-settings/fees';
+        if (permissions.stateManagement?.states) return '/master-data/states';
+        if (permissions.stateManagement?.districts) return '/master-data/districts';
+        if (permissions.stateManagement?.areas) return '/master-data/areas';
+        if (permissions.paymentManagement) return '/payments';
+
+        return null;
+    }
+
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         const currentUser = this.authenticationService.currentUserValue;
 
@@ -27,7 +76,7 @@ export class PermissionGuard implements CanActivate {
             const permissions = currentUser.permissions;
 
             if (!permissions) {
-                this.router.navigate(['/dashboard']);
+                this.router.navigate(['/account/login']);
                 return false;
             }
 
@@ -40,6 +89,12 @@ export class PermissionGuard implements CanActivate {
                     return true;
                 }
                 // If no dashboard permission, find first allowed route
+                const firstRoute = this.getFirstAvailableRoute(permissions);
+                if (firstRoute) {
+                    this.router.navigate([firstRoute]);
+                    return false;
+                }
+                // No permissions at all, redirect to login
                 this.router.navigate(['/account/login']);
                 return false;
             }
@@ -62,7 +117,12 @@ export class PermissionGuard implements CanActivate {
 
             // Sub-Admin - only admin can access
             if (url.includes('/subadmin')) {
-                this.router.navigate(['/dashboard']);
+                const firstRoute = this.getFirstAvailableRoute(permissions);
+                if (firstRoute) {
+                    this.router.navigate([firstRoute]);
+                } else {
+                    this.router.navigate(['/account/login']);
+                }
                 return false;
             }
 

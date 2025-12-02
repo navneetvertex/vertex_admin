@@ -18,7 +18,7 @@
                                     <small><strong>Name:</strong> {{ userDetails.name }}</small>
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3 col-lg-12">
                                 <label for="cardId" class="form-label">Loan</label>
                                 <ng-select (change)="getTotalPaybleAmount($event)" [items]="loanList" [bindValue]="'_id'" [bindLabel]="'label'" formControlName="loanId"></ng-select>
@@ -39,15 +39,36 @@
                             </div>
                             <div class="mb-3 col-lg-6">
                                 <label for="paymentMethod" class="form-label">Payment Method</label>
-                                <select class="form-control" id="paymentMethod" formControlName="paymentMethod" > 
+                                <select class="form-control" id="paymentMethod" formControlName="paymentMethod" >
                                    <option *ngFor="let method of paymentMethods" [ngValue]="method" >{{method}}</option>
                                 </select>
                                 <div *ngIf="paymentFormGroup.get('paymentMethod')?.touched && paymentFormGroup.get('paymentMethod')?.invalid" class="text-danger">
                                     <small *ngIf="paymentFormGroup.get('paymentMethod')?.errors?.['required']">Payment Method is required.</small>
                                 </div>
                             </div>
+
+                            <!-- Clear Off Loan Checkbox -->
+                            <div class="mb-3 col-lg-12" *ngIf="totalOutstandingAmount > 0">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="clearOffLoan"
+                                           [(ngModel)]="clearOffLoan" [ngModelOptions]="{standalone: true}"
+                                           (change)="onClearOffLoanChange()">
+                                    <label class="form-check-label text-danger fw-bold" for="clearOffLoan">
+                                        <i class="mdi mdi-alert-circle me-1"></i>
+                                        Clear Off Loan (Waive total outstanding: ₹{{ totalOutstandingAmount }})
+                                    </label>
+                                </div>
+                                <small class="text-muted" *ngIf="clearOffLoan">
+                                    <i class="mdi mdi-information-outline me-1"></i>
+                                    This will mark the loan as completed and waive the total remaining balance of ₹{{ totalOutstandingAmount }}. This action cannot be undone.
+                                </small>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" [disabled]="paymentFormGroup.invalid" (click)="payLoanFees()" >Submit</button>
+                        <button type="submit" class="btn" [ngClass]="clearOffLoan ? 'btn-danger' : 'btn-primary'"
+                                [disabled]="!clearOffLoan && paymentFormGroup.invalid" (click)="payLoanFees()">
+                            <i class="mdi me-1" [ngClass]="clearOffLoan ? 'mdi-close-circle' : 'mdi-cash'"></i>
+                            {{ clearOffLoan ? 'Clear Off Loan' : 'Submit Payment' }}
+                        </button>
                         </form>
 
                 </div>

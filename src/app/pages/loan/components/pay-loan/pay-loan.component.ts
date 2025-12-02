@@ -16,27 +16,29 @@ export class PayLoanComponent implements OnInit {
     private loanService: LoanService,
     private toast: ToastrService,
     private route: ActivatedRoute
-  ) { 
+  ) {
     // Initialize userDetails and loanList
     this.userDetails = null;
     this.loanList = [];
-    
+
     // Get query parameters
-    
+
   }
 
   breadCrumbItems: Array<{}>;
   paymentFormGroup: FormGroup;
   userDetails: any = null;
   loanList: any[] = [];
-  paymentMethods: any[] = ['Cash', 'Bank Transfer', 'Cash', 'Cheque']
+  paymentMethods: any[] = ['Cash']
   totalPayableAmount: number = 0;
+  totalOutstandingAmount: number = 0; // Total remaining for entire loan (for clear off)
   userId: string = '';
+  clearOffLoan: boolean = false;
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Loans' }, { label: 'Pay Loans', active: true }];
     this.paymentFormGroup = new FormGroup({
-      id : new FormControl({value:'', disabled: true}, Validators.required),
+      id : new FormControl('', Validators.required),
       loanId: new FormControl('', Validators.required),
       amount: new FormControl('', [Validators.required, Validators.min(1)]),
       paymentMethod: new FormControl('', Validators.required)
@@ -64,7 +66,7 @@ export class PayLoanComponent implements OnInit {
         if (res.status) {
           this.userDetails = res?.data?.user;
           this.getAllLoans(this.userDetails._id);
-        } 
+        }
       }, error: (err) => {
         console.error('Error fetching user details:', err);
       }
@@ -72,11 +74,14 @@ export class PayLoanComponent implements OnInit {
   }
 
   getTotalPaybleAmount(evt: any) {
+    this.clearOffLoan = false; // Reset checkbox when loan changes
     this.loanService.getTotalPaymentAmount(evt._id).subscribe({
       next: (res: any) => {
         console.log('Total Payment Amount:', res);
         if (res.status) {
           this.totalPayableAmount = res?.data?.outstandingAmount;
+          // Get total remaining for entire loan (for clear off feature)
+          this.totalOutstandingAmount = parseFloat(res?.data?.breakdown?.totalRemainingAmount) || 0;
           this.paymentFormGroup.patchValue({ amount: this.totalPayableAmount });
           this.paymentFormGroup.get('amount')?.disable();
         } else {
@@ -87,6 +92,18 @@ export class PayLoanComponent implements OnInit {
         console.error('Error fetching total payment amount:', err);
       }
     });
+  }
+
+  onClearOffLoanChange() {
+    if (this.clearOffLoan) {
+      // When clear off is checked, disable payment method and amount
+      this.paymentFormGroup.get('paymentMethod')?.disable();
+      this.paymentFormGroup.get('amount')?.disable();
+    } else {
+      // When unchecked, enable payment method
+      this.paymentFormGroup.get('paymentMethod')?.enable();
+      this.paymentFormGroup.get('amount')?.disable(); // Keep amount disabled as it's auto-filled
+    }
   }
 
   getAllLoans(userId: string) {
@@ -107,13 +124,44 @@ export class PayLoanComponent implements OnInit {
   }
 
   payLoanFees() {
+    const loanId = this.paymentFormGroup.get('loanId')?.value;
+
+    if (!loanId) {
+      this.toast.error('Please select a loan');
+      return;
+    }
+
+    // If clear off loan is checked, call clearOffLoan API
+    if (this.clearOffLoan) {
+      this.loanService.clearOffLoan({ loanId }).subscribe({
+        next: (res: any) => {
+          if (res.status === 'success') {
+            this.toast.success(`Loan cleared off successfully. Waived amount: ₹${res.data.waivedAmount}`);
+            this.paymentFormGroup.reset();
+            this.totalPayableAmount = 0;
+            this.totalOutstandingAmount = 0;
+            this.clearOffLoan = false;
+            this.loanList = [];
+            this.userDetails = null;
+          } else {
+            this.toast.error('Error clearing off loan');
+          }
+        },
+        error: (err) => {
+          this.toast.error(err.error?.message || 'Error clearing off loan');
+        }
+      });
+      return;
+    }
+
+    // Regular payment flow
     if (this.paymentFormGroup.invalid) {
       console.error('Payment form is invalid');
       return;
     }
 
     const paymentData = {
-      ...this.paymentFormGroup.value,
+      ...this.paymentFormGroup.getRawValue(),
       amount: this.totalPayableAmount
     };
 
@@ -127,20 +175,21 @@ export class PayLoanComponent implements OnInit {
       this.toast.error('Amount exceeds total payable amount');
       return;
     }
-    
 
     this.loanService.recordPayment(paymentData).subscribe({
       next: (res: any) => {
         if (res.status) {
           this.toast.success('Payment recorded successfully');
-          // Reset form or show success message
           this.paymentFormGroup.reset();
           this.totalPayableAmount = 0;
+          this.totalOutstandingAmount = 0;
+          this.loanList = [];
+          this.userDetails = null;
         } else {
-          this.toast.success('Error recording payment:');
+          this.toast.error('Error recording payment');
         }
       }, error: (err) => {
-        this.toast.success('Error recording payment:');
+        this.toast.error(err.error?.message || 'Error recording payment');
       }
     });
   }
