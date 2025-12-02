@@ -331,6 +331,12 @@ export const MENU: MenuItem[] = [
         label: 'Payment Management',
         icon: 'bx-credit-card',
         link: '/payments'
+    },
+    {
+        id: 16,
+        label: 'Notices',
+        icon: 'bx-bell',
+        link: '/notices'
     }
 
 

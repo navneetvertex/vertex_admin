@@ -31,6 +31,7 @@ const routes: Routes = [
   { path: 'franchises', loadChildren: () => import('./franchise/franchise.module').then(m => m.FranchiseModule), canActivate: [PermissionGuard] },
   { path: 'deposits', loadChildren: () => import('./deposit/deposit.module').then(m => m.DepositModule), canActivate: [PermissionGuard] },
   { path: 'shg', loadChildren: () => import('./shg/shg.module').then(m => m.ShgModule), canActivate: [PermissionGuard] },
+  { path: 'notices', loadChildren: () => import('./notice/notice.module').then(m => m.NoticeModule), canActivate: [PermissionGuard] },
   { path: 'payment', component: PaymentComponent },
   { path: 'payment/success', component: PaymentSuccessComponent },
   { path: 'payment/failed', component: PaymentFailedComponent },
