@@ -5,7 +5,7 @@
       <div class="navbar-brand-box modern-logo-box">
         <a routerLink="/" class="logo logo-dark">
           <span class="logo-lg d-flex align-items-center gap-2">
-            <img src="assets/images/logo-dark.png" alt="Vertex Logo" height="40" class="logo-img"> 
+            <img src="assets/images/logo-dark.png" alt="Vertex Logo" height="40" class="logo-img">
             <span class="brand-text">Vertex</span>
           </span>
         </a>
@@ -361,7 +361,7 @@
                   <img src="assets/img/not-found.png" width="150px" alt="">
                   <p class="text-mutes mt-2">No New Notification Found.</p>
             </div>
-            
+
             <ng-container *ngFor="let notification of listNotifications">
               <a href="javascript: void(0);" (click)="clickSingleNotification(notification)" class="text-reset notification-item">
                   <div class="d-flex">
@@ -382,7 +382,7 @@
           </ngx-simplebar>
           <div class="p-2 border-top d-grid" routerLink="/members/notification-list">
             <a class="btn btn-sm btn-link font-size-14 text-center" >
-              <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more" *ngIf="listNotifications.length >= 10">Load More</span>   <span key="t-view-more" *ngIf="listNotifications.length < 10">All Notifications</span> 
+              <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more" *ngIf="listNotifications.length >= 10">Load More</span>   <span key="t-view-more" *ngIf="listNotifications.length < 10">All Notifications</span>
             </a>
           </div>
         </div>
@@ -391,7 +391,7 @@
       <div class="dropdown d-inline-block" ngbDropdown>
         <button type="button" class="btn header-item" ngbDropdownToggle id="page-header-user-dropdown">
           <img class="rounded-circle header-profile-user" src="assets/images/users/user_placeholder.png" alt="Header Avatar">
-          <span class="d-none d-xl-inline-block ms-1">Admin</span>
+          <span class="d-none d-xl-inline-block ms-1">{{name}}</span>
           <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
         </button>
         <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>

@@ -42,7 +42,7 @@
                 </div>
               </div>
 
-              <div class="col-md-6">
+              <div class="col-md-6 display-none">
                 <div class="mb-3">
                   <label class="form-label">WhatsApp Number</label>
                   <input type="text" class="form-control" formControlName="whatsapp_no" placeholder="10-digit WhatsApp number" maxlength="10">
@@ -52,14 +52,14 @@
                 </div>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label">Date of Birth</label>
                   <input type="date" class="form-control" formControlName="date_of_birth">
                 </div>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label">Gender <span class="text-danger">*</span></label>
                   <select class="form-control" formControlName="gender">
@@ -70,7 +70,7 @@
                 </div>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-4 display-none">
                 <div class="mb-3">
                   <label class="form-label">Payment Method <span class="text-danger">*</span></label>
                   <select class="form-control" formControlName="payment_method">
@@ -124,7 +124,7 @@
                 </div>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-4 display-none">
                 <div class="mb-3">
                   <label class="form-label">District</label>
                   <select class="form-control" formControlName="district" [disabled]="!subAdminForm.get('state')?.value">
@@ -134,7 +134,7 @@
                 </div>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-4 display-none">
                 <div class="mb-3">
                   <label class="form-label">Area</label>
                   <select class="form-control" formControlName="area" [disabled]="!subAdminForm.get('district')?.value">

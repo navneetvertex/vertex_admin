@@ -28,6 +28,7 @@ export class TopbarComponent implements OnInit {
   listNotifications = [];
   countryName;
   valueset;
+  name: string = 'Admin'
   unreadCount: number = 0;
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
@@ -40,6 +41,9 @@ export class TopbarComponent implements OnInit {
 
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
+    this.currentUser.subscribe(x => {
+      this.name = x?.name || 'Admin';
+    })
   }
 
   openMobileMenu: boolean;
@@ -52,7 +56,7 @@ export class TopbarComponent implements OnInit {
     this.element = document.documentElement;
 
     this.getNotification();
-    
+
   }
 
   getNotification() {
