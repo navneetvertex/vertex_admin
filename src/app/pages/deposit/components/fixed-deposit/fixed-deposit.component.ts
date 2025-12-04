@@ -65,7 +65,7 @@ export class FixedDepositComponent implements OnInit {
       });
       this.closeFDFormGroup = new FormGroup({
         penalty_amount: new FormControl(0, [Validators.min(0)]),
-        final_amount: new FormControl({value: 0, disabled: true}),
+        final_amount: new FormControl(0, [Validators.min(0)]),
         notes: new FormControl('')
       });
       // Calculate final amount when penalty changes

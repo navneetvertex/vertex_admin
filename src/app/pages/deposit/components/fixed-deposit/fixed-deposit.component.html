@@ -474,8 +474,8 @@
                 <div class="mb-3 col-lg-6">
                     <label for="final-amount" class="col-form-label">Final Settlement Amount</label>
                     <input type="number" class="form-control" id="final-amount" formControlName="final_amount"
-                        placeholder="Final amount" readonly>
-                    <small class="text-muted">Total Paid + Interest - Penalty</small>
+                        placeholder="Final amount" min="0" step="0.01">
+                    <small class="text-muted">Auto-calculated (Total Paid + Interest - Penalty). You can edit if needed.</small>
                 </div>
 
                 <!-- Calculation Summary -->
