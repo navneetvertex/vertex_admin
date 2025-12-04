@@ -543,7 +543,7 @@
                         <h5 class="mb-0 card-title flex-grow-1">Deposit History</h5>
                         <div class="flex-shrink-0 d-flex gap-1">
                             <a href="javascript:void(0);" class="btn btn-primary" *ngIf="depositSettings.length > 0 && depositList.length == 0"  (click)="openModal(addDepositModal)" >Add Deposit</a>
-                            <a href="javascript:void(0);"  *ngIf="canRequestClosure"
+                            <a href="javascript:void(0);"  *ngIf="selectedSetting?.status === 'Approved'"
                                class="btn btn-warning"
                                (click)="requestCloseFD()" >
                                 <i class="mdi mdi-lock-check me-1"></i>
