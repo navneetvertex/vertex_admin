@@ -53,6 +53,7 @@
                                       <th>Contact</th>
                                       <th>Amount</th>
                                       <th>Int Rate</th>
+                                      <th>Type</th>
                                       <th>Paid</th>
                                       <th>Balance</th>
                                       <th>Notes</th>
@@ -76,6 +77,12 @@
                                             <td>
                                                 <span *ngIf="user.annual_rate">{{ user.annual_rate }} %</span>
                                             </td>
+                                            <td>
+                                                <span *ngIf="user.isMIS" class="badge badge-soft-info cursor-pointer" (click)="openMISScheduleModal(misScheduleModal, user)">
+                                                    <i class="bx bx-calendar me-1"></i>MIS
+                                                </span>
+                                                <span *ngIf="!user.isMIS" class="badge badge-soft-secondary">Regular</span>
+                                            </td>
                                             <td>₹{{ user.paidAmount | number: '1.2-2' }}</td>
                                             <td>₹{{ user.pendingAmount | number: '1.2-2' }}</td>
                                             <td>{{ user.notes }}</td>
@@ -85,10 +92,16 @@
                                                     {{ (user.status === 'Approved' && user.paidAmount === 0) ? 'in-hold' : user.status === 'Close-Requested' ? 'Closure Requested' : user.status }}
                                                 </span>
                                             </td>
+                                            <td>
                                             <ul class="list-inline font-size-20 contact-links mb-0">
                                                 <li class="list-inline-item px-2" >
                                                     <a [routerLink]="['/members/fixed-deposits/', user?.user?._id]" tooltip="Profile">
                                                     <i class="bx bx-wallet"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item px-2" *ngIf="user.isMIS">
+                                                    <a class="cursor-pointer text-info" (click)="openMISScheduleModal(misScheduleModal, user)" ngbTooltip="View MIS Schedule">
+                                                    <i class="bx bx-calendar-check"></i>
                                                     </a>
                                                 </li>
                                                 <li class="list-inline-item px-2" *ngIf="user.status === 'Requested'">
@@ -102,6 +115,7 @@
                                                     </a>
                                                 </li>
                                             </ul>
+                                            </td>
                                         </tr>
                                     </ng-container>
                                   </tbody>
@@ -524,4 +538,100 @@
             </button>
         </div>
     </form>
+</ng-template>
+
+<!-- MIS Payment Schedule Modal -->
+<ng-template #misScheduleModal role="document" let-modal>
+    <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">
+            <i class="bx bx-calendar-check me-2"></i>MIS Payment Schedule
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"
+            (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <!-- Account Summary -->
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Account Holder</p>
+                        <h6>{{ selectedMISAccount?.user?.name }} ({{ selectedMISAccount?.user?.user_id }})</h6>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Principal Amount</p>
+                        <h6 class="text-primary">₹{{ selectedMISAccount?.amount | number: '1.2-2' }}</h6>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Monthly Interest</p>
+                        <h6 class="text-success">₹{{ misMonthlyInterest | number: '1.2-2' }}</h6>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Annual Rate</p>
+                        <h6>{{ selectedMISAccount?.annual_rate }}%</h6>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Duration</p>
+                        <h6>{{ selectedMISAccount?.duration }} Year(s)</h6>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Total Interest</p>
+                        <h6 class="text-info">₹{{ misTotalInterest | number: '1.2-2' }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Schedule Table -->
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-bordered table-hover table-sm">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th class="text-center" style="width: 60px;">Month</th>
+                        <th>Payment Date</th>
+                        <th class="text-end">Interest Amount</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let payment of misPaymentSchedule; let i = index">
+                        <td class="text-center">{{ i + 1 }}</td>
+                        <td>{{ payment.paymentDate | date: 'dd MMM yyyy' }}</td>
+                        <td class="text-end">₹{{ payment.amount | number: '1.2-2' }}</td>
+                        <td class="text-center">
+                            <span *ngIf="payment.isPaid" class="badge badge-soft-success">
+                                <i class="bx bx-check me-1"></i>Paid
+                            </span>
+                            <span *ngIf="!payment.isPaid && payment.isDue" class="badge badge-soft-warning">
+                                <i class="bx bx-time me-1"></i>Due
+                            </span>
+                            <span *ngIf="!payment.isPaid && !payment.isDue" class="badge badge-soft-secondary">
+                                <i class="bx bx-calendar me-1"></i>Upcoming
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="2" class="text-end"><strong>Total Interest</strong></td>
+                        <td class="text-end"><strong>₹{{ misTotalInterest | number: '1.2-2' }}</strong></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-end"><strong>Principal Return (On Maturity)</strong></td>
+                        <td class="text-end"><strong>₹{{ selectedMISAccount?.amount | number: '1.2-2' }}</strong></td>
+                        <td class="text-center">
+                            <span class="badge badge-soft-info">{{ misMaturityDate | date: 'dd MMM yyyy' }}</span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal"
+            (click)="modal.close('Close click')">Close</button>
+    </div>
 </ng-template>

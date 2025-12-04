@@ -30,6 +30,13 @@ export class FixedDepositComponent implements OnInit {
     depositSummary: any = null;
     isFormInitializing: boolean = false;
 
+    // MIS Schedule properties
+    selectedMISAccount: any = null;
+    misPaymentSchedule: any[] = [];
+    misMonthlyInterest: number = 0;
+    misTotalInterest: number = 0;
+    misMaturityDate: Date | null = null;
+
     ngOnInit(): void {
       this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Fixed Deposit List', active: true }];
 
@@ -297,6 +304,58 @@ export class FixedDepositComponent implements OnInit {
       this.closeFDFormGroup.patchValue({
         final_amount: Math.max(0, finalAmount) // Ensure final amount is not negative
       });
+    }
+
+    // MIS Payment Schedule Methods
+    openMISScheduleModal(content: any, user: any) {
+      this.selectedMISAccount = user;
+      this.calculateMISSchedule(user);
+      this.modalService.open(content, { size: 'lg', centered: true });
+    }
+
+    calculateMISSchedule(fdAccount: any) {
+      this.misPaymentSchedule = [];
+
+      if (!fdAccount || !fdAccount.isMIS) {
+        return;
+      }
+
+      const principal = fdAccount.amount || 0;
+      const annualRate = fdAccount.annual_rate || 0;
+      const durationYears = fdAccount.duration || 1;
+      const approvedDate = fdAccount.approved_on ? new Date(fdAccount.approved_on) : new Date(fdAccount.created_date);
+
+      // Calculate monthly interest (simple interest for MIS)
+      this.misMonthlyInterest = (principal * annualRate) / (12 * 100);
+
+      // Total months
+      const totalMonths = Math.round(durationYears * 12);
+
+      // Total interest over the duration
+      this.misTotalInterest = this.misMonthlyInterest * totalMonths;
+
+      // Generate payment schedule
+      const today = new Date();
+
+      for (let i = 1; i <= totalMonths; i++) {
+        const paymentDate = new Date(approvedDate);
+        paymentDate.setMonth(paymentDate.getMonth() + i);
+
+        const isPaid = paymentDate < today;
+        const isDue = !isPaid && paymentDate <= new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+        this.misPaymentSchedule.push({
+          month: i,
+          paymentDate: paymentDate,
+          amount: this.misMonthlyInterest,
+          isPaid: isPaid,
+          isDue: isDue
+        });
+      }
+
+      // Calculate maturity date (when principal is returned)
+      this.misMaturityDate = new Date(approvedDate);
+      this.misMaturityDate.setMonth(this.misMaturityDate.getMonth() + totalMonths);
     }
 
     submitCloseFDRequest() {
