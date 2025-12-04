@@ -22,6 +22,13 @@
                             <div class="col-lg-1" >
                                     <button (click)="reset()" type="button" class="btn btn-soft-secondary w-100" class="btn btn-light"><i class="mdi mdi-refresh"></i></button>
                                 </div>
+                            <div class="col-lg-1">
+                                <button type="button" (click)="exportToExcel()" [disabled]="exportLoading || paymentList.length === 0" class="btn btn-soft-success w-100">
+                                    <i class="mdi mdi-file-excel align-middle" *ngIf="!exportLoading"></i>
+                                    <i class="mdi mdi-loading mdi-spin align-middle" *ngIf="exportLoading"></i>
+                                    Excel
+                                </button>
+                            </div>
                         </div>
                       </form>
                   </div>
@@ -45,6 +52,7 @@
                                       <th>Branch Name</th>
                                       <th>IFSC Code</th>
                                       <th>Comments</th>
+                                      <th>Date</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -62,7 +70,7 @@
                                       <td> <span *ngIf="payment.active_bank_details.length !== 0">{{ payment.active_bank_details[0].branch_name }}</span> </td>
                                       <td> <span *ngIf="payment.active_bank_details.length !== 0">{{ payment.active_bank_details[0].ifsc_code }}</span> </td>
                                       <td>{{ payment.message || '-' }}</td>
-                                      
+                                      <td>{{ payment.createdAt | date:'dd MMM yyyy' }}</td>
                                     </tr>
                                   </tbody>
                                 </table>
