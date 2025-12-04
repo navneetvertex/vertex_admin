@@ -33,9 +33,10 @@ export class FixedDepositComponent implements OnInit {
     // MIS Schedule properties
     selectedMISAccount: any = null;
     misPaymentSchedule: any[] = [];
-    misMonthlyInterest: number = 0;
+    misInterestAmount: number = 0;
     misTotalInterest: number = 0;
     misMaturityDate: Date | null = null;
+    misFrequencyLabel: string = 'Monthly';
 
     ngOnInit(): void {
       this.breadCrumbItems = [{ label: 'Deposit' }, { label: 'Fixed Deposit List', active: true }];
@@ -324,30 +325,52 @@ export class FixedDepositComponent implements OnInit {
       const annualRate = fdAccount.annual_rate || 0;
       const durationYears = fdAccount.duration || 1;
       const approvedDate = fdAccount.approved_on ? new Date(fdAccount.approved_on) : new Date(fdAccount.created_date);
+      const compoundingFrequency = parseInt(fdAccount.compounding_frequency) || 1; // Default to annual if not set
 
-      // Calculate monthly interest (simple interest for MIS)
-      this.misMonthlyInterest = (principal * annualRate) / (12 * 100);
+      // Set frequency label based on compounding frequency
+      switch (compoundingFrequency) {
+        case 1:
+          this.misFrequencyLabel = 'Yearly';
+          break;
+        case 2:
+          this.misFrequencyLabel = 'Half-Yearly';
+          break;
+        case 4:
+          this.misFrequencyLabel = 'Quarterly';
+          break;
+        case 12:
+        default:
+          this.misFrequencyLabel = 'Monthly';
+          break;
+      }
 
-      // Total months
-      const totalMonths = Math.round(durationYears * 12);
+      // Calculate interest per period based on compounding frequency
+      // Interest per period = (Principal * Annual Rate) / (Frequency * 100)
+      this.misInterestAmount = (principal * annualRate) / (compoundingFrequency * 100);
+
+      // Total number of payments = frequency * duration in years
+      const totalPayments = Math.round(compoundingFrequency * durationYears);
+
+      // Months between each payment
+      const monthsBetweenPayments = 12 / compoundingFrequency;
 
       // Total interest over the duration
-      this.misTotalInterest = this.misMonthlyInterest * totalMonths;
+      this.misTotalInterest = this.misInterestAmount * totalPayments;
 
       // Generate payment schedule
       const today = new Date();
 
-      for (let i = 1; i <= totalMonths; i++) {
+      for (let i = 1; i <= totalPayments; i++) {
         const paymentDate = new Date(approvedDate);
-        paymentDate.setMonth(paymentDate.getMonth() + i);
+        paymentDate.setMonth(paymentDate.getMonth() + (i * monthsBetweenPayments));
 
         const isPaid = paymentDate < today;
         const isDue = !isPaid && paymentDate <= new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
         this.misPaymentSchedule.push({
-          month: i,
+          installment: i,
           paymentDate: paymentDate,
-          amount: this.misMonthlyInterest,
+          amount: this.misInterestAmount,
           isPaid: isPaid,
           isDue: isDue
         });
@@ -355,7 +378,7 @@ export class FixedDepositComponent implements OnInit {
 
       // Calculate maturity date (when principal is returned)
       this.misMaturityDate = new Date(approvedDate);
-      this.misMaturityDate.setMonth(this.misMaturityDate.getMonth() + totalMonths);
+      this.misMaturityDate.setMonth(this.misMaturityDate.getMonth() + (durationYears * 12));
     }
 
     submitCloseFDRequest() {
