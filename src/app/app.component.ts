@@ -84,8 +84,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.warningTimer.unsubscribe();
     }
 
-    // 4 minutes = 240000 ms
-    this.inactivityTimer = timer(240000).subscribe(() => {
+    // 14 minutes = 840000 ms (15 minutes total with 1 minute warning)
+    this.inactivityTimer = timer(840000).subscribe(() => {
       this.showLogoutWarning();
     });
   }
@@ -93,7 +93,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private showLogoutWarning() {
     Swal.fire({
       title: 'Session Timeout Warning',
-      text: 'You will be logged out in 1 minute due to inactivity.',
+      text: 'You will be logged out in 1 minute due to inactivity. Your session will expire after 15 minutes of inactivity.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Stay Logged In',

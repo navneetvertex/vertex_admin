@@ -1,166 +1,133 @@
-<div class="container-fluid p-0">
-    <div class="row g-0">
-
-        <div class="col-xl-9">
-            <div class="auth-full-bg pt-lg-5 p-4">
-                <div class="w-100">
-                    <div class="bg-overlay"></div>
-                    <div class="d-flex h-100 flex-column">
-                        <div class="p-4 mt-auto">
-                            <div class="row justify-content-center">
-                                <div class="col-lg-7">
-                                    <div class="text-center text-white">
-                                        <h1 class="display-4 fw-bold mb-3 animate-slide-up">Welcome to Vertex</h1>
-                                        <p class="lead mb-4 animate-slide-up" style="animation-delay: 0.2s;">
-                                            Vertex Kalyan Cooperative (V) Thrift & Credit Society Ltd.
-                                        </p>
-                                        <div class="feature-icons d-flex justify-content-center gap-4 mt-5 animate-slide-up" style="animation-delay: 0.4s;">
-                                            <div class="feature-item">
-                                                <div class="icon-box">
-                                                    <i class="mdi mdi-shield-check"></i>
-                                                </div>
-                                                <p class="mt-2 small">Secure</p>
-                                            </div>
-                                            <div class="feature-item">
-                                                <div class="icon-box">
-                                                    <i class="mdi mdi-account-group"></i>
-                                                </div>
-                                                <p class="mt-2 small">Trusted</p>
-                                            </div>
-                                            <div class="feature-item">
-                                                <div class="icon-box">
-                                                    <i class="mdi mdi-chart-line"></i>
-                                                </div>
-                                                <p class="mt-2 small">Growing</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- end col -->
-
-        <div class="col-xl-3">
-            <div class="auth-full-page-content p-md-5 p-4">
-                <div class="w-100">
-
-                    <div class="d-flex flex-column h-100">
-                        <div class="mb-4 mb-md-5 text-center animate-fade-in">
-                            <a routerLink="/" class="d-block auth-logo">
-                                <img src="assets/images/logo-dark.png" alt="Vertex Logo" height="100" class="auth-logo-dark logo-bounce">
-                                <img src="assets/images/logo-tr.png" alt="Vertex Logo" height="100" class="auth-logo-light logo-bounce">
-                            </a>
-                        </div>
-                        <div class="my-auto">
-
-                            <div class="text-center mb-4 animate-fade-in" style="animation-delay: 0.2s;">
-                                <h4 class="text-primary fw-bold mb-2">Welcome Back!</h4>
-                                <p class="text-muted">Sign in to continue to your admin dashboard</p>
-                            </div>
-
-                            <div class="mt-4 animate-fade-in" style="animation-delay: 0.3s;">
-                                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="modern-form">
-
-                                    <div class="mb-4">
-                                        <label for="email" class="form-label fw-semibold">
-                                            <i class="mdi mdi-email-outline me-1"></i>Email Address
-                                        </label>
-                                        <div class="input-wrapper">
-                                            <input type="email" 
-                                                   class="form-control form-control-lg" 
-                                                   id="email" 
-                                                   formControlName="email"
-                                                   [ngClass]="{ 'is-invalid': submitted && f.email.errors, 'is-valid': submitted && !f.email.errors }"
-                                                   placeholder="Enter your email">
-                                            <i class="input-icon mdi mdi-email"></i>
-                                        </div>
-                                        <div *ngIf="submitted && f.email.errors" class="invalid-feedback d-block">
-                                            <i class="mdi mdi-alert-circle me-1"></i>
-                                            <span *ngIf="f.email.errors.required">Email is required</span>
-                                            <span *ngIf="f.email.errors.email">Please enter a valid email address</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label for="userpassword" class="form-label fw-semibold">
-                                            <i class="mdi mdi-lock-outline me-1"></i>Password
-                                        </label>
-                                        <div class="input-group auth-pass-inputgroup">
-                                            <div class="input-wrapper">
-                                                <input type="password" 
-                                                       #password 
-                                                       class="form-control form-control-lg" 
-                                                       formControlName="password"
-                                                       [ngClass]="{ 'is-invalid': submitted && f.password.errors, 'is-valid': submitted && !f.password.errors && submitted }"
-                                                       placeholder="Enter your password" 
-                                                       aria-label="Password"
-                                                       aria-describedby="password-addon">
-                                                <i class="input-icon mdi mdi-lock"></i>
-                                            </div>
-                                            <button class="btn password-toggle" 
-                                                    type="button" 
-                                                    (click)="showHidePassword(password)" 
-                                                    id="password-addon"
-                                                    tabindex="-1"
-                                                    [attr.aria-label]="passwordFieldType === 'password' ? 'Show password' : 'Hide password'">
-                                                <i class="mdi" 
-                                                   [ngClass]="passwordFieldType === 'password' ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"></i>
-                                            </button>
-                                        </div>
-                                        <div *ngIf="submitted && f.password.errors" class="invalid-feedback d-block">
-                                            <i class="mdi mdi-alert-circle me-1"></i>
-                                            <span *ngIf="f.password.errors.required">Password is required</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-check mb-4">
-                                        <input class="form-check-input" type="checkbox" id="remember-check">
-                                        <label class="form-check-label text-muted" for="remember-check">
-                                            Keep me signed in
-                                        </label>
-                                    </div>
-
-                                    <div class="d-grid">
-                                        <button class="btn btn-primary btn-lg waves-effect waves-light modern-btn" 
-                                                type="submit"
-                                                [disabled]="loading">
-                                            <span *ngIf="!loading">
-                                                <i class="mdi mdi-login me-2"></i>Sign In
-                                            </span>
-                                            <span *ngIf="loading">
-                                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                                Signing in...
-                                            </span>
-                                        </button>
-                                    </div>
-
-                                    <div class="mt-4 text-center">
-                                        <p class="text-muted mb-0">
-                                            <i class="mdi mdi-information-outline me-1"></i>
-                                            Need help? Contact your administrator
-                                        </p>
-                                    </div>
-
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 mt-md-5 text-center animate-fade-in" style="animation-delay: 0.5s;">
-                            <p class="mb-0 text-muted">©
-                                {{year}} Vertex. Crafted with <i class="mdi mdi-heart text-danger heartbeat"></i> by
-                                <span class="text-primary fw-semibold">Piyush Sahay</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- end col -->
+<div class="auth-container">
+  <div class="auth-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+      <div class="shape shape-5"></div>
     </div>
-    <!-- end row -->
+  </div>
+  
+  <div class="auth-content">
+    <div class="login-card">
+      <div class="card-header">
+        <div class="logo-container">
+          <img src="assets/images/logo-dark.png" alt="Vertex Logo" class="logo">
+        </div>
+        <h2 class="welcome-title">Welcome Back</h2>
+        <p class="welcome-subtitle">Sign in to your admin dashboard</p>
+      </div>
+      
+      <div class="card-body">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          
+          <div class="form-group">
+            <div class="input-container">
+              <i class="input-icon mdi mdi-email"></i>
+              <input 
+                type="email" 
+                class="form-input" 
+                id="email" 
+                formControlName="email"
+                [ngClass]="{ 'error': submitted && f.email.errors, 'success': submitted && !f.email.errors && f.email.value }"
+                placeholder="Email Address"
+                autocomplete="email">
+            </div>
+            <div *ngIf="submitted && f.email.errors" class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              <span *ngIf="f.email.errors.required">Email is required</span>
+              <span *ngIf="f.email.errors.email">Please enter a valid email</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-container password-container">
+              <i class="input-icon mdi mdi-lock"></i>
+              <input 
+                type="password" 
+                #password
+                class="form-input" 
+                id="password" 
+                formControlName="password"
+                [ngClass]="{ 'error': submitted && f.password.errors, 'success': submitted && !f.password.errors && f.password.value }"
+                placeholder="Password"
+                autocomplete="current-password">
+              <button 
+                type="button" 
+                class="password-toggle-btn"
+                (click)="showHidePassword(password)"
+                [attr.aria-label]="passwordFieldType === 'password' ? 'Show password' : 'Hide password'">
+                <i class="mdi" [ngClass]="passwordFieldType === 'password' ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"></i>
+              </button>
+            </div>
+            <div *ngIf="submitted && f.password.errors" class="error-message">
+              <i class="mdi mdi-alert-circle"></i>
+              <span *ngIf="f.password.errors.required">Password is required</span>
+            </div>
+          </div>
+
+          <div class="form-options">
+            <label class="checkbox-container">
+              <input type="checkbox" id="remember-check">
+              <span class="checkmark"></span>
+              <span class="checkbox-text">Remember me</span>
+            </label>
+          </div>
+
+          <button 
+            type="submit" 
+            class="login-btn"
+            [disabled]="loading"
+            [class.loading]="loading">
+            <span class="btn-content" *ngIf="!loading">
+              <i class="mdi mdi-login"></i>
+              Sign In
+            </span>
+            <span class="btn-content" *ngIf="loading">
+              <div class="spinner"></div>
+              Signing in...
+            </span>
+          </button>
+
+        </form>
+      </div>
+      
+      <div class="card-footer">
+        <div class="help-text">
+          <i class="mdi mdi-help-circle"></i>
+          Need help? Contact your administrator
+        </div>
+      </div>
+    </div>
+    
+    <div class="features-section">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <i class="mdi mdi-shield-check"></i>
+        </div>
+        <h4>Secure</h4>
+        <p>Bank-level security</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <i class="mdi mdi-account-group"></i>
+        </div>
+        <h4>Trusted</h4>
+        <p>By thousands of users</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <i class="mdi mdi-trending-up"></i>
+        </div>
+        <h4>Growing</h4>
+        <p>Expanding every day</p>
+      </div>
+    </div>
+  </div>
+  
+ <div class="copyright">
+  © {{ currentYear }} Vertex Cooperative. All rights reserved. Built on trust and integrity.
 </div>
-<!-- end container-fluid -->
+
+</div>
