@@ -70,7 +70,7 @@ export class Login2Component implements OnInit {
               <div class="professional-success">
                 <div class="success-content">
                   <div class="logo-container">
-                    <img src="assets/images/logo-dark.png" alt="Vertex Logo" class="popup-logo">
+                    <img src="assets/images/vertexlogokalyan.webp" alt="Vertex Logo" class="popup-logo">
                     <div class="success-badge">
                       <i class="mdi mdi-check"></i>
                     </div>
